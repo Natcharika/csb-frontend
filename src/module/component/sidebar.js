@@ -1,30 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
-import {
-  LaptopOutlined,
-  UserOutlined,
-  FormOutlined
-} from "@ant-design/icons";
+import React, { useState } from "react";
 import { Breadcrumb, Layout, Menu, theme } from "antd";
-import '../theme/css/sidebar.css';
-import kmutnb from '../public/image/kmutnb.png'
+import "../theme/css/sidebar.css";
+import kmutnb from "../public/image/kmutnb.png";
+import { Link, useNavigate } from "react-router-dom";
 
 const { Header, Content, Sider } = Layout;
-
 const menuItemsStudent = [
   {
     key: "/",
-    icon: React.createElement(LaptopOutlined),
+    // icon: React.createElement(LaptopOutlined),
     label: "หน้าหลัก",
   },
   {
     key: "/special-project-1",
-    icon: React.createElement(FormOutlined),
+    // icon: React.createElement(FormOutlined),
     label: "Special Project 1",
     children: [
       {
         key: "/special-project-1/provider",
-        // label: "ตรวจสอบคุณสมบัตินักศึกษา" <br/> "Special Project 1", 
+        // label: "ตรวจสอบคุณสมบัตินักศึกษา" <br/> "Special Project 1",
         label: `${"ตรวจสอบคุณสมบัตินักศึกษา"} <br/> ${"Special Project 1"}`,
       },
       {
@@ -33,18 +27,18 @@ const menuItemsStudent = [
       },
       {
         key: "/special-project-1/exam-csb02",
-        label: "ยื่นสอบก้าวหน้า", 
+        label: "ยื่นสอบก้าวหน้า",
       },
-    ]
+    ],
   },
   {
     key: "/special-project-2",
-    icon: React.createElement(FormOutlined),
+    // icon: React.createElement(FormOutlined),
     label: "Special Project 2",
     children: [
       {
         key: "/special-project-2/provider",
-        label: "ตรวจสอบคุณสมบัติ", 
+        label: "ตรวจสอบคุณสมบัติ",
       },
       {
         key: "/special-project-2/exam-csb03",
@@ -52,27 +46,26 @@ const menuItemsStudent = [
       },
       {
         key: "/special-project-2/exam-csb04",
-        label: "ยื่นสอบป้องกัน", 
+        label: "ยื่นสอบป้องกัน",
       },
-    ]
+    ],
   },
   {
     key: "/project-status",
-    icon: React.createElement(LaptopOutlined),
+    // icon: React.createElement(LaptopOutlined),
     label: "ตรวจสอบสถานะโครงงาน",
-  }
+  },
 ];
 
 const menuItemsTeacher = [
   {
     key: "/",
-    icon: React.createElement(LaptopOutlined),
+    // icon: React.createElement(LaptopOutlined),
     label: "หน้าหลัก",
-
   },
   {
     key: "/approve",
-    icon: React.createElement(FormOutlined),
+    // icon: React.createElement(FormOutlined),
     label: "อนุมัติการยื่นสอบ",
     children: [
       {
@@ -83,11 +76,11 @@ const menuItemsTeacher = [
         key: "/approve/approve-csb04",
         label: "อนุมัติการสอบป้องกัน",
       },
-    ]
+    ],
   },
   {
     key: "/input-score",
-    icon: React.createElement(FormOutlined),
+    // icon: React.createElement(FormOutlined),
     label: "ประเมินคะแนน",
     children: [
       {
@@ -100,13 +93,13 @@ const menuItemsTeacher = [
       },
       {
         key: "/input-score/inputscore-csb04",
-        label: "ประเมินป้องกัน", 
+        label: "ประเมินป้องกัน",
       },
-    ]
+    ],
   },
   {
     key: "/chairman-score",
-    icon: React.createElement(FormOutlined),
+    // icon: React.createElement(FormOutlined),
     label: "อนุมัติคะแนนสอบ",
     children: [
       {
@@ -119,13 +112,13 @@ const menuItemsTeacher = [
       },
       {
         key: "/chairman-score/chairman-score-csb04",
-        label: "อนุมัติคะแนนสอบป้องกันโดยประธานกรรมการสอบ", 
+        label: "อนุมัติคะแนนสอบป้องกันโดยประธานกรรมการสอบ",
       },
-    ]
+    ],
   },
   {
     key: "/department-score",
-    icon: React.createElement(FormOutlined),
+    // icon: React.createElement(FormOutlined),
     label: "อนุมัติคะแนนสอบ",
     children: [
       {
@@ -138,24 +131,77 @@ const menuItemsTeacher = [
       },
       {
         key: "/department-score/department-score-csb04",
-        label: "อนุมัติคะแนนสอบป้องกันโดยหัวหน้าภาควิชา", 
+        label: "อนุมัติคะแนนสอบป้องกันโดยหัวหน้าภาควิชา",
       },
-    ]
+    ],
   },
 ];
 
-const SiderBar = ({ page, pageName, pageSub, path, rolePage }) => {
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
-  
+const menuItemsAdmin = [
+  {
+    key: "/",
+    // icon: React.createElement(HomeOutlined),
+    label: "หน้าหลัก",
+  },
+  {
+    key: "/exam-management",
+    // icon: React.createElement(FormOutlined),
+    label: "จัดการเวลาสอบ",
+  },
+  {
+    key: "/room-management",
+    // icon: React.createElement(LaptopOutlined),
+    label: "สร้างห้องสอบ",
+    // children: [
+    //   {
+    //     key: "/room-management/add-room",
+    //     label: "เพิ่มห้องสอบ",
+    //   },
+    //   {
+    //     key: "/room-management/edit-room",
+    //     label: "แก้ไขห้องสอบ",
+    //   }
+    // ]
+  },
+  {
+    key: "/member-spacial-project",
+    // icon: React.createElement(UserOutlined),
+    label: "รายชื่อนักศึกษา",
+    children: [
+      {
+        key: "/member-spacial-project/sp-1",
+        label: "Special Project 1",
+      },
+      {
+        key: "/member-spacial-project/sp-2",
+        label: "Special Project 2",
+      },
+    ],
+  },
+  {
+    key: "/sumary-room",
+    // icon: React.createElement(LaptopOutlined),
+    label: "สรุปห้องสอบ",
+  },
+  // {
+  //   key: "/add-member-spacial-project",
+  //   icon: React.createElement(UserOutlined),
+  //   label: "เพิ่มรายชื่อนักศึกษา",
+  // },
+  {
+    key: "/add-lecture",
+    // icon: React.createElement(UserAddOutlined),
+    label: "เพิ่มอาจารย์ที่ปรึกษา",
+  },
+  {
+    key: "/create-project-for-student",
+    // icon: React.createElement(UserOutlined),
+    label: "สร้างโปรเจกต์ให้นักศึกษา",
+  },
+];
+const SiderBar = ({ children, role }) => {
   const [selectedKey, setSelectedKey] = useState("/");
   const navigate = useNavigate();
-
-  useEffect(() => {
-    setSelectedKey(path);
-  }, [path]);
-
   const handleMenuClick = (e) => {
     setSelectedKey(e.key);
     navigate(e.key);
@@ -163,44 +209,59 @@ const SiderBar = ({ page, pageName, pageSub, path, rolePage }) => {
 
   return (
     <Layout>
-      <Header className="header" style={{ background: colorBgContainer }}>
-      <img src={kmutnb} alt="logo" style={{ maxWidth: '15%', height: 'auto' }} />
-      <span style={{ fontSize: '20px'}}>
+      <Header className="header bg-white h-[100px] shadow-md">
+        <img
+          src={kmutnb}
+          alt="logo"
+          className="w-[200px] h-auto items-center"
+        />
+        <span style={{ fontSize: "20px" }}>
           Special Project Examination Management System for CSB Program
         </span>
-        <span>
-          
-          {"สวัสดี เจ้าหน้าที่ สุดหล่อ"}
-          </span>
+        <span>{role == "" ? <Link to={"/login"}>Log in</Link> : role}</span>
       </Header>
 
       <Layout>
-        <Sider className="sider" style={{ background: colorBgContainer }}>
-        {/* <p style={{ marginLeft: '20px' }}>Teacher</p> */}
-        <p style={{ marginLeft: '20px' }}>Student</p>
+        <Sider className="sider bg-white">
+          <h1 style={{ marginLeft: "20px" }}>
+            {role == "students"
+              ? "นักศึกษา"
+              : role == "teacher"
+              ? "อาจารย์"
+              : role == "admin"
+              ? "เจ้าหน้าที่"
+              : ""}
+          </h1>
           <Menu
             mode="inline"
             selectedKeys={[selectedKey]}
-            defaultOpenKeys={["sub1"]}
-            items={rolePage === "students" ? menuItemsStudent : menuItemsTeacher}
+            // defaultOpenKeys={["sub1"]}
+            items={
+              role === "students"
+                ? menuItemsStudent
+                : role === "teacher"
+                ? menuItemsTeacher
+                : role === "admin"
+                ? menuItemsAdmin
+                : [menuItemsStudent[0]]
+            }
             onClick={handleMenuClick}
           />
         </Sider>
 
         <Layout style={{ padding: "0 24px 24px" }}>
-          <Breadcrumb
+          {/* <Breadcrumb
             className="breadcrumb"
             items={[{ title: pageName }, { title: pageSub ?? "" }]}
-          />
+          /> */}
 
           <Content
             className="content"
             style={{
-              background: colorBgContainer,
-              borderRadius: borderRadiusLG,
+              borderRadius: "10px",
             }}
           >
-            {page}
+            {children}
           </Content>
         </Layout>
       </Layout>
