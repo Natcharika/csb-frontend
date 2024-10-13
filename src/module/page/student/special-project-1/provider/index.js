@@ -5,7 +5,7 @@ import axios from "axios";
 
 const { Title, Paragraph } = Typography;
 
-export default function ProjectEvaluation() {
+export default function ProviderSp1() {
   const [file, setFile] = useState(null); 
   const [previewVisible, setPreviewVisible] = useState(false); 
   const [fileUrl, setFileUrl] = useState(""); 
@@ -24,11 +24,11 @@ export default function ProjectEvaluation() {
 
     const formData = new FormData();
     formData.append("files[]", file);
-    formData.append("std", "6304062636121"); // เพิ่ม studentId ที่ต้องการ
+    formData.append("std", "6304062636120"); // เพิ่ม studentId ที่ต้องการ
     formData.append("stdName", "ทerdgjyhk"); // เพิ่ม studentName ที่ต้องการ
 
     try {
-      const response = await fetch("http://localhost:9999/files", {
+      const response = await fetch("http://localhost:8788/files", {
         method: "POST",
         body: formData,
       });
@@ -48,7 +48,7 @@ export default function ProjectEvaluation() {
 
   const handleFileUpload = async (fi_id) => {
     try {
-      await axios.patch(`http://localhost:9999/files/${fi_id}`);
+      await axios.patch(`http://localhost:8788/files/${fi_id}`);
     } catch (error) {
       console.error("Error updating file status:", error);
     }

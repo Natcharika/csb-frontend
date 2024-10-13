@@ -27,6 +27,7 @@ import SumaryRoom from "./module/page/admin/sumary-room";
 import AddLecture from "./module/page/admin/add-lecture";
 import CreateProjectForStudent from "./module/page/admin/create-project-for-student";
 import RoomManagement from "./module/page/admin/room-management";
+import ProviderSp1 from "./module/page/student/special-project-1/provider";
 
 function App() {
   const [role, setRole] = useState("teacher");
@@ -52,10 +53,10 @@ function App() {
             <Route path="/login" element={<Login />} />
             {role === "students" && (
               <>
-                {/* <Route
+                <Route
                 path="/special-project-1/provider"
                 element={<ProviderSp1 />}
-              /> */}
+              />
                 <Route
                   path="/special-project-1/exam-csb01"
                   element={<ExamCSB01 />}
