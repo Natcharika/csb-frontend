@@ -198,6 +198,11 @@ const menuItemsAdmin = [
     // icon: React.createElement(UserOutlined),
     label: "สร้างโปรเจกต์ให้นักศึกษา",
   },
+  {
+    key: "/appointment-department",
+    // icon: React.createElement(UserOutlined),
+    label: "แต่งตั้งหัวหน้าภาค",
+  },
 ];
 const SiderBar = ({ children, role }) => {
   const [selectedKey, setSelectedKey] = useState("/");

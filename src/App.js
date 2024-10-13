@@ -30,8 +30,7 @@ import RoomManagement from "./module/page/admin/room-management";
 import ProviderSp1 from "./module/page/student/special-project-1/provider";
 import ProviderSp2 from "./module/page/student/special-project-2/provider";
 import ProjectStatus from "./module/page/student/project-status"
-
-
+import AppointmentHeadofDepartment from "./module/page/admin/appointment-department";
 
 function App() {
   const [role, setRole] = useState("teacher");
@@ -151,6 +150,7 @@ function App() {
                   path="/create-project-for-student"
                   element={<CreateProjectForStudent />}
                 />
+                <Route path="/appointment-department" element={<AppointmentHeadofDepartment />} />
               </>
             )}
           </Routes>

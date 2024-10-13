@@ -12,7 +12,7 @@ const Login = ({ onLoginSuccess }) => {
 
   const onSubmit = async () => {
     try {
-      const response = await axios.post("http://localhost:9999/auth/login", {
+      const response = await axios.post("http://localhost:8788/auth/login", {
         username,
         password,
       });
@@ -30,31 +30,32 @@ const Login = ({ onLoginSuccess }) => {
 
           if (userInfo.account_type === "students") {
             const studentPayload = {
-              S_status: true,
+                // S_id: userInfo.username,
+                S_name: userInfo.displayname,
             };
-
-            await axios.put(`http://localhost:9999/students/${S_id}/status`, studentPayload);
+            await axios.post(`http://localhost:8788/user`,studentPayload);
             localStorage.setItem("S_id", S_id);
             if (typeof onLoginSuccess === "function") {
               onLoginSuccess();
             }
-            window.location.href = "http://localhost:3000/free/studen/";
-          } else if (userInfo.account_type === "admin") {
+            window.location.href = "http://localhost:3000/special-project-1/provider";
+
+          } else if (userInfo.username === "nateep") {
             const AdminPayload = {
               A_id: userInfo.username,
               A_name: userInfo.displayname,
             };
-
-            await axios.post("http://localhost:9999/admins", AdminPayload);
+            await axios.post("http://localhost:8788/admins", AdminPayload);
             localStorage.setItem("A_id", userInfo.username);
-            window.location.href = "http://localhost:3000/free/staff/";
+            window.location.href = "http://localhost:3000/aminins";
+
           } else if (userInfo.account_type === "teachers") {
             const TeacherPayload = {
               T_id: userInfo.username,
               T_name: userInfo.displayname,
             };
 
-            await axios.post("http://localhost:9999/teachers", TeacherPayload);
+            await axios.post("http://localhost:8788/teachers", TeacherPayload);
             localStorage.setItem("T_id", userInfo.username);
             window.location.href = "http://localhost:3000/free/teacher/";
           }

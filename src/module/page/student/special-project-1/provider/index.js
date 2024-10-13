@@ -36,7 +36,7 @@ export default function ProviderSp1() {
     formData.append("stdName", "ทerdgjyhk");
 
     try {
-      const response = await fetch("http://localhost:9999/files", {
+      const response = await fetch("http://localhost:8788/files", {
         method: "POST",
         body: formData,
       });
@@ -56,7 +56,7 @@ export default function ProviderSp1() {
 
   const handleFileUpload = async (fi_id) => {
     try {
-      await axios.patch(`http://localhost:9999/files/${fi_id}`);
+      await axios.patch(`http://localhost:8788/files/${fi_id}`);
     } catch (error) {
       console.error("Error updating file status:", error);
     }
