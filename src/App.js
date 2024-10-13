@@ -28,6 +28,10 @@ import AddLecture from "./module/page/admin/add-lecture";
 import CreateProjectForStudent from "./module/page/admin/create-project-for-student";
 import RoomManagement from "./module/page/admin/room-management";
 import ProviderSp1 from "./module/page/student/special-project-1/provider";
+import ProviderSp2 from "./module/page/student/special-project-2/provider";
+import ProjectStatus from "./module/page/student/project-status"
+
+
 
 function App() {
   const [role, setRole] = useState("teacher");
@@ -65,10 +69,10 @@ function App() {
                   path="/special-project-1/exam-csb02"
                   element={<ExamCSB02 />}
                 />
-                {/* <Route
+                <Route
                 path="/special-project-2/provider"
                 element={<ProviderSp2 />}
-              /> */}
+              />
                 <Route
                   path="/special-project-2/exam-csb03"
                   element={<ExamCSB03 />}
@@ -77,7 +81,10 @@ function App() {
                   path="/special-project-2/exam-csb04"
                   element={<ExamCSB04 />}
                 />
-                {/* <Route path="/project-status" element={<ProjectStatus />} /> */}
+                <Route 
+                  path="/project-status" 
+                  element={<ProjectStatus />} 
+                />
               </>
             )}
             {role === "teacher" && (

@@ -14,40 +14,46 @@ export default function ExamCSB01() {
     setIsOtherChecked(checkedValues.includes("topic6"));
   };
 
-  const handleSubmit = async (values) => {
-    const body = {
-      projectName: values.projectName,
-      projectType: values.projectType,
-      projectStatus: "0",
-      projectDescription: values.projectDescription,
-      student: values.student,
-      lecturer: values.lecturer,
-      scoreId: "",
-    };
-    console.log("asdadsad",body)
+    const handleSubmit = async (values) => {
+  // Transforming the form values to match the desired structure
+  const formattedStudents = Object.keys(values.student).map((key) => ({
+    studentId: values.student[key].studentId,
+    FirstName: values.student[key].FirstName,
+    LastName: values.student[key].LastName,
+  }));
 
-    api
-      .createProject(body)
-      .then((res) => {
-        form.resetFields();
-        setIsSubmitDisabled(true); 
-        notification.success({
-          message: "สำเร็จ",
-          description: "สร้างโปรเจกต์สำเร็จ", 
-          placement: "topRight",
-        });
-
-      })
-   
-      .catch((error) => {
-        console.error(error);
-        notification.error({
-          message: "เกิดข้อผิดพลาด",
-          description: "ไม่สามารถสร้างโปรเจกต์ได้",
-          placement: "topRight",
-        });
-      });
+  const body = {
+    projectName: values.projectName,
+    projectType: 0,
+    projectStatus: 0,
+    projectDescription: values.projectDescription,
+    student: formattedStudents, // Use the formatted student array here
+    lecturer: values.lecturer,
+    scoreId: "",
   };
+
+  console.log("Body to be sent to backend:", body);
+
+  api
+    .createProject(body)
+    .then((res) => {
+      form.resetFields();
+      setIsSubmitDisabled(true); 
+      notification.success({
+        message: "สำเร็จ",
+        description: "สร้างโปรเจกต์สำเร็จ", 
+        placement: "topRight",
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+      notification.error({
+        message: "เกิดข้อผิดพลาด",
+        description: "ไม่สามารถสร้างโปรเจกต์ได้",
+        placement: "topRight",
+      });
+    });
+};
 
   return (
     <div style={{ margin: "auto", backgroundColor: "#fff", padding: 40, borderRadius: 10 }}>
@@ -70,7 +76,7 @@ export default function ExamCSB01() {
         {/* Form Fields */}
         <Form.Item
           label="รหัสนักศึกษา 1"
-          name={['student', 'student1', 'studentId']}
+          name={['student', '0', 'studentId']}
           rules={[{ required: true, message: "กรุณากรอกรหัสนักศึกษา 1" }]}
         >
           <Input placeholder="รหัสนักศึกษา 1" />
@@ -80,7 +86,7 @@ export default function ExamCSB01() {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name={['student', 'student1', 'FirstName']}
+                name={['student', '0', 'FirstName']}
                 rules={[{ required: true, message: "กรุณากรอกชื่อจริงนักศึกษา 1" }]}
               >
                 <Input placeholder="ชื่อจริงนักศึกษา 1" />
@@ -88,7 +94,7 @@ export default function ExamCSB01() {
             </Col>
             <Col span={12}>
               <Form.Item
-                name={['student', 'student1', 'LastName']}
+                name={['student', '0', 'LastName']}
                 rules={[{ required: true, message: "กรุณากรอกนามสกุลนักศึกษา 1" }]}
               >
                 <Input placeholder="นามสกุลนักศึกษา 1" />
@@ -99,7 +105,7 @@ export default function ExamCSB01() {
 
         <Form.Item
           label="รหัสนักศึกษา 2"
-          name={['student', 'student2', 'studentId']}
+          name={['student', '1', 'studentId']}
           rules={[{ required: true, message: "กรุณากรอกรหัสนักศึกษา 2" }]}
         >
           <Input placeholder="รหัสนักศึกษา 2" />
@@ -109,7 +115,7 @@ export default function ExamCSB01() {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name={['student', 'student2', 'FirstName']}
+                name={['student', '1', 'FirstName']}
                 rules={[{ required: true, message: "กรุณากรอกชื่อจริงนักศึกษา 2" }]}
               >
                 <Input placeholder="ชื่อจริงนักศึกษา 2" />
@@ -117,7 +123,7 @@ export default function ExamCSB01() {
             </Col>
             <Col span={12}>
               <Form.Item
-                name={['student', 'student2', 'LastName']}
+                name={['student', '1', 'LastName']}
                 rules={[{ required: true, message: "กรุณากรอกนามสกุลนักศึกษา 2" }]}
               >
                 <Input placeholder="นามสกุลนักศึกษา 2" />

@@ -4,7 +4,7 @@ import cis from "../../../../public/image/cis.png";
 
 const { Title, Paragraph } = Typography;
 
-export default function ProjectEvaluation() {
+export default function ProviderSp2() {
   const [file, setFile] = useState(null); // State to hold the uploaded file
   const [previewVisible, setPreviewVisible] = useState(false); // State to control the preview modal
   const [fileUrl, setFileUrl] = useState(""); // State to hold the file URL for preview

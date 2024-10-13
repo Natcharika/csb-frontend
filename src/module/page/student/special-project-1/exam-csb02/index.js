@@ -23,28 +23,19 @@ export default function ExamCSB02() {
     });
   };
 
-  const handleDecline = () => {
-    console.log("ปฏิเสธ");
-    notification.error({
-      message: 'ปฏิเสธ',
-      description: 'ท่านปฏิเสธสอบความก้าวหน้าโครงงานพิเศษแล้ว',
-      placement: 'topRight',
-    });
-  };
-
   useEffect(() => {
     api
       .getAllProject()
       .then((res) => {
-        console.log("Response from API:", res.data.body); // ตรวจสอบข้อมูลที่ได้รับจาก API
+        console.log("Response from API:", res.data.body);
         if (res.data.body.length > 0) {
           const projectData = res.data.body[0];
           console.log("Project Data:", projectData);
 
           setData({
             projectName: projectData.projectName || "",
-            student: projectData.student || [], // ตรวจสอบว่ามีข้อมูลนักศึกษาหรือไม่
-            lecturer: projectData.lecturer || [], // ตรวจสอบว่ามีข้อมูลอาจารย์หรือไม่
+            student: projectData.student || [], 
+            lecturer: projectData.lecturer || [],
           });
 
           // ตรวจสอบข้อมูลอาจารย์

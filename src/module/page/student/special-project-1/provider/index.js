@@ -1,4 +1,4 @@
-import React, { useState } from "react"; 
+import React, { useState } from "react";
 import { Typography, Upload, Button, message, Modal } from "antd";
 import cis from "../../../../public/image/cis.png";
 import axios from "axios";
@@ -6,29 +6,37 @@ import axios from "axios";
 const { Title, Paragraph } = Typography;
 
 export default function ProviderSp1() {
-  const [file, setFile] = useState(null); 
+  const [transcriptFile, setTranscriptFile] = useState(null); 
+  const [englishScoreFile, setEnglishScoreFile] = useState(null); 
   const [previewVisible, setPreviewVisible] = useState(false); 
   const [fileUrl, setFileUrl] = useState(""); 
 
-  const handleUpload = (uploadedFile) => {
-    setFile(uploadedFile); 
-    setFileUrl(URL.createObjectURL(uploadedFile)); 
+  const handleUploadTranscript = (uploadedFile) => {
+    setTranscriptFile(uploadedFile);
+    setFileUrl(URL.createObjectURL(uploadedFile));
+    return false; 
+  };
+
+  const handleUploadEnglishScore = (uploadedFile) => {
+    setEnglishScoreFile(uploadedFile);
+    setFileUrl(URL.createObjectURL(uploadedFile));
     return false; 
   };
 
   const handleSubmit = async () => {
-    if (!file) {
-      message.error("กรุณาอัปโหลดไฟล์ก่อนที่จะส่ง");
+    if (!transcriptFile || !englishScoreFile) {
+      message.error("กรุณาอัปโหลดทั้งไฟล์ผลการศึกษาและไฟล์คะแนนภาษาอังกฤษก่อนที่จะส่ง");
       return;
     }
 
     const formData = new FormData();
-    formData.append("files[]", file);
-    formData.append("std", "6304062636120"); // เพิ่ม studentId ที่ต้องการ
-    formData.append("stdName", "ทerdgjyhk"); // เพิ่ม studentName ที่ต้องการ
+    formData.append("transcriptFile", transcriptFile);
+    formData.append("englishScoreFile", englishScoreFile);
+    formData.append("std", "6304062636119");
+    formData.append("stdName", "ทerdgjyhk");
 
     try {
-      const response = await fetch("http://localhost:8788/files", {
+      const response = await fetch("http://localhost:9999/files", {
         method: "POST",
         body: formData,
       });
@@ -38,8 +46,8 @@ export default function ProviderSp1() {
       } else {
         message.error("การส่งไฟล์ล้มเหลว");
       }
-      await handleFileUpload(6304062636121)
 
+      await handleFileUpload(6304062636119);
     } catch (error) {
       console.error("Error uploading file:", error);
       message.error("เกิดข้อผิดพลาดในการอัปโหลดไฟล์");
@@ -48,25 +56,25 @@ export default function ProviderSp1() {
 
   const handleFileUpload = async (fi_id) => {
     try {
-      await axios.patch(`http://localhost:8788/files/${fi_id}`);
+      await axios.patch(`http://localhost:9999/files/${fi_id}`);
     } catch (error) {
       console.error("Error updating file status:", error);
     }
   };
 
   const handlePreview = () => {
-    setPreviewVisible(true); 
+    setPreviewVisible(true);
   };
 
   const handleClosePreview = () => {
-    setPreviewVisible(false); 
+    setPreviewVisible(false);
   };
 
   return (
     <div style={{ margin: "auto", padding: 40, backgroundColor: "#fff", borderRadius: 10, maxWidth: 820 }}>
       <img src={cis} alt="logo" style={{ display: "block", margin: "0 auto", width: "150px" }} />
       <center><Title level={3}>ตรวจสอบคุณสมบัติยื่นโครงงานพิเศษ 1</Title></center>
-      
+
       <Title level={5}>เกณฑ์การประเมิน</Title>
       <Paragraph>
         1. นักศึกษาโครงการพิเศษสองภาษาต้องลงทะเบียนเรียนวิชา 040613141 Special Project I<br/>
@@ -75,16 +83,33 @@ export default function ProviderSp1() {
         <div style={{ marginLeft: "20px" }}>
           3.1 ผลการศึกษา สามารถ Ctrl + p  และเลือก Printer เป็น Microsoft Print to PDF และบันทึกไฟล์ได้
         </div>
+        4. ไฟล์คะแนนภาษาอังกฤษ
       </Paragraph>
 
-      <Upload beforeUpload={handleUpload} showUploadList={false}>
-        <Button type="primary">อัปโหลดไฟล์</Button>
+      {/* Upload for Transcript File */}
+      <Upload beforeUpload={handleUploadTranscript} showUploadList={false}>
+        <Button type="primary">ไฟล์ผลการศึกษา</Button>
       </Upload>
-
-      {file && (
+      {transcriptFile && (
         <div style={{ marginTop: 16 }}>
           <Paragraph>
-            <strong>ชื่อไฟล์ที่อัปโหลด: </strong> {file.name}
+            <strong>ชื่อไฟล์ผลการศึกษา: </strong> {transcriptFile.name}
+          </Paragraph>
+          <Button type="default" onClick={handlePreview} style={{ marginTop: 10 }}>
+            ดูไฟล์
+          </Button>
+        </div>
+      )}
+
+      {/* Upload for English Score File */}
+      <br/><br/>
+      <Upload beforeUpload={handleUploadEnglishScore} showUploadList={false}>
+        <Button type="primary">ไฟล์คะแนนภาษาอังกฤษ</Button>
+      </Upload>
+      {englishScoreFile && (
+        <div style={{ marginTop: 16 }}>
+          <Paragraph>
+            <strong>ชื่อไฟล์คะแนนภาษาอังกฤษ: </strong> {englishScoreFile.name}
           </Paragraph>
           <Button type="default" onClick={handlePreview} style={{ marginTop: 10 }}>
             ดูไฟล์
@@ -103,8 +128,8 @@ export default function ProviderSp1() {
         visible={previewVisible}
         footer={null}
         onCancel={handleClosePreview}
-        width={1000} 
-        style={{ top: 20 }} 
+        width={1000}
+        style={{ top: 20 }}
       >
         <iframe
           src={fileUrl}
