@@ -136,6 +136,18 @@ export default function Teacher(){
           ),
         },
         {
+          path: "/approve/approve-csb02",
+          element: (
+            <SideBar 
+              page={ <ApproveCSB03/>}
+              pageName={"อนุมัติการยื่นสอบ"}
+              pageSub={"อนุมัติการยื่นสอบก้าวหน้า"}
+              path={"/approve/approve-csb02"}
+              rolePage={"personel"}
+            />
+          ),
+        },
+        {
           path: "/approve/approve-csb03",
           element: (
             <SideBar 

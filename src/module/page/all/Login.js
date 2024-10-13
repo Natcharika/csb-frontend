@@ -23,41 +23,51 @@ const Login = ({ onLoginSuccess }) => {
         if (api_status === "success") {
           console.log("Login successful:", userInfo);
 
-          const S_id = userInfo.username.startsWith("s") ? userInfo.username.substring(1) : userInfo.username;
-          console.log("Modified S_id: ", S_id);
-
-          localStorage.setItem("username", userInfo.username);
-
           if (userInfo.account_type === "students") {
-            const studentPayload = {
-                // S_id: userInfo.username,
-                S_name: userInfo.displayname,
-            };
-            await axios.post(`http://localhost:8788/user`,studentPayload);
-            localStorage.setItem("S_id", S_id);
-            if (typeof onLoginSuccess === "function") {
-              onLoginSuccess();
-            }
+            const S_id = userInfo.username.startsWith("s") ? userInfo.username.substring(1) : userInfo.username;
+            console.log("Modified S_id: ", S_id);
+            localStorage.setItem("username", userInfo.username);
+            // const studentPayload = {
+            //   S_id: userInfo.username,
+            //   S_name: userInfo.displayname,
+            //   S_firstname_en: userInfo.firstname_en,
+            //   S_lastname_en: userInfo.lastname_en,
+            //   S_email: userInfo.email,
+            //   S_account_type: userInfo.account_type,
+            //   S_status: true,
+            // };
+            await axios.post(`http://localhost:8788/students`);
+            localStorage.setItem("S_id", userInfo.username)
             window.location.href = "http://localhost:3000/special-project-1/provider";
 
           } else if (userInfo.username === "nateep") {
             const AdminPayload = {
-              A_id: userInfo.username,
-              A_name: userInfo.displayname,
+                A_id: userInfo.username,
+                A_name: userInfo.displayname,
+                A_firstname_en: userInfo.firstname_en,
+                A_lastname_en: userInfo.lastname_en,
+                A_email: userInfo.email,
+                A_account_type: userInfo.account_type,
+                A_status: true,
+
             };
             await axios.post("http://localhost:8788/admins", AdminPayload);
             localStorage.setItem("A_id", userInfo.username);
-            window.location.href = "http://localhost:3000/aminins";
+            window.location.href = "http://localhost:3000/exam-management";
 
-          } else if (userInfo.account_type === "teachers") {
+          } else if (userInfo.account_type === "personel") {
             const TeacherPayload = {
               T_id: userInfo.username,
               T_name: userInfo.displayname,
+              T_firstname_en: userInfo.firstname_en,
+              T_lastname_en: userInfo.lastname_en,
+              T_email: userInfo.email,
+              T_account_type: userInfo.account_type,
+              T_status: true,
             };
-
             await axios.post("http://localhost:8788/teachers", TeacherPayload);
             localStorage.setItem("T_id", userInfo.username);
-            window.location.href = "http://localhost:3000/free/teacher/";
+            window.location.href = "http://localhost:3000/approve/approve-csb03";
           }
         } else {
           setError(api_message);
@@ -69,6 +79,7 @@ const Login = ({ onLoginSuccess }) => {
       message.error("Invalid username or password");
     }
   };
+  
     return (
       <center>
         <div style={{ width: 300, marginTop: "2rem", padding: "2rem", border: "1px solid #ccc", borderRadius: "8px" }}>

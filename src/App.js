@@ -17,6 +17,7 @@ import ChairmanScoreCSB04 from "./module/page/teacher/chairman-score/chairman-sc
 import DepartmentHeadScoreCSB01 from "./module/page/teacher/department-score/department-score-csb01";
 import DepartmentHeadScoreCSB02 from "./module/page/teacher/department-score/department-score-csb02";
 import DepartmentHeadScoreCSB04 from "./module/page/teacher/department-score/department-score-csb04";
+import ApproveCSB02 from "./module/page/teacher/approve/approve-csb02";
 import ApproveCSB03 from "./module/page/teacher/approve/approve-csb03";
 import ApproveCSB04 from "./module/page/teacher/approve/approve-csb04";
 import SiderBar from "./module/component/sidebar";
@@ -127,6 +128,10 @@ function App() {
                 <Route
                   path="/department-score/department-score-csb04"
                   element={<DepartmentHeadScoreCSB04 />}
+                />
+                <Route
+                  path="/approve/approve-csb02"
+                  element={<ApproveCSB02 />}
                 />
                 <Route
                   path="/approve/approve-csb03"

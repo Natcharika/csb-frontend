@@ -29,6 +29,7 @@ export default function ExamCSB01() {
     projectDescription: values.projectDescription,
     student: formattedStudents, // Use the formatted student array here
     lecturer: values.lecturer,
+    Status:"",
     scoreId: "",
   };
 

@@ -32,7 +32,7 @@ export default function ProviderSp1() {
     const formData = new FormData();
     formData.append("transcriptFile", transcriptFile);
     formData.append("englishScoreFile", englishScoreFile);
-    formData.append("std", "6304062636119");
+    formData.append("std", "6304062663038");
     formData.append("stdName", "ทerdgjyhk");
 
     try {
@@ -47,7 +47,7 @@ export default function ProviderSp1() {
         message.error("การส่งไฟล์ล้มเหลว");
       }
 
-      await handleFileUpload(6304062636119);
+      await handleFileUpload(6304062663038);
     } catch (error) {
       console.error("Error uploading file:", error);
       message.error("เกิดข้อผิดพลาดในการอัปโหลดไฟล์");

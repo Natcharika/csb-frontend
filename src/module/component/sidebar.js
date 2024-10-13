@@ -69,6 +69,10 @@ const menuItemsTeacher = [
     label: "อนุมัติการยื่นสอบ",
     children: [
       {
+        key: "/approve/approve-csb02",
+        label: "อนุมัติการสอบก้าวหน้า",
+      },
+      {
         key: "/approve/approve-csb03",
         label: "อนุมัติการยื่นทดสอบโครงงาน",
       },

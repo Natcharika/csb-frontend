@@ -1,37 +1,66 @@
 import React, { useState } from "react";
 import { Typography, Upload, Button, message, Modal } from "antd";
 import cis from "../../../../public/image/cis.png";
+import axios from "axios";
 
 const { Title, Paragraph } = Typography;
 
 export default function ProviderSp2() {
+  const [transcriptFile, setTranscriptFile] = useState(null); 
   const [file, setFile] = useState(null); // State to hold the uploaded file
   const [previewVisible, setPreviewVisible] = useState(false); // State to control the preview modal
   const [fileUrl, setFileUrl] = useState(""); // State to hold the file URL for preview
 
-  const handleUpload = (uploadedFile) => {
-    setFile(uploadedFile); // Set the uploaded file to state
-    setFileUrl(URL.createObjectURL(uploadedFile)); // Create a URL for the file
-    return false; // Prevent automatic upload
+  const handleUploadTranscript = (uploadedFile) => {
+    setTranscriptFile(uploadedFile);
+    setFileUrl(URL.createObjectURL(uploadedFile));
+    return false; 
   };
 
-  const handleSubmit = () => {
-    if (!file) {
-      message.error("กรุณาอัปโหลดไฟล์ก่อนที่จะส่ง"); // Show an error message if no file is uploaded
+  const handleSubmit = async () => {
+    if (!transcriptFile) {
+      message.error("กรุณาอัปโหลดทั้งไฟล์ผลการศึกษาและไฟล์คะแนนภาษาอังกฤษก่อนที่จะส่ง");
       return;
     }
 
-    // Here you would handle the file upload logic, e.g., send it to the server
-    console.log("Submitting file: ", file);
-    message.success("ส่งไฟล์สำเร็จ!"); // Show success message
+    const formData = new FormData();
+    formData.append("transcriptFile", transcriptFile);
+    formData.append("std", "6304062663040");
+    formData.append("stdName", "ทerdgjyhk");
+
+    try {
+      const response = await fetch("http://localhost:8788/files", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        message.success("ส่งไฟล์สำเร็จ!");
+      } else {
+        message.error("การส่งไฟล์ล้มเหลว");
+      }
+
+      await handleFileUpload(6304062663040);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      message.error("เกิดข้อผิดพลาดในการอัปโหลดไฟล์");
+    }
+  };
+
+  const handleFileUpload = async (fi_id) => {
+    try {
+      await axios.patch(`http://localhost:8788/files/${fi_id}`);
+    } catch (error) {
+      console.error("Error updating file status:", error);
+    }
   };
 
   const handlePreview = () => {
-    setPreviewVisible(true); // Show the preview modal
+    setPreviewVisible(true);
   };
 
   const handleClosePreview = () => {
-    setPreviewVisible(false); // Close the preview modal
+    setPreviewVisible(false);
   };
 
   return (
@@ -48,29 +77,25 @@ export default function ProviderSp2() {
         </div>
       </Paragraph>
 
-      <Upload beforeUpload={handleUpload} showUploadList={false}>
-        <Button type="primary">อัปโหลดไฟล์</Button>
+            {/* Upload for Transcript File */}
+            <Upload beforeUpload={handleUploadTranscript} showUploadList={false}>
+        <Button type="primary">ไฟล์ผลการศึกษา</Button>
       </Upload>
-
-      {file && (
+      {transcriptFile && (
         <div style={{ marginTop: 16 }}>
           <Paragraph>
-            <strong>ชื่อไฟล์ที่อัปโหลด: </strong> {file.name}
+            <strong>ชื่อไฟล์ผลการศึกษา: </strong> {transcriptFile.name}
           </Paragraph>
-          {/* <Paragraph>
-            <strong>ขนาดไฟล์: </strong> {(file.size / 1024).toFixed(2)} KB
-          </Paragraph> */}
           <Button type="default" onClick={handlePreview} style={{ marginTop: 10 }}>
             ดูไฟล์
           </Button>
         </div>
       )}
-
 <div style={{ display: "flex", justifyContent: "center", marginTop: 20 }}>
-  <Button type="primary" onClick={handleSubmit}>
-    ส่งไฟล์
-  </Button>
-</div>
+        <Button type="primary" onClick={handleSubmit}>
+          ส่งไฟล์
+        </Button>
+      </div>
 
 
       <Modal

@@ -38,7 +38,6 @@ export default function ExamCSB02() {
             lecturer: projectData.lecturer || [],
           });
 
-          // ตรวจสอบข้อมูลอาจารย์
           console.log("Lecturer Data:", projectData.lecturer);
         }
         setLoading(false);

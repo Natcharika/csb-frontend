@@ -6,7 +6,7 @@ import { Table, Button, notification, Modal, Form, Input, Select } from "antd";
 export default function AddLecture() {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [lecturer, setLecturer] = useState([]);
+  const [Teacher, setTeacher] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentProject, setCurrentProject] = useState(null);
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ export default function AddLecture() {
       const res = await api.getAllProject(body);
       setData(res.data.body);
       const filtered = res.data.body.filter(
-        (project) => !project.lecturer || project.lecturer.length === 0
+        (project) => !project.Teacher || project.Teacher.length === 0
       );
       setFilteredData(filtered);
     } catch (err) {
@@ -25,11 +25,11 @@ export default function AddLecture() {
     }
   };
 
-  const fetchLecturer = async () => {
+  const fetchTeacher = async () => {
     try {
-      const res = await api.getLeacturer();
-      console.log(res.data.body); // Log the response
-      setLecturer(res.data.body);
+      const res = await api.getTeacher();
+      console.log(res.data.body); 
+      setTeacher(res.data.body);
     } catch (err) {
       console.error(err);
     }
@@ -37,7 +37,7 @@ export default function AddLecture() {
 
   useEffect(() => {
     fetchData();
-    fetchLecturer();
+    fetchTeacher();
   }, []);
 
   const handleEdit = (record) => {
@@ -46,20 +46,36 @@ export default function AddLecture() {
     setIsModalVisible(true);
   };
 
-  const handleModalOk = async (values) => {
-    try {
-      await api.updateProject(currentProject.id, values);
-      notification.success({ message: "Project updated successfully!" });
-      setIsModalVisible(false);
-      fetchData();
-    } catch (err) {
-      notification.error({ message: "Failed to update project." });
-    }
-  };
+  // const handleModalOk = async (values) => {
+  //   console.log(values.Teacher);
+  //   try {
+  //     const lecturerData = { id: values.Teacher };
+
+  //     await api.updateProject(currentProject.id, {
+  //       ...values, 
+  //       lecturer: lecturerData, 
+  //     });
+
+  //     notification.success({ message: "Project updated successfully!" });
+  //     setIsModalVisible(false);
+  //     fetchData();
+  //   } catch (err) {
+  //     notification.error({ message: "Failed to update project." });
+  //   }
+  // };
 
   const handleModalCancel = () => {
     setIsModalVisible(false);
   };
+
+  const handleSubmit = async (values) => {
+    console.log(values);
+    const data = await api.assignTeacher(values.projectName, [values.lecturer])
+    console.log(data);
+    
+    // setIsModalVisible(false);
+    
+  }
 
   const components = {
     header: {
@@ -130,26 +146,25 @@ export default function AddLecture() {
       <Modal
         title="Edit Project"
         visible={isModalVisible}
-        onOk={handleModalOk}
-        onCancel={handleModalCancel}
+        footer={[
+        ]}
       >
         <Form
           initialValues={{
             projectName: currentProject?.projectName,
-            lecturer: currentProject?.lecturer
-              ? currentProject.lecturer.id
-              : undefined,
+            lecturer: currentProject?.teacher ? currentProject.teacher.id : undefined,
           }}
-          onFinish={handleModalOk}
+          onFinish={handleSubmit}
+          
         >
           <Form.Item
             label="Project Name"
             name="projectName"
-            rules={[
-              { required: true, message: "Please input the project name!" },
-            ]}
+            rules={[{ required: true, message: "Please input the project name!" }]}
+            
           >
-            <Input value={currentProject?.projectName} disabled />{" "}
+             
+            <Input value={currentProject?.projectName} disabled /> 
             {/* Show project name, not editable */}
           </Form.Item>
 
@@ -158,17 +173,19 @@ export default function AddLecture() {
             name="lecturer"
             rules={[{ required: true, message: "Please select a lecturer!" }]}
           >
-            <Select>
-              {lecturer.map((lecturers) => (
-                <Select.Option
-                  key={lecturers.id}
-                  value={lecturers.nameLecturer}
-                >
-                  {lecturers.nameLecturer}
+            <Select >
+              {Teacher.map((teacher) => (
+                <Select.Option key={teacher.T_id} value={teacher.T_id}>
+                  {teacher.T_name}
                 </Select.Option>
               ))}
             </Select>
           </Form.Item>
+          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+      <Button type="primary" htmlType="submit">
+        Submit
+      </Button>
+    </Form.Item>
         </Form>
       </Modal>
     </div>
