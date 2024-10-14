@@ -55,12 +55,16 @@ export default function SumaryRoom() {
       dataIndex: "projects",
       render: (projects) => (
         <>
-          {projects.map((project, index) => (
-            <span key={index}>
-              {project.projectName}
-              <br />
-            </span>
-          ))}
+          {Array.isArray(projects) ? (
+            projects.map((project, index) => (
+              <span key={index}>
+                {project.projectName}
+                <br />
+              </span>
+            ))
+          ) : (
+            <span>No projects available</span>
+          )}
         </>
       ),
     },
@@ -77,49 +81,63 @@ export default function SumaryRoom() {
       dataIndex: "projects",
       render: (projects) => (
         <>
-          {projects.map((project, index) => (
-            <span key={index}>
-              <Tag color="purple">{project.start_in_time}</Tag>
-              <br />
-            </span>
-          ))}
+          {Array.isArray(projects) ? (
+            projects.map((project, index) => (
+              <span key={index}>
+                <Tag color="purple">{project.start_in_time}</Tag>
+                <br />
+              </span>
+            ))
+          ) : (
+            <span>No times available</span>
+          )}
         </>
       ),
     },
     {
-      title: "Referees",
-      dataIndex: "referees",
-      render: (referees) => (
+      title: "Teachers",
+      dataIndex: "teachers", // Updated from referees to teachers
+      render: (teachers) => (
         <>
-          {referees.map((referee, index) => (
-            <span key={index}>
-              {referee.nameLecturer}
-              <br />
-            </span>
-          ))}
+          {Array.isArray(teachers) ? (
+            teachers.map((teacher, index) => (
+              <span key={index}>
+                {teacher.T_name}
+                <br />
+              </span>
+            ))
+          ) : (
+            <span>No teachers available</span>
+          )}
         </>
       ),
     },
     {
-      title: "Referees Role",
-      dataIndex: "referees",
-      render: (referees) => (
+      title: "Teachers Role",
+      dataIndex: "teachers", // Updated from referees to teachers
+      render: (teachers) => (
         <>
-          {referees.map((referee, index) => (
-            <span key={index}>
-              <Tag color="blue">{referee.roleLecturer}</Tag>
-              <br />
-            </span>
-          ))}
+          {Array.isArray(teachers) ? (
+            teachers.map((teacher, index) => (
+              <span key={index}>
+                <Tag color="blue">{teacher.role}</Tag>
+                <br />
+              </span>
+            ))
+          ) : (
+            <span>No roles available</span>
+          )}
         </>
       ),
     },
     {
       title: "Date",
       dataIndex: "dateExam",
-      render: (dateExam) => new Date(dateExam).toLocaleDateString(),
+      render: (dateExam) => (dateExam ? new Date(dateExam).toLocaleDateString() : "No date available"),
     },
   ];
+  
+  
 
   const onChange = (pagination, filters, sorter, extra) => {
     console.log("params", pagination, filters, sorter, extra);

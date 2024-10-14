@@ -1,70 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Button, Table, Input, Modal, Typography, Select, Card, InputNumber, Form, message } from "antd";
+import { Button, Table, Input, Modal, Typography, Select, Card, InputNumber, Form, message, notification } from "antd";
+import api from '../../../../utils/form/api';
 
 const { TextArea } = Input;
 
 function InputScoreCSB02() {
-
-    const mockProjects = [
-        {
-            P_id: 1,
-            P_name: 'Project A',
-            P_S1: 'สมหมาย สมใจ',
-            P_S2: 'กล้วยไม้ เรืองรอง',
-            P_T: 'อาจารย์คนสวย',
-            evaluationDate: '2024-10-10',
-        },
-        {
-            P_id: 2,
-            P_name: 'Project B',
-            P_S1: 'Student 1B',
-            P_S2: 'Student 2B',
-            P_T: 'Advisor B',
-            evaluationDate: '2024-10-10',
-        },
-        {
-            P_id: 3,
-            P_name: 'Project C',
-            P_S1: 'Student 1C',
-            P_S2: 'Student 2C',
-            P_T: 'Advisor C',
-            evaluationDate: '2024-10-10',
-        },
-        {
-            P_id: 4,
-            P_name: 'Project D',
-            P_S1: 'Student 1D',
-            P_S2: 'Student 2D',
-            P_T: 'Advisor D',
-            evaluationDate: '2024-10-15',
-        },
-        {
-            P_id: 5,
-            P_name: 'Project E',
-            P_S1: 'Student 1E',
-            P_S2: 'Student 2E',
-            P_T: 'Advisor E',
-            evaluationDate: '2024-10-15',
-        },
-        {
-            P_id: 6,
-            P_name: 'Project F',
-            P_S1: 'Student 1F',
-            P_S2: 'Student 2F',
-            P_T: 'Advisor F',
-            evaluationDate: '2024-10-15',
-        },
-    ];
-
-    const criteriaData = [
-        { key: "1", criteria: "วัตถุประสงค์และขอบเขตโครงงาน", maxScore: 10 },
-        { key: "2", criteria: "ความเข้าใจระบบงานเดิม/ทฤษฎีหรืองานวิจัย ที่นำมาใช้พัฒนาโครงงาน", maxScore: 20 },
-        { key: "3", criteria: "การศึกษาความต้องการของระบบ และการออกแบบ", maxScore: 20 },
-        { key: "4", criteria: "การนำเสนอโครงงาน", maxScore: 20 },
-        { key: "5", criteria: "รูปแบบรายงาน", maxScore: 10 },
-        { key: "6", criteria: "แนวทางการดำเนินงาน", maxScore: 10 },
-    ];
-
     const [scores, setScores] = useState({});
     const [totalScore, setTotalScore] = useState(0);
     const [comment, setComment] = useState("");
@@ -75,16 +15,53 @@ function InputScoreCSB02() {
     const [selectedDate, setSelectedDate] = useState(null);
     const [evaluatedRows, setEvaluatedRows] = useState({});
     const [successfulEvaluations, setSuccessfulEvaluations] = useState(new Set());
+    const [loading, setLoading] = useState(true); // State for loading status
+
+    // Criteria data
+    const criteriaData = [
+        { key: "1", criteria: "วัตถุประสงค์และขอบเขตโครงงาน", maxScore: 10 },
+        { key: "2", criteria: "ความเข้าใจระบบงานเดิม/ทฤษฎีหรืองานวิจัย ที่นำมาใช้พัฒนาโครงงาน", maxScore: 20 },
+        { key: "3", criteria: "การศึกษาความต้องการของระบบ และการออกแบบ", maxScore: 20 },
+        { key: "4", criteria: "การนำเสนอโครงงาน", maxScore: 20 },
+        { key: "5", criteria: "รูปแบบรายงาน", maxScore: 10 },
+        { key: "6", criteria: "แนวทางการดำเนินงาน", maxScore: 10 },
+    ];
 
     useEffect(() => {
-        setProjects(mockProjects);
+        const fetchProjectsAndRooms = async () => {
+            try {
+                const resProjects = await api.getAllProject(); // Fetch projects
+                console.log("Response from API (Projects):", resProjects.data.body);
+                if (resProjects.data.body.length > 0) {
+                    setProjects(resProjects.data.body); // Set the projects directly
+                }
+
+                const resRooms = await api.getRoomPage(); // Fetch rooms
+                console.log("Response from API (Rooms):", resRooms.data.body);
+                // Handle rooms data as necessary; you might want to set it in state if needed
+                // setRooms(resRooms.data.body); // Uncomment if you have a state for rooms
+
+            } catch (err) {
+                console.log(err);
+                notification.error({
+                    message: 'Error Fetching Data',
+                    description: 'Unable to fetch project or room data. Please try again later.',
+                    placement: 'topRight',
+                });
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProjectsAndRooms();
     }, []);
 
-    const availableDates = [...new Set(mockProjects.map(project => project.evaluationDate))];
+    // Get unique dates for evaluation
+    const availableDates = [...new Set(projects.map(project => project.dateExam))];
 
     const handleDateChange = (value) => {
         setSelectedDate(value);
-        const filtered = projects.filter(project => project.evaluationDate === value);
+        const filtered = projects.filter(project => project.dateExam === value);
         setFilteredProjects(filtered);
     };
 
@@ -125,7 +102,7 @@ function InputScoreCSB02() {
 
         if (selectedProject) {
             setSuccessfulEvaluations((prev) => new Set(prev).add(selectedProject.P_id));
-            setEvaluatedRows((prev) => ({ ...prev, [selectedProject.P_id]: 'evaluated' }));
+            setEvaluatedRows((prev) => ({ ...prev, [selectedProject.P_id]: 'evaluated' })); 
         }
     };
 
@@ -149,7 +126,7 @@ function InputScoreCSB02() {
             key: "score",
             render: (text, record) => (
                 record.key === "total" ? (
-                    <strong>{totalScore}</strong> 
+                    <strong>{totalScore}</strong>
                 ) : (
                     <InputNumber
                         min={0}
@@ -181,11 +158,11 @@ function InputScoreCSB02() {
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <div style={{ width: '60%', textAlign: 'center' }}>
+            <div style={{ width: '60%', textAlign: 'center' }}>
                 <Typography.Title level={2}>ประเมินการโครงงานพิเศษ 1 (สอบก้าวหน้า)</Typography.Title>
                 <Typography.Text>เลือกวันที่ที่จะทำการประเมิน:</Typography.Text>
                 <Select
-                    style={{ width: '100%' }} 
+                    style={{ width: '100%' }}
                     placeholder="เลือกวันที่"
                     onChange={handleDateChange}
                     options={availableDates.map(date => ({ value: date, label: date }))}
@@ -208,7 +185,7 @@ function InputScoreCSB02() {
                         </Button>
                         <Table
                             dataSource={filteredProjects}
-                            columns={[ // แสดงข้อมูลในตาราง
+                            columns={[ 
                                 {
                                     title: 'ลำดับที่',
                                     dataIndex: 'P_id',
@@ -216,8 +193,8 @@ function InputScoreCSB02() {
                                 },
                                 {
                                     title: 'ชื่อโครงงาน',
-                                    dataIndex: 'P_name',
-                                    key: 'P_name',
+                                    dataIndex: 'projectName',
+                                    key: 'projectName',
                                 },
                                 {
                                     title: 'ประเมิน',
@@ -269,52 +246,31 @@ function InputScoreCSB02() {
                     footer={null}
                     width={1000}
                 >
-                    <Card title="ข้อมูลนักศึกษาและโครงงาน">
-                        <p><strong>ชื่อโครงงาน : </strong> {selectedProject?.P_name}</p>
-                        <p><strong>นักศึกษาคนที่ 1 : </strong> {selectedProject?.P_S1} </p>
-                        <p><strong>นักศึกษาคนที่ 2 : </strong> {selectedProject?.P_S2} </p>
-                        <p><strong>อาจารย์ที่ปรึกษา : </strong> {selectedProject?.P_T}</p>
+                    <Card>
+                        <p><strong>ชื่อโครงงาน : </strong> {selectedProject?.projectName}</p>
+                        <p><strong>นักศึกษาคนที่ 1 : </strong> {selectedProject?.P_S1}</p>
+                        <p><strong>นักศึกษาคนที่ 2 : </strong> {selectedProject?.P_S2}</p>
+                        <p><strong>วันที่ประเมิน : </strong> {selectedProject?.evaluationDate}</p>
                     </Card>
-
-                    <Card title="ฟอร์มกรอกคะแนน">
-                        <Form onFinish={onSubmit}>
-                            <Table
-                                dataSource={tableData.map((data) => ({
-                                    ...data,
-                                    backgroundColor: successfulEvaluations.has(selectedProject?.P_id) ? 'green' : 'transparent',
-                                }))}
-                                columns={columns.map((col) => ({
-                                    ...col,
-                                    onCell: (record) => ({
-                                        style: {
-                                            backgroundColor: successfulEvaluations.has(selectedProject?.P_id) && col.key === 'score' ? 'green' : 'transparent',
-                                        },
-                                    }),
-                                }))}
-                                pagination={false}
-                                bordered
+                    <Table dataSource={tableData} columns={columns} pagination={false} />
+                    <Form layout="vertical" style={{ marginTop: 16 }}>
+                        <Form.Item label="ความคิดเห็น">
+                            <TextArea
+                                rows={4}
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
                             />
-
-                            <Form.Item label="ความคิดเห็นจากอาจารย์" style={{ marginTop: "20px" }}>
-                                <TextArea
-                                    rows={4}
-                                    value={comment}
-                                    onChange={(e) => setComment(e.target.value)}
-                                    placeholder="กรุณากรอกความคิดเห็น"
-                                />
-                            </Form.Item>
-
-                            <Form.Item style={{ marginTop: "20px", textAlign: 'center' }}>
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    disabled={!isScoreComplete()} // ปิดใช้งานปุ่มถ้ามีคะแนนที่กรอกไม่ครบ
-                                >
-                                    ส่งคะแนน
-                                </Button>
-                            </Form.Item>
-                        </Form>
-                    </Card>
+                        </Form.Item>
+                        <Form.Item>
+                            <Button
+                                type="primary"
+                                onClick={onSubmit}
+                                disabled={!isScoreComplete() || loading}
+                            >
+                                บันทึกคะแนน
+                            </Button>
+                        </Form.Item>
+                    </Form>
                 </Modal>
             </div>
         </div>

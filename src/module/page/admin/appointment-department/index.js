@@ -6,24 +6,27 @@ const { Option } = Select;
 
 export default function AppointmentHeadofDepartment() {
   const [form] = Form.useForm();
-  const [Teacher, setTeacher] = useState([]);
+  const [teachers, setTeachers] = useState([]); // Updated from Teacher to teachers
 
-  const fetchTeacher = async () => {
+  const fetchTeachers = async () => {
     try {
       const res = await api.getTeacher();
       console.log(res.data.body); 
-      setTeacher(res.data.body);
+      setTeachers(res.data.body);
     } catch (err) {
       console.error(err);
     }
   };
 
   useEffect(() => {
-    fetchTeacher(); 
+    fetchTeachers(); 
   }, []);
 
   const handleSubmit = (values) => {
-    api.appointHeadOfDepartment(values)
+    const { teacherId } = values;
+    const teacherName = teachers.find(teacher => teacher.T_id === teacherId).T_name; // Get the teacher's name
+  
+    api.appointHeadOfDepartment(teacherId, teacherName, "Head of Department")
       .then((response) => {
         notification.success({
           message: "Success",
@@ -39,6 +42,8 @@ export default function AppointmentHeadofDepartment() {
         });
       });
   };
+  
+  
 
   return (
     <div style={{ margin: "auto", padding: 40, backgroundColor: "#fff", borderRadius: 10, maxWidth: 820 }}>
@@ -50,7 +55,7 @@ export default function AppointmentHeadofDepartment() {
           rules={[{ required: true, message: "Please select a teacher!" }]}
         >
           <Select placeholder="Select a teacher">
-            {Teacher.map((teacher) => ( // Make sure the naming is consistent
+            {teachers.map((teacher) => ( // Make sure the naming is consistent
               <Option key={teacher.T_id} value={teacher.T_id}>
                 {teacher.T_name}
               </Option>

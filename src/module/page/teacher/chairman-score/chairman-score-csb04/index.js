@@ -31,7 +31,17 @@ function ChairmanScoreCSB04() {
 
   const handleScoreChange = (e) => {
     const newScore = e.target.value;
-    setData((prevData) => prevData.map((item) => ({ ...item, score: newScore })));
+    const fullScore = Number(data[0].fullscores); // คะแนนเต็ม
+
+    // ตรวจสอบว่าคะแนนที่กรอกไม่ติดลบและไม่เกินคะแนนเต็ม
+    if (newScore < 0 || newScore > fullScore) {
+      notification.error({
+        message: 'กรอกคะแนนผิดพลาด',
+        description: `คะแนนต้องอยู่ระหว่าง 0 และ ${fullScore}`,
+      });
+    } else {
+      setData((prevData) => prevData.map((item) => ({ ...item, score: newScore })));
+    }
   };
 
   const resetForm = () => {
@@ -40,7 +50,6 @@ function ChairmanScoreCSB04() {
     setData([{ id: 1, name: 'คะแนนรวม', fullscores: '80', score: '' }]);
   };
 
-  
   const handleSubmit = () => {
     if (!selectedProject) {
       notification.error({
@@ -90,6 +99,7 @@ function ChairmanScoreCSB04() {
         <Input
           value={record.score}
           onChange={handleScoreChange}
+          type="number" // กำหนดให้กรอกเฉพาะตัวเลข
           style={{ width: '80px', border: '1px solid #d9d9d9', borderRadius: '4px' }}
         />
       ),
@@ -99,7 +109,8 @@ function ChairmanScoreCSB04() {
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <div style={{ width: '60%', textAlign: 'center' }}>
-        <h1>แบบประเมินโครงงานพิเศษ 2 (ปริญญานิพนธ์)</h1>
+        <h1 style={{ textAlign: 'center' }}>แบบประเมินโครงงานพิเศษ 1 (สอบก้าวหน้า)</h1>
+
         <Form layout="vertical">
           <Row gutter={16}>
             <Col span={24}>

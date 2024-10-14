@@ -31,16 +31,24 @@ function ChairmanScoreCSB02() {
 
   const handleScoreChange = (e) => {
     const newScore = e.target.value;
-    setData((prevData) => prevData.map((item) => ({ ...item, score: newScore })));
-  };
+    const fullScore = Number(data[0].fullscores); // คะแนนเต็ม
 
+    // ตรวจสอบว่าคะแนนที่กรอกไม่ติดลบและไม่เกินคะแนนเต็ม
+    if (newScore < 0 || newScore > fullScore) {
+      notification.error({
+        message: 'กรอกคะแนนผิดพลาด',
+        description: `คะแนนต้องอยู่ระหว่าง 0 และ ${fullScore}`,
+      });
+    } else {
+      setData((prevData) => prevData.map((item) => ({ ...item, score: newScore })));
+    }
+  };
 
   const resetForm = () => {
     setSelectedProject(null);
     setProjectDetails(null);
     setData([{ id: 1, name: 'คะแนนรวม', fullscores: '80', score: '' }]);
   };
-
 
   const handleSubmit = () => {
     if (!selectedProject) {
@@ -91,6 +99,7 @@ function ChairmanScoreCSB02() {
         <Input
           value={record.score}
           onChange={handleScoreChange}
+          type="number" // กำหนดให้กรอกเฉพาะตัวเลข
           style={{ width: '80px', border: '1px solid #d9d9d9', borderRadius: '4px' }}
         />
       ),
@@ -111,7 +120,6 @@ function ChairmanScoreCSB02() {
                   value={selectedProject?.Er_Pname}
                   onChange={handleProjectChange}
                   placeholder="เลือกโครงงาน"
-
                 >
                   {filteredProjects.map((project) => (
                     <Select.Option key={project.Er_Pname} value={project.Er_Pname}>
@@ -173,7 +181,6 @@ function ChairmanScoreCSB02() {
         </Form>
       </div>
     </div>
-
   );
 }
 

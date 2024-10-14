@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Button, Row, Col, notification } from "antd";
+import { Typography, Button, Row, Col, notification, Input } from "antd"; // Import Input from Ant Design
 import cis from '../../../../public/image/cis.png';
 import api from '../../../../utils/form/api';
 
@@ -7,38 +7,59 @@ const { Title, Paragraph } = Typography;
 
 export default function ExamCSB02() {
   const [data, setData] = useState({
+    projectId: "",
     projectName: "",
     student: [],
     lecturer: [],
   });
 
   const [loading, setLoading] = useState(true);
+  const [confirmScore, setConfirmScore] = useState(0);
+  const [unconfirmScore, setUnconfirmScore] = useState(0);
+  const [referees, setReferees] = useState([]); 
+  const [logBookScore, setlogBookScore] = useState(0);
 
-  const handleAccept = () => {
-    console.log("ยินยอม");
-    notification.success({
-      message: 'ยินยอม',
-      description: 'ท่านยินยอมสอบความก้าวหน้าโครงงานพิเศษแล้ว',
-      placement: 'topRight',
-    });
-  };
+  const handleAccept = async () => {
+    try {
+        const response = await api.getAllProject({ // Update the API call
+            projectId: data.projectId,
+            confirmScore: confirmScore,
+            unconfirmScore: unconfirmScore,
+            logBookScore:logBookScore, 
+            csb02Status: {
+                activeStatus: 1, 
+                status: "waiting",
+                date: new Date(),
+            },
+            referee: referees,
+        });
+        notification.success({
+            message: 'Success',
+            description: response.data.message,
+            placement: 'topRight',
+        });
+    } catch (error) {
+        console.error(error);
+        notification.error({
+            message: 'Error',
+            description: 'Unable to create CSB01 data. Please try again later.',
+            placement: 'topRight',
+        });
+    }
+};
 
   useEffect(() => {
-    api
-      .getAllProject()
+    api.getAllProject()
       .then((res) => {
-        console.log("Response from API:", res.data.body);
         if (res.data.body.length > 0) {
           const projectData = res.data.body[0];
-          console.log("Project Data:", projectData);
 
           setData({
+            projectId: projectData._id || "",
             projectName: projectData.projectName || "",
-            student: projectData.student || [], 
+            student: projectData.student || [],
             lecturer: projectData.lecturer || [],
           });
-
-          console.log("Lecturer Data:", projectData.lecturer);
         }
         setLoading(false);
       })
@@ -58,7 +79,7 @@ export default function ExamCSB02() {
   }
 
   return (
-    <div style={{ maxWidth: 600, margin: "auto", flexDirection: 'column', alignItems: 'center', textAlign: 'center',  borderRadius: 15 }}>
+    <div style={{ maxWidth: 600, margin: "auto", backgroundColor: "#fff", flexDirection: 'column', alignItems: 'center', textAlign: 'center', borderRadius: 15 }}>
       <img src={cis} alt="logo" style={{ display: "block", margin: "0 auto", width: "150px" }} />
       <Typography style={{ textAlign: "center", marginBottom: 24 }}>
         <Title level={3} style={{ fontWeight: "bold" }}>แบบฟอร์มขอสอบความก้าวหน้าโครงงานพิเศษ</Title>
@@ -88,12 +109,16 @@ export default function ExamCSB02() {
         <Col span={12}>
           <div><br />
             <Paragraph style={{ fontSize: "18px" }}>อาจารย์ที่ปรึกษา</Paragraph>
-            {data.lecturer.length > 0 && (
+            {data.lecturer.length > 0 ? (
               data.lecturer.map((lecturer, index) => (
                 <Paragraph key={index} style={{ fontSize: "16px", color: "#555" }}>
-                  {index + 1}. {`${lecturer.FirstName} ${lecturer.LastName}`}
+                  {index + 1}. {lecturer.T_name}
                 </Paragraph>
               ))
+            ) : (
+              <Paragraph style={{ fontSize: "16px", color: "#555" }}>
+                ไม่มีอาจารย์ที่ปรึกษา
+              </Paragraph>
             )}
           </div>
         </Col>

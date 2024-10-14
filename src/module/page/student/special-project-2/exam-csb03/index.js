@@ -8,20 +8,46 @@ const { Title, Paragraph } = Typography;
 export default function ExamCSB03() {
   const [isSubmitDisabled, setSubmitDisabled] = useState(false);
   const [data, setData] = useState({
+    projectId: "",
     projectName: "",
     student: [],
     lecturer: [],
   });
-  const [loading, setLoading] = useState(true);
 
-  const handleAccept = (values) => {
-    console.log("ยินยอม", values);
-    notification.success({
-      message: 'ยินยอม',
-      description: 'ท่านยินยอมยื่นทดสอบโครงงานพิเศษแล้ว',
-      placement: 'topRight',
-    });
-    setSubmitDisabled(true); // ปิดการใช้งานปุ่มหลังจากส่งข้อมูล
+  const [loading, setLoading] = useState(true);
+  const [confirmScore, setConfirmScore] = useState(0);
+  const [unconfirmScore, setUnconfirmScore] = useState(0);
+  const [referees, setReferees] = useState([]);
+  const [logBookScore, setlogBookScore] = useState(0);
+
+  const handleAccept = async () => {
+    try {
+      const response = await api.createCSB03({ // Update the API call
+        projectId: data.projectId,
+        confirmScore: confirmScore,
+        unconfirmScore: unconfirmScore,
+        logBookScore: logBookScore,
+        csb03Status: {
+          activeStatus: 1, // Set activeStatus to 1
+          status: "waiting",
+          date: new Date(),
+        },
+        referee: referees,
+      });
+      console.log(response.data.body);
+      notification.success({
+        message: 'Success',
+        description: response.data.message,
+        placement: 'topRight',
+      });
+    } catch (error) {
+      console.error(error);
+      notification.error({
+        message: 'Error',
+        description: 'Unable to create CSB03 data. Please try again later.',
+        placement: 'topRight',
+      });
+    }
   };
 
   const onChange = (date, dateString) => {
@@ -29,8 +55,7 @@ export default function ExamCSB03() {
   };
 
   useEffect(() => {
-    api
-      .getAllProject()
+    api.getAllProject()
       .then((res) => {
         console.log(res.data.body);
         if (res.data.body.length > 0) {
@@ -38,7 +63,8 @@ export default function ExamCSB03() {
           console.log(projectData);
 
           setData({
-            projectName: projectData.projectName,
+            projectId: projectData._id || "",
+            projectName: projectData.projectName || "",
             student: projectData.student || [],
             lecturer: projectData.lecturer || [],
           });
@@ -61,7 +87,7 @@ export default function ExamCSB03() {
   }
 
   return (
-<div style={{ maxWidth: 600, margin: "auto", flexDirection: 'column', alignItems: 'center', textAlign: 'center',  borderRadius: 15 }}>
+    <div style={{ maxWidth: 600, margin: "auto", flexDirection: 'column', alignItems: 'center', textAlign: 'center', borderRadius: 15 }}>
       <img src={cis} alt="logo" style={{ width: "150px", marginBottom: 24 }} />
       <Typography>
         <Title level={3}>หนังสือรับรองการทดสอบโครงงานพิเศษ</Title>
@@ -83,10 +109,10 @@ export default function ExamCSB03() {
               <Paragraph style={{ fontSize: "18px" }}>รายชื่อนักศึกษา</Paragraph>
               {data.student.map((student, index) => (
                 <Paragraph key={index} style={{ fontSize: "16px", color: "#555" }}>
-                  {index + 1}. {`${student.FirstName} ${student.LastName}`} 
+                  {index + 1}. {`${student.FirstName} ${student.LastName}`}
                 </Paragraph>
               ))}
-            </div> 
+            </div>
           )}
         </Col>
         <Col span={12}>
@@ -95,7 +121,7 @@ export default function ExamCSB03() {
             {data.lecturer.length > 0 && (
               data.lecturer.map((lecturer, index) => (
                 <Paragraph key={index} style={{ fontSize: "16px", color: "#555" }}>
-                  {index + 1}. {`${lecturer.FirstName} ${lecturer.LastName}`}
+                  {index + 1}. {lecturer.T_name}
                 </Paragraph>
               ))
             )}
@@ -105,21 +131,12 @@ export default function ExamCSB03() {
 
       <Form onFinish={handleAccept} layout="vertical" style={{ width: '100%' }}>
         <Space direction="vertical" style={{ width: '100%' }}>
-          <Form.Item 
-            label="เลือกวันที่ยื่นทดสอบ" 
-            name="date" 
-            rules={[{ required: true, message: 'กรุณาเลือกวันที่!' }]}
-            style={{ textAlign: 'center' }} 
-          >
-            <DatePicker onChange={onChange} format="YYYY-MM-DD" style={{ width: '100%' }} />
-          </Form.Item>
           <div style={{ display: "flex", justifyContent: "center", marginTop: 40 }}>
             <Row gutter={16}>
               <Col>
                 <Button
                   type="primary"
                   htmlType="submit"
-                  disabled={isSubmitDisabled}
                   style={{ padding: "6px 30px", fontSize: "16px" }}
                 >
                   ยินยอม

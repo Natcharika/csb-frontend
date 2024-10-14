@@ -1,24 +1,62 @@
 import React, { useState, useEffect } from 'react';
-import { Select, Input, Button, Form, Row, Col, message } from 'antd';
+import { Select, Input, Button, Form, Row, Col, message,notification } from 'antd';
+import api from '../../../../utils/form/api';
 
 export default function ApproveCSB02() {
   const [projects, setProjects] = useState([]);
   const [approvedProjects, setApprovedProjects] = useState(new Set());
   const [selectedProject, setSelectedProject] = useState(null);
   const [projectDetails, setProjectDetails] = useState(null);
-
-  const mockProjects = [
-    { projectName: 'Project A', students: ['Student 1A', 'Student 2A'], lecture: 'Lecture A' },
-    { projectName: 'Project B', students: ['Student 1B', 'Student 2B'], lecture: 'Lecture B' },
-    { projectName: 'Project C', students: ['Student 1C', 'Student 2C'], lecture: 'Lecture C' },
-  ];
+  const [data, setData] = useState({
+    projectId: "",
+    projectName: "",
+    student: [],
+    lecturer: [],
+  });
 
   useEffect(() => {
-    setProjects(mockProjects);
+    const fetchProjects = async () => {
+      try {
+        const response = await api.getcsb02();
+        console.log(response.data.body);
+        setProjects(response.data.body);
+      } catch (error) {
+        message.error('ไม่สามารถดึงข้อมูลโครงงานได้ กรุณาลองใหม่อีกครั้ง');
+      }
+      
+    };
+
+    fetchProjects();
   }, []);
+
+  // useEffect(() => {
+  //   api.getAllProject()
+  //     .then((res) => {
+  //       if (res.data.body.length > 0) {
+  //         const projectData = res.data.body[0];
+  //         setData({
+  //           projectId: projectData._id || "",
+  //           projectName: projectData.projectName || "",
+  //           student: projectData.student || [],
+  //           lecturer: projectData.lecturer || [],
+  //         });
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //       notification.error({
+  //         message: 'Error Fetching Projects',
+  //         description: 'Unable to fetch project data. Please try again later.',
+  //         placement: 'topRight',
+  //       });
+  //     });
+  // }, []);
+
+
 
   const handleProjectChange = (value) => {
     const selected = projects.find((p) => p.projectName === value);
+    console.log(selected);
     setSelectedProject(selected);
     setProjectDetails(selected);
   };
@@ -28,23 +66,39 @@ export default function ApproveCSB02() {
     setProjectDetails(null);
   };
 
-  const handleApprove = () => {
+  const handleApprove = async () => {
+    console.log(selectedProject._id)
     if (!selectedProject) {
       message.warning('กรุณาเลือกชื่อโครงงานก่อน');
+      console.log("hi")
       return;
     }
-    message.success(`อนุมัติโครงงาน ${selectedProject.projectName} สำเร็จ`);
-    setApprovedProjects((prev) => new Set(prev).add(selectedProject.projectName));
-    resetForm();
+    console.log(selectedProject)
+    try {
+      const {data} = await api.approveCSB02(selectedProject._id); 
+      console.log(data)
+      message.success(`อนุมัติโครงงาน ${selectedProject.projectName} สำเร็จ`);
+      setApprovedProjects((prev) => new Set(prev).add(selectedProject.projectName));
+      resetForm();
+    } catch (error) {
+      // message.error('ไม่สามารถอนุมัติโครงงานได้ กรุณาลองใหม่อีกครั้ง');
+      console.log(error)
+    }
   };
 
-  const handleReject = () => {
+  const handleReject = async () => {
     if (!selectedProject) {
       message.warning('กรุณาเลือกชื่อโครงงานก่อน');
       return;
     }
-    message.warning(`ปฏิเสธการยื่นสอบป้องกันโครงงาน ${selectedProject.projectName}`);
-    resetForm();
+
+    try {
+      await api.rejectCSB02(selectedProject.projectId); // Assuming selectedProject contains projectId
+      message.warning(`ปฏิเสธการยื่นสอบป้องกันโครงงาน ${selectedProject.projectName}`);
+      resetForm();
+    } catch (error) {
+      message.error('ไม่สามารถปฏิเสธโครงงานได้ กรุณาลองใหม่อีกครั้ง');
+    }
   };
 
   const filteredProjects = projects.filter((project) => !approvedProjects.has(project.projectName));
@@ -56,21 +110,23 @@ export default function ApproveCSB02() {
 
         <Form layout="vertical">
           <Row justify="center" gutter={16}>
-            <Col  span={12}>
+            <Col span={12}>
               <Form.Item style={{ textAlign: 'center' }}>
-              <h3>เลือกชื่อโครงงาน</h3>
-                <Select 
+                <h3>เลือกชื่อโครงงาน</h3>
+               
+                <Select
                   value={selectedProject?.projectName || ''}
-                  onChange={handleProjectChange}
                   placeholder="เลือกโครงงาน"
                   style={{ width: '100%' }}
+                  onChange={handleProjectChange}
                 >
                   {filteredProjects.map((project) => (
-                    <Select.Option key={project.projectName} value={project.projectName}>
+                    <Select.Option key={project.projectId} value={project.projectName}>
                       {project.projectName}
                     </Select.Option>
                   ))}
                 </Select>
+               
               </Form.Item>
             </Col>
           </Row>
@@ -80,32 +136,40 @@ export default function ApproveCSB02() {
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item label="ชื่อ-สกุลนักศึกษาคนที่ 1">
-                    <Input value={projectDetails.students[0]} disabled style={{ width: '100%' }} />
+                    <Input value={`${projectDetails.student[0].FirstName} ${projectDetails.student[0].LastName}`} disabled style={{ width: '100%' }} />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
                   <Form.Item label="ชื่อ-สกุลนักศึกษาคนที่ 2">
-                    <Input value={projectDetails.students[1]} disabled style={{ width: '100%' }} />
+                    <Input value={`${projectDetails.student[1].FirstName} ${projectDetails.student[1].LastName}`} disabled style={{ width: '100%' }} />
                   </Form.Item>
                 </Col>
               </Row>
               <Row gutter={16}>
                 <Col span={24}>
-                  <Form.Item label="ชื่ออาจารย์ที่ปรึกษา">
-                    <Input value={projectDetails.lecture} disabled style={{ width: '100%' }} />
-                  </Form.Item>
+                  {
+                    projectDetails.lecturer.map((lecturer, index) => (
+                      <Form.Item label={`ชื่ออาจารย์ที่ปรึกษา ${index + 1}`}>
+                        <Input value={`${lecturer.T_name}`} disabled style={{ width: '100%' }} />
+                      </Form.Item>
+                    ))
+                  }
+
+                  {/*<Form.Item label="ชื่ออาจารย์ที่ปรึกษา">
+                    <Input value={projectDetails.lecturer} disabled style={{ width: '100%' }} />
+                  </Form.Item>*/}
                 </Col>
               </Row>
 
               <Row gutter={16} style={{ marginTop: '16px' }}>
                 <Col span={12} style={{ textAlign: 'right' }}>
                   <Button type="primary" onClick={handleApprove}>
-                  อนุมัติการยื่นสอบป้องกันโครงงาน
+                    อนุมัติการยื่นสอบก้าวหน้าโครงงาน...................
                   </Button>
                 </Col>
                 <Col span={12}>
                   <Button type="primary" danger onClick={handleReject}>
-                    ปฏิเสธการยื่นสอบป้องกันโครงงาน
+                    ปฏิเสธการยื่นสอบก้าวหน้าโครงงาน
                   </Button>
                 </Col>
               </Row>

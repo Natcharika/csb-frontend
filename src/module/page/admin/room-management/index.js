@@ -17,17 +17,17 @@ const { Option } = Select;
 
 function RoomManagement() {
   const [form] = Form.useForm();
-  const [refereeCount, setRefereeCount] = useState(1);
+  const [teacherCount, setTeacherCount] = useState(1);
   const [projectCount, setProjectCount] = useState(1);
-  const [referees, setReferees] = useState([
-    { keyLecturer: "", nameLecturer: "", roleLecturer: "" },
+  const [teachers, setTeachers] = useState([
+    { T_id: "", T_name: "", role: "" },
   ]);
   const [projects, setProjects] = useState([
     { projectId: "", projectName: "", start_in_time: "" },
   ]);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
   const [data, setData] = useState([]);
-  const [refereeNames, setRefereeNames] = useState([]);
+  const [teacherNames, setTeacherNames] = useState([]);
 
   const projectTimes = [
     "09:00",
@@ -73,10 +73,10 @@ function RoomManagement() {
       .catch(console.error);
 
     api
-      .getLeacturer()
+      .getTeacher()
       .then((res) => {
         console.log(res.data.body);
-        setRefereeNames(res.data.body);
+        setTeacherNames(res.data.body);
       })
       .catch((err) => {
         console.log(err);
@@ -87,18 +87,19 @@ function RoomManagement() {
     const body = {
       roomExam: values.examRoom,
       nameExam: values.examName,
+      // Format dateExam to be in the 'YYYY-MM-DD' format without time
       dateExam: values.examDate ? values.examDate.format("YYYY-MM-DD") : "",
-      referees,
+      teachers,
       projects,
     };
     api
       .createRoomManagement(body)
       .then((res) => {
         form.resetFields();
-        setReferees([{ keyLecturer: "", nameLecturer: "", roleLecturer: "" }]);
+        setTeachers([{ T_id: "", T_name: "", role: "" }]);
         setProjects([{ projectId: "", projectName: "", start_in_time: "" }]);
         setIsSubmitDisabled(true);
-
+  
         // Show notification on success
         notification.success({
           message: "สำเร็จ",
@@ -108,6 +109,7 @@ function RoomManagement() {
       })
       .catch(console.error);
   };
+  
 
   const checkFormValidity = () => {
     const values = form.getFieldsValue();
@@ -115,19 +117,15 @@ function RoomManagement() {
       values.examRoom &&
       values.examName &&
       values.examDate &&
-      referees.every(
-        ({ nameLecturer, roleLecturer }) => nameLecturer && roleLecturer
-      ) &&
-      projects.every(
-        ({ projectId, start_in_time }) => projectId && start_in_time
-      );
+      teachers.every(({ T_name, role }) => T_name && role) &&
+      projects.every(({ projectId, start_in_time }) => projectId && start_in_time);
 
     setIsSubmitDisabled(!allFieldsFilled);
   };
 
   useEffect(() => {
     checkFormValidity();
-  }, [form, referees, projects]);
+  }, [form, teachers, projects]);
 
   const handleDynamicFieldChange = (setState, fieldIndex, fieldName, value) => {
     setState((prevState) => {
@@ -137,43 +135,23 @@ function RoomManagement() {
     });
   };
 
-  const handleLecturerChange = (index, keyLecturer) => {
-    const selectedLecturer = refereeNames.find(
-      (referee) => referee.keyLecturer === keyLecturer
-    );
-    if (selectedLecturer) {
-      handleDynamicFieldChange(setReferees, index, "keyLecturer", keyLecturer);
-      handleDynamicFieldChange(
-        setReferees,
-        index,
-        "nameLecturer",
-        selectedLecturer.nameLecturer
-      );
+  const handleTeacherChange = (index, T_id) => {
+    const selectedTeacher = teacherNames.find((teacher) => teacher.T_id === T_id);
+    if (selectedTeacher) {
+      handleDynamicFieldChange(setTeachers, index, "T_id", T_id);
+      handleDynamicFieldChange(setTeachers, index, "T_name", selectedTeacher.T_name);
     }
   };
 
   const handleProjectNameChange = (index, projectName) => {
-    const selectedProject = data.find(
-      (project) => project.projectName === projectName
-    );
+    const selectedProject = data.find((project) => project.projectName === projectName);
     handleDynamicFieldChange(setProjects, index, "projectName", projectName);
     if (selectedProject) {
-      handleDynamicFieldChange(
-        setProjects,
-        index,
-        "projectId",
-        selectedProject.projectId
-      );
+      handleDynamicFieldChange(setProjects, index, "projectId", selectedProject.projectId);
     }
   };
 
-  const handleCountChange = (
-    setState,
-    setCount,
-    value,
-    limit,
-    fieldTemplate
-  ) => {
+  const handleCountChange = (setState, setCount, value, limit, fieldTemplate) => {
     const count = Math.min(Number(value), limit);
     const newFields = Array.from({ length: count }, (_, index) => ({
       ...fieldTemplate,
@@ -184,30 +162,19 @@ function RoomManagement() {
   };
 
   const filteredOptions = (options, selected, currentIndex) =>
-    options.filter(
-      (option) =>
-        !selected.includes(option) || selected[currentIndex] === option
-    );
-
-  const filterRefereeOptions = (options, selected) =>
-    options.filter((option) => !selected.includes(option.keyLecturer));
+    options.filter((option) => !selected.includes(option) || selected[currentIndex] === option);
 
   const handleRoleChange = (index, value) => {
-    // Check if the selected value is 'main'
     if (value === "main") {
-      // Check if another referee is already set as 'main'
-      const isChairpersonExists = referees.some(
-        (referee, i) => referee.roleLecturer === "main" && i !== index
+      const isChairpersonExists = teachers.some(
+        (teacher, i) => teacher.role === "main" && i !== index
       );
       if (isChairpersonExists) {
-        // Optionally display a message to the user
-        alert("มีกรรมการสอบท่านอื่นเป็นประธานกรรมการอยู่แล้ว"); // "Another referee is already assigned as Chairperson."
-        return; // Prevent the change
+        alert("มีกรรมการสอบท่านอื่นเป็นประธานกรรมการอยู่แล้ว");
+        return;
       }
     }
-
-    // If it's a valid change, proceed to update the state
-    handleDynamicFieldChange(setReferees, index, "roleLecturer", value);
+    handleDynamicFieldChange(setTeachers, index, "role", value);
   };
 
   return (
@@ -271,40 +238,39 @@ function RoomManagement() {
           <Input
             type="number"
             min={1}
-            value={refereeCount}
+            value={teacherCount}
             onChange={(e) =>
               handleCountChange(
-                setReferees,
-                setRefereeCount,
+                setTeachers,
+                setTeacherCount,
                 e.target.value,
                 5,
-                { keyLecturer: "", nameLecturer: "", roleLecturer: "" }
+                { T_id: "", T_name: "", role: "" }
               )
             }
             placeholder="กรอกจำนวนกรรมการสอบ"
           />
         </Form.Item>
 
-        {referees.map((_, index) => (
+        {teachers.map((_, index) => (
           <Row gutter={16} key={index}>
             <Col span={12}>
               <Form.Item
                 label="ชื่อกรรมการสอบ"
-                rules={[
-                  { required: true, message: "กรุณาเลือกชื่อกรรมการสอบ" },
-                ]}
+                rules={[{ required: true, message: "กรุณาเลือกชื่อกรรมการสอบ" }]}
               >
                 <Select
                   placeholder="เลือกชื่อกรรมการสอบ"
-                  value={referees[index].nameLecturer}
-                  onChange={(value) => handleLecturerChange(index, value)}
+                  value={teachers[index].T_name}
+                  onChange={(value) => handleTeacherChange(index, value)}
                 >
-                  {filterRefereeOptions(
-                    refereeNames,
-                    referees.map((r) => r.keyLecturer)
-                  ).map(({ keyLecturer, nameLecturer }) => (
-                    <Option key={keyLecturer} value={keyLecturer}>
-                      {nameLecturer}
+                  {filteredOptions(
+                    teacherNames,
+                    teachers.map((t) => t.T_id),
+                    index
+                  ).map(({ T_id, T_name }) => (
+                    <Option key={T_id} value={T_id}>
+                      {T_name}
                     </Option>
                   ))}
                 </Select>
@@ -313,24 +279,17 @@ function RoomManagement() {
             <Col span={12}>
               <Form.Item
                 label="ตำแหน่ง (Role)"
-                rules={[{ required: true, message: "กรุณาเลือกตำแหน่ง" }]}
+                rules={[{ required: true, message: "กรุณาเลือกตำแหน่งกรรมการ" }]}
               >
                 <Select
-                  placeholder="เลือกตำแหน่ง"
-                  value={referees[index].roleLecturer}
-                  onChange={(value) =>
-                    handleDynamicFieldChange(
-                      setReferees,
-                      index,
-                      "roleLecturer",
-                      value
-                    )
-                  }
-                  disabled={referees[index].roleLecturer === "main"} // Disable if already Chairperson
+                  placeholder="เลือกตำแหน่งกรรมการ"
+                  value={teachers[index].role}
+                  onChange={(value) => handleRoleChange(index, value)}
+                  disabled={teachers[index].role === "main"}
                 >
-                  {referees.every(
-                    (referee) => referee.roleLecturer !== "main"
-                  ) || referees[index].roleLecturer === "main" ? (
+                  {teachers.every(
+                    (teacher) => teacher.role !== "main"
+                  ) || teachers[index].role === "main" ? (
                     <>
                       <Option value="main">ประธานกรรมการ</Option>
                       <Option value="sub">กรรมการ</Option>
@@ -344,7 +303,7 @@ function RoomManagement() {
           </Row>
         ))}
 
-        <Form.Item label="จำนวนโครงงาน">
+<Form.Item label="จำนวนโครงงาน">
           <Input
             type="number"
             min={1}

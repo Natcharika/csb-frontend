@@ -36,6 +36,26 @@ import AppointmentHeadofDepartment from "./module/page/admin/appointment-departm
 function App() {
   const [role, setRole] = useState("teacher");
 
+  // useEffect(async() => {
+  //   try {
+  //     // const token = localStorage.getItem("jwtToken");
+  //     // if (token) {
+  //     //   const response = await api.getLogin(token);
+
+  //     //   if (response.status !== 200) {
+  //     //     localStorage.clear();
+  //     //   }
+        
+  //     //   const { username, role, level, jwtToken } = response.data;
+  //     //   localStorage.setItem("username", username);
+  //     //   localStorage.setItem("role", role);
+  //     //   localStorage.setItem("level", level);
+  //     //   localStorage.setItem("jwtToken", jwtToken);
+  //     // }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }, []);
   return (
     <div>
       <BrowserRouter>

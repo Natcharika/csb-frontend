@@ -73,7 +73,7 @@ export default function AddLecture() {
     const data = await api.assignTeacher(values.projectName, [values.lecturer])
     console.log(data);
     
-    // setIsModalVisible(false);
+    setIsModalVisible(false);
     
   }
 

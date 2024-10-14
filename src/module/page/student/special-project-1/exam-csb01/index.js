@@ -27,10 +27,8 @@ export default function ExamCSB01() {
     projectType: 0,
     projectStatus: 0,
     projectDescription: values.projectDescription,
-    student: formattedStudents, // Use the formatted student array here
-    lecturer: values.lecturer,
+    student: formattedStudents, 
     Status:"",
-    scoreId: "",
   };
 
   console.log("Body to be sent to backend:", body);

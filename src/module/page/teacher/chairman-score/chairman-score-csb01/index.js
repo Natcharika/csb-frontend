@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Select, Input, Button, Table, Form, Row, Col, notification } from 'antd';
+import api from '../../../../utils/form/api';
 
 function ChairmanScoreCSB01() {
   const [projects, setProjects] = useState([]);
@@ -7,32 +8,54 @@ function ChairmanScoreCSB01() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [data, setData] = useState([{ id: 1, name: 'คะแนนรวม', fullscores: '80', score: '' }]);
   const [projectDetails, setProjectDetails] = useState(null);
-
-  const mockProjects = [
-    { Er_Pname: 'Project A', Er_CSB03: '75', Er_CSB03_status: 'ไม่ผ่าน' },
-    { Er_Pname: 'Project B', Er_CSB03: '80', Er_CSB03_status: 'ไม่ผ่าน' },
-  ];
-
-  const mockProjectDetails = {
-    'Project A': { P_S1: 'Student 1A', P_S2: 'Student 2A', P_T: 'Advisor A' },
-    'Project B': { P_S1: 'Student 1B', P_S2: 'Student 2B', P_T: 'Advisor B' },
-  };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setProjects(mockProjects);
+    api
+      .getAllProject()
+      .then((res) => {
+        console.log("Response from API:", res.data.body);
+        if (res.data.body.length > 0) {
+          setProjects(res.data.body);
+          setData([{ id: 1, name: 'คะแนนรวม', fullscores: '80', score: '' }]);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        notification.error({
+          message: 'Error Fetching Projects',
+          description: 'Unable to fetch project data. Please try again later.',
+          placement: 'topRight',
+        });
+        setLoading(false);
+      });
   }, []);
 
-  const handleProjectChange = (value) => {
-    const selected = projects.find((p) => p.Er_Pname === value);
-    setSelectedProject(selected);
-    setProjectDetails(mockProjectDetails[value]);
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-    setData([{ id: 1, name: 'คะแนนรวม', fullscores: '80', score: selected.Er_CSB03 }]);
+  const handleProjectChange = (value) => {
+    const selected = projects.find((p) => p.projectName === value);
+    setSelectedProject(selected);
+    setProjectDetails(selected); 
+    setData([{ id: 1, name: 'คะแนนรวม', fullscores: '80', score: selected.Er_CSB03 || '' }]);
   };
 
   const handleScoreChange = (e) => {
     const newScore = e.target.value;
-    setData((prevData) => prevData.map((item) => ({ ...item, score: newScore })));
+    const fullScore = parseFloat(data[0].fullscores);
+
+    // ตรวจสอบคะแนนที่กรอก
+    if (newScore === '' || (parseFloat(newScore) >= 0 && parseFloat(newScore) <= fullScore)) {
+      setData((prevData) => prevData.map((item) => ({ ...item, score: newScore })));
+    } else {
+      notification.error({
+        message: 'ผิดพลาด',
+        description: `กรุณากรอกคะแนนระหว่าง 0 ถึง ${fullScore}`,
+      });
+    }
   };
 
   const resetForm = () => {
@@ -69,11 +92,7 @@ function ChairmanScoreCSB01() {
     resetForm();
   };
 
-  const handleCancel = () => {
-    resetForm();
-  };
-
-  const filteredProjects = projects.filter((project) => !approvedProjects.has(project.Er_Pname));
+  const filteredProjects = projects.filter((project) => !approvedProjects.has(project.projectName));
 
   const columns = [
     {
@@ -107,13 +126,13 @@ function ChairmanScoreCSB01() {
               <Form.Item>
                 <h3>เลือกชื่อโครงงาน</h3>
                 <Select
-                  value={selectedProject?.Er_Pname}
+                  value={selectedProject?.projectName}
                   onChange={handleProjectChange}
                   placeholder="เลือกโครงงาน"
                 >
                   {filteredProjects.map((project) => (
-                    <Select.Option key={project.Er_Pname} value={project.Er_Pname}>
-                      {project.Er_Pname}
+                    <Select.Option key={project.projectName} value={project.projectName}>
+                      {project.projectName}
                     </Select.Option>
                   ))}
                 </Select>
@@ -126,19 +145,31 @@ function ChairmanScoreCSB01() {
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item label="ชื่อ-สกุลนักศึกษาคนที่ 1">
-                    <Input value={projectDetails.P_S1} disabled style={{ width: '100%', borderRadius: '4px' }} />
+                    <Input 
+                      value={projectDetails.student[0]?.FirstName + ' ' + projectDetails.student[0]?.LastName} 
+                      disabled 
+                      style={{ width: '100%', borderRadius: '4px' }} 
+                    />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
                   <Form.Item label="ชื่อ-สกุลนักศึกษาคนที่ 2">
-                    <Input value={projectDetails.P_S2} disabled style={{ width: '100%', borderRadius: '4px' }} />
+                    <Input 
+                      value={projectDetails.student[1]?.FirstName + ' ' + projectDetails.student[1]?.LastName} 
+                      disabled 
+                      style={{ width: '100%', borderRadius: '4px' }} 
+                    />
                   </Form.Item>
                 </Col>
               </Row>
               <Row gutter={16}>
                 <Col span={24}>
                   <Form.Item label="ชื่ออาจารย์ที่ปรึกษา">
-                    <Input value={projectDetails.P_T} disabled style={{ width: '100%', borderRadius: '4px' }} />
+                    <Input 
+                      value={projectDetails.lecturer[0]?.T_name} 
+                      disabled 
+                      style={{ width: '100%', borderRadius: '4px' }} 
+                    />
                   </Form.Item>
                 </Col>
               </Row>
@@ -157,11 +188,6 @@ function ChairmanScoreCSB01() {
                 <Col>
                   <Button type="primary" onClick={handleSubmit}>
                     อนุมัติคะแนน
-                  </Button>
-                </Col>
-                <Col>
-                  <Button onClick={handleCancel}>
-                    ยกเลิก
                   </Button>
                 </Col>
               </Row>
