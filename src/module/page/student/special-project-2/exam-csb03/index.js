@@ -6,7 +6,6 @@ import api from '../../../../utils/form/api';
 const { Title, Paragraph } = Typography;
 
 export default function ExamCSB03() {
-  const [isSubmitDisabled, setSubmitDisabled] = useState(false);
   const [data, setData] = useState({
     projectId: "",
     projectName: "",
@@ -48,10 +47,6 @@ export default function ExamCSB03() {
         placement: 'topRight',
       });
     }
-  };
-
-  const onChange = (date, dateString) => {
-    console.log("Selected date:", dateString);
   };
 
   useEffect(() => {

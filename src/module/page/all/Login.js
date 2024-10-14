@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Typography, message } from "antd";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const { Link } = Typography;
@@ -9,6 +10,16 @@ const Login = ({ onLoginSuccess }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const redirectToHome = () => {
+    navigate("/");
+  };
+
+  if (localStorage.getItem("jwtToken")) {
+    redirectToHome();
+  }
+
 
   const onSubmit = async () => {
     try {
@@ -19,10 +30,8 @@ const Login = ({ onLoginSuccess }) => {
 
       if (response && response.data && response.status === 200) {
         const { username, role, level, jwtToken } = response.data;
-        localStorage.setItem("username", username);
-        localStorage.setItem("role", role);
-        localStorage.setItem("level", level);
-        localStorage.setItem("jwtToken", jwtToken);
+        onLoginSuccess({ username, role, level, jwtToken });
+        redirectToHome();
           // if (role === "students") {
           //   const S_id = userInfo.username.startsWith("s") ? userInfo.username.substring(1) : userInfo.username;
           //   // const studentPayload = {

@@ -37,7 +37,7 @@ const ManageExam = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:9999/Exam', {
+            const response = await fetch('http://localhost:8788/Exam', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

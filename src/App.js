@@ -34,28 +34,48 @@ import ProjectStatus from "./module/page/student/project-status"
 import AppointmentHeadofDepartment from "./module/page/admin/appointment-department";
 
 function App() {
-  const [role, setRole] = useState("teacher");
+  const [role, setRole] = useState("");
+  const [username, setUsername] = useState("");
+  const [level, setLevel] = useState("");
 
-  // useEffect(async() => {
-  //   try {
-  //     // const token = localStorage.getItem("jwtToken");
-  //     // if (token) {
-  //     //   const response = await api.getLogin(token);
+  useEffect(() => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      if (token) {
+        api.getLogin(token).then((response) => {
+          if (response.status !== 200) {
+            localStorage.clear();
+          }
+          const { username, role, level, jwtToken } = response.data;
+          localStorage.setItem("username", username);
+          localStorage.setItem("role", role);
+          localStorage.setItem("level", level);
+          localStorage.setItem("jwtToken", jwtToken);
+          setRole(role);
+        })
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
 
-  //     //   if (response.status !== 200) {
-  //     //     localStorage.clear();
-  //     //   }
-        
-  //     //   const { username, role, level, jwtToken } = response.data;
-  //     //   localStorage.setItem("username", username);
-  //     //   localStorage.setItem("role", role);
-  //     //   localStorage.setItem("level", level);
-  //     //   localStorage.setItem("jwtToken", jwtToken);
-  //     // }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }, []);
+  const onLoginSuccess = (data) => {
+    const { username, role, level, jwtToken } = data;
+    localStorage.setItem("username", username);
+    localStorage.setItem("role", role);
+    localStorage.setItem("level", level);
+    localStorage.setItem("jwtToken", jwtToken);
+    setRole(role);
+    setUsername(username);
+    setLevel(level);
+  };
+
+  const logout = () => {
+    localStorage.clear();
+    setRole("");
+    setUsername("");
+    setLevel("");
+  }
   return (
     <div>
       <BrowserRouter>
@@ -64,18 +84,18 @@ function App() {
           <button onClick={() => setRole("teacher")}>
             กลายร่างเป็นอาจารย์
           </button>
-          <button onClick={() => setRole("students")}>
+          <button onClick={() => setRole("student")}>
             กลายร่างเป็นนักศึกษา
           </button>
           <button onClick={() => setRole("admin")}>
             กลายร่างเป็นเจ้าหน้าที่
           </button>
         </div>
-        <SiderBar role={role}>
+        <SiderBar role={role} username={username} level={level} logout={logout}>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            {role === "students" && (
+            <Route path="/login" element={<Login onLoginSuccess={onLoginSuccess}/>} />
+            {role === "student" && (
               <>
                 <Route
                 path="/special-project-1/provider"

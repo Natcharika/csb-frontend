@@ -208,7 +208,7 @@ const menuItemsAdmin = [
     label: "แต่งตั้งหัวหน้าภาค",
   },
 ];
-const SiderBar = ({ children, role }) => {
+const SiderBar = ({ children, role, username, level, logout }) => {
   const [selectedKey, setSelectedKey] = useState("/");
   const navigate = useNavigate();
   const handleMenuClick = (e) => {
@@ -227,13 +227,13 @@ const SiderBar = ({ children, role }) => {
         <span style={{ fontSize: "20px" }}>
           Special Project Examination Management System for CSB Program
         </span>
-        <span>{role == "" ? <Link to={"/login"}>Log in</Link> : role}</span>
+        <span>{username ? <h1 onClick={()=> logout()}>{username}</h1> : <Link to={"/login"}>Log in</Link>}</span>
       </Header>
 
       <Layout>
         <Sider className="sider bg-white">
           <h1 style={{ marginLeft: "20px" }}>
-            {role == "students"
+            {role == "student"
               ? "นักศึกษา"
               : role == "teacher"
               ? "อาจารย์"
@@ -246,7 +246,7 @@ const SiderBar = ({ children, role }) => {
             selectedKeys={[selectedKey]}
             // defaultOpenKeys={["sub1"]}
             items={
-              role === "students"
+              role === "student"
                 ? menuItemsStudent
                 : role === "teacher"
                 ? menuItemsTeacher

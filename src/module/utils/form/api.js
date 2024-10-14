@@ -66,50 +66,18 @@ export default {
   // getCreateProjectForStudent
   createProject: (data) => service.post("/create-form", { data }),
 
-  //createCSB
-  createCSB02: ({ projectId, confirmScore, unconfirmScore, logBookScore, csb02Status, referee }) =>
-    service.post("/createCSB02", {
-      projectId,
-      confirmScore,
-      unconfirmScore,
-      logBookScore,
-      csb02Status,
-      referee
-  }),
 
-  getcsb02: (params) => service.get("/csb02", { params }),
+  studentactivecsb02: (params) => service.post("/student-csb02", { params }),
+  approveCSB02 : ( params) => service.post("/approveCSB02", { params }), 
+  rejectCSB02 :  ( ProjectId) => service.post("/rejectCSB02", { projectId : ProjectId}), 
 
-  approveCSB02 : ( ProjectId) => service.post("/approveCSB02", {
-    projectId : ProjectId
-  }), 
+  studentactivecsb03: (ProjectId) => service.post("/student-csb03", { projectId : ProjectId }),
+  approveCSB03 : ( ProjectId) => service.post("/approveCSB03", { projectId : ProjectId}), 
+  rejectCSB03 :  ( ProjectId) => service.post("/rejectCSB03", { projectId : ProjectId}), 
 
-
-
-  createCSB03: ({ projectId, confirmScore, unconfirmScore, logBookScore, csb03Status, referee}) =>
-    service.post("/createCSB03", {
-      projectId,
-      confirmScore,
-      unconfirmScore,
-      logBookScore,
-      csb03Status,
-      referee
-  }),
-
-  approveCSB03 : ({ ProjectId, Csb03Status}) => service.post("/approveCSB03", {
-    projectId : ProjectId,
-    csb03Status:  Csb03Status,
-  }), 
-
-
-  createCSB04: ({ projectId, confirmScore, unconfirmScore, logBookScore, csb04Status, referee }) =>
-    service.post("/createCSB04", {
-      projectId,
-      confirmScore,
-      unconfirmScore,
-      logBookScore,
-      csb04Status,
-      referee
-  }),
+  studentactivecsb04: (ProjectId) => service.post("/student-csb04", { projectId : ProjectId }),
+  approveCSB04 : ( ProjectId) => service.post("/approveCSB04", { projectId : ProjectId}), 
+  rejectCSB04 :  ( ProjectId) => service.post("/rejectCSB04", { projectId : ProjectId}), 
 
 
 

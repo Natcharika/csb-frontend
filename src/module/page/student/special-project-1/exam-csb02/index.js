@@ -14,39 +14,28 @@ export default function ExamCSB02() {
   });
 
   const [loading, setLoading] = useState(true);
-  const [confirmScore, setConfirmScore] = useState(0);
-  const [unconfirmScore, setUnconfirmScore] = useState(0);
-  const [referees, setReferees] = useState([]); 
-  const [logBookScore, setlogBookScore] = useState(0);
+  const [referees, setReferees] = useState([]);
 
   const handleAccept = async () => {
     try {
-        const response = await api.getAllProject({ // Update the API call
-            projectId: data.projectId,
-            confirmScore: confirmScore,
-            unconfirmScore: unconfirmScore,
-            logBookScore:logBookScore, 
-            csb02Status: {
-                activeStatus: 1, 
-                status: "waiting",
-                date: new Date(),
-            },
-            referee: referees,
-        });
-        notification.success({
-            message: 'Success',
-            description: response.data.message,
-            placement: 'topRight',
-        });
+      const response = await api.studentactivecsb02({ // Update the API call
+        projectId: data.projectId,
+        activeStatus: 1,
+      });
+      notification.success({
+        message: 'Success',
+        description: response.data.message,
+        placement: 'topRight',
+      });
     } catch (error) {
-        console.error(error);
-        notification.error({
-            message: 'Error',
-            description: 'Unable to create CSB01 data. Please try again later.',
-            placement: 'topRight',
-        });
+      console.error(error);
+      notification.error({
+        message: 'Error',
+        description: 'Unable to create CSB02 data. Please try again later.',
+        placement: 'topRight',
+      });
     }
-};
+  };
 
   useEffect(() => {
     api.getAllProject()
@@ -100,10 +89,10 @@ export default function ExamCSB02() {
               <Paragraph style={{ fontSize: "18px" }}>รายชื่อนักศึกษา</Paragraph>
               {data.student.map((student, index) => (
                 <Paragraph key={index} style={{ fontSize: "16px", color: "#555" }}>
-                  {index + 1}. {`${student.FirstName} ${student.LastName}`} 
+                  {index + 1}. {`${student.FirstName} ${student.LastName}`}
                 </Paragraph>
               ))}
-            </div> 
+            </div>
           )}
         </Col>
         <Col span={12}>

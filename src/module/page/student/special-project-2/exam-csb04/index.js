@@ -7,34 +7,50 @@ const { Title, Paragraph } = Typography;
 
 export default function ExamCSB04() {
   const [data, setData] = useState({
+    projectId: "",
     projectName: "",
     student: [],
     lecturer: [],
   });
 
   const [loading, setLoading] = useState(true);
+  const [confirmScore, setConfirmScore] = useState(0);
+  const [unconfirmScore, setUnconfirmScore] = useState(0);
+  const [referees, setReferees] = useState([]);
+  const [logBookScore, setlogBookScore] = useState(0);
 
-  const handleAccept = () => {
-    console.log("ยินยอม");
-    notification.success({
-      message: 'ยินยอม',
-      description: 'ท่านยินยอมสอบป้องกันโครงงานพิเศษแล้ว',
-      placement: 'topRight',
-    });
-  };
-
-  const handleDecline = () => {
-    console.log("ปฏิเสธ");
-    notification.error({
-      message: 'ปฏิเสธ',
-      description: 'ท่านปฏิเสธสอบป้องกันโครงงานพิเศษแล้ว',
-      placement: 'topRight',
-    });
+  const handleAccept = async () => {
+    try {
+      const response = await api.createCSB04({ // Update the API call
+        projectId: data.projectId,
+        confirmScore: confirmScore,
+        unconfirmScore: unconfirmScore,
+        logBookScore: logBookScore,
+        csb04Status: {
+          activeStatus: 1, // Set activeStatus to 1
+          status: "waiting",
+          date: new Date(),
+        },
+        referee: referees,
+      });
+      console.log(response.data.body);
+      notification.success({
+        message: 'Success',
+        description: response.data.message,
+        placement: 'topRight',
+      });
+    } catch (error) {
+      console.error(error);
+      notification.error({
+        message: 'Error',
+        description: 'Unable to create CSB04 data. Please try again later.',
+        placement: 'topRight',
+      });
+    }
   };
 
   useEffect(() => {
-    api
-      .getAllProject()
+    api.getAllProject()
       .then((res) => {
         console.log("Response from API:", res.data.body); // ตรวจสอบข้อมูลที่ได้รับจาก API
         if (res.data.body.length > 0) {
@@ -42,13 +58,14 @@ export default function ExamCSB04() {
           console.log("Project Data:", projectData);
 
           setData({
+            projectId: projectData._id || "",
             projectName: projectData.projectName || "",
-            student: projectData.student || [], // ตรวจสอบว่ามีข้อมูลนักศึกษาหรือไม่
-            lecturer: projectData.lecturer   || [], // ตรวจสอบว่ามีข้อมูลอาจารย์หรือไม่
+            student: projectData.student || [],
+            lecturer: projectData.lecturer || [],
           });
 
           // ตรวจสอบข้อมูลอาจารย์
-          console.log("Lecturer Data:", projectData.lecturer); 
+          console.log("Lecturer Data:", projectData.lecturer);
         }
         setLoading(false);
       })
@@ -68,7 +85,7 @@ export default function ExamCSB04() {
   }
 
   return (
-<div style={{ maxWidth: 600, margin: "auto", flexDirection: 'column', alignItems: 'center', textAlign: 'center',  borderRadius: 15 }}>
+    <div style={{ maxWidth: 600, margin: "auto", flexDirection: 'column', alignItems: 'center', textAlign: 'center', borderRadius: 15 }}>
       <img src={cis} alt="logo" style={{ display: "block", margin: "0 auto", width: "150px" }} />
 
       <Typography style={{ textAlign: "center", marginBottom: 24 }}>
@@ -91,10 +108,10 @@ export default function ExamCSB04() {
               <Paragraph style={{ fontSize: "18px" }}>รายชื่อนักศึกษา</Paragraph>
               {data.student.map((student, index) => (
                 <Paragraph key={index} style={{ fontSize: "16px", color: "#555" }}>
-                  {index + 1}. {`${student.FirstName} ${student.LastName}`} 
+                  {index + 1}. {`${student.FirstName} ${student.LastName}`}
                 </Paragraph>
               ))}
-            </div> 
+            </div>
           )}
         </Col>
         <Col span={12}>
@@ -103,7 +120,7 @@ export default function ExamCSB04() {
             {data.lecturer.length > 0 && (
               data.lecturer.map((lecturer, index) => (
                 <Paragraph key={index} style={{ fontSize: "16px", color: "#555" }}>
-                  {index + 1}. {`${lecturer.FirstName} ${lecturer.LastName}`}
+                  {index + 1}. {lecturer.T_name}
                 </Paragraph>
               ))
             )}
