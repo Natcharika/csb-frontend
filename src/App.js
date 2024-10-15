@@ -47,8 +47,6 @@ function App() {
             localStorage.clear();
           }
           const { username, role, level, jwtToken } = response.data;
-          localStorage.setItem("username", username);
-          localStorage.setItem("role", role);
           localStorage.setItem("jwtToken", jwtToken);
           setRole(role);
           setUsername(username);
@@ -66,9 +64,6 @@ function App() {
 
   const onLoginSuccess = (data) => {
     const { username, role, level, jwtToken } = data;
-    localStorage.setItem("username", username);
-    localStorage.setItem("role", role);
-    localStorage.setItem("level", level);
     localStorage.setItem("jwtToken", jwtToken);
     setRole(role);
     setUsername(username);

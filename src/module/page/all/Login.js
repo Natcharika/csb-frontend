@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Form, Input, Button, Typography, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import api from "../../utils/form/api";
+
 
 const { Link } = Typography;
 
@@ -29,7 +31,10 @@ const Login = ({ onLoginSuccess }) => {
       });
 
       if (response && response.data && response.status === 200) {
-        const { username, role, level, jwtToken } = response.data;
+        const { username, role, jwtToken } = response.data;
+
+        const level = await api.getlevel(username);
+
         onLoginSuccess({ username, role, level, jwtToken });
         redirectToHome();
           // if (role === "students") {
