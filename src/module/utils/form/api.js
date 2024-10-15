@@ -66,6 +66,10 @@ export default {
   // getCreateProjectForStudent
   createProject: (data) => service.post("/create-form", { data }),
 
+  studentactivecsb01: (params) => service.post("/student-csb01", { params }),
+  approveCSB01 : ( params) => service.post("/approveCSB01", { params }), 
+  rejectCSB01 :  ( params) => service.post("/rejectCSB01", {params}),
+  scorecsb01:( params) => service.post("/score-csb01", { params }),
 
   studentactivecsb02: (params) => service.post("/student-csb02", { params }),
   approveCSB02 : ( params) => service.post("/approveCSB02", { params }), 
@@ -83,6 +87,10 @@ export default {
   scorecsb04:( params) => service.post("/score-csb04", { params }), 
 
   getProjects: (data) => service.get("/projects", { data }),
+
+  getcsb01: (data) => service.get("/csb01", { data }),
+  chaircsb01 :( params) => service.post("/chair-csb01", { params }),
+  departcsb01:( params) => service.post("/depart-csb01", { params }),
 
   getcsb02: (data) => service.get("/csb02", { data }),
   chaircsb02 :( params) => service.post("/chair-csb02", { params }),
