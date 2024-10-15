@@ -75,10 +75,24 @@ export default {
   studentactivecsb03: (params) => service.post("/student-csb03", { params }),
   approveCSB03 : ( params ) => service.post("/approveCSB03", {params}), 
   rejectCSB03 :  ( params) => service.post("/rejectCSB03", {params}), 
+  scorecsb03:( params) => service.post("/score-csb03", { params }), 
 
   studentactivecsb04: (params) => service.post("/student-csb04", { params }),
   approveCSB04 : ( params ) => service.post("/approveCSB04", {params}), 
   rejectCSB04 :  ( params) => service.post("/rejectCSB04", {params}), 
+  scorecsb04:( params) => service.post("/score-csb04", { params }), 
+
+  getProjects: (data) => service.get("/projects", { data }),
+
+  getcsb02: (data) => service.get("/csb02", { data }),
+  chaircsb02 :( params) => service.post("/chair-csb02", { params }),
+  departcsb02:( params) => service.post("/depart-csb02", { params }),
+
+  getcsb04 : (data) => service.get("/csb04", { data }),
+  chaircsb04 :( params) => service.post("/score-csb04", { params }), 
+  departcsb02:( params) => service.post("/depart-csb02", { params }),
+
+  
 
 
 
@@ -87,6 +101,8 @@ export default {
       Authorization: `Bearer ${token}`
     }
    }),
+   getlevel : (username) => service.post("/auth/level", { username }),
+
 
 
 

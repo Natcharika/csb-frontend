@@ -8,26 +8,17 @@ export default function ApproveCSB02() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [projectDetails, setProjectDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState({
-    projectId: "",
-    projectName: "",
-    student: [],
-    lecturer: [],
-  });
 
   useEffect(() => {
-    api.getAllProject()
+    api.getProjects()
       .then((res) => {
         if (res.data.body.length > 0) {
-          setProjects(res.data.body); // Update projects state here
+          setProjects(res.data.body);
 
+          // Set initial data for the first project if needed
           const projectData = res.data.body[0];
-          setData({
-            projectId: projectData._id || "",
-            projectName: projectData.projectName || "",
-            student: projectData.student || [],
-            lecturer: projectData.lecturer || [],
-          });
+          setProjectDetails(projectData);
+          setSelectedProject(projectData); // Store the first project as selected
         }
         setLoading(false);
       })
@@ -47,7 +38,7 @@ export default function ApproveCSB02() {
   }
 
   const handleProjectChange = (value) => {
-    const selected = projects.find((p) => p.projectName === value);
+    const selected = projects.find((p) => p._id === value);
     setSelectedProject(selected);
     setProjectDetails(selected);
   };
@@ -62,13 +53,13 @@ export default function ApproveCSB02() {
       message.warning('กรุณาเลือกชื่อโครงงานก่อน');
       return;
     }
-  
+
     try {
       const response = await api.approveCSB02({
-        projectId: selectedProject.projectId,
+        projectId: selectedProject._id,
         activeStatus: 2,
       });
-      
+
       console.log(response.data);
       message.success(`อนุมัติโครงงาน ${selectedProject.projectName} สำเร็จ`);
       setApprovedProjects((prev) => new Set(prev).add(selectedProject.projectName));
@@ -86,7 +77,11 @@ export default function ApproveCSB02() {
     }
 
     try {
-      await api.rejectCSB02(selectedProject.projectId);
+      const response = await api.rejectCSB02({
+        projectId: selectedProject._id, // Use _id from selectedProject
+        activeStatus: 0,
+      });
+      console.log(response.data);
       message.warning(`ปฏิเสธการยื่นสอบป้องกันโครงงาน ${selectedProject.projectName}`);
       resetForm();
     } catch (error) {
@@ -106,20 +101,18 @@ export default function ApproveCSB02() {
             <Col span={12}>
               <Form.Item style={{ textAlign: 'center' }}>
                 <h3>เลือกชื่อโครงงาน</h3>
-               
                 <Select
-                  value={selectedProject?.projectName || ''}
+                  value={selectedProject?._id || ''} // Use _id as the value
                   placeholder="เลือกโครงงาน"
                   style={{ width: '100%' }}
                   onChange={handleProjectChange}
                 >
                   {filteredProjects.map((project) => (
-                    <Select.Option key={project.projectId} value={project.projectName}>
+                    <Select.Option key={project._id} value={project._id}>
                       {project.projectName}
                     </Select.Option>
                   ))}
                 </Select>
-               
               </Form.Item>
             </Col>
           </Row>

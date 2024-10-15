@@ -24,9 +24,9 @@ export default function AppointmentHeadofDepartment() {
 
   const handleSubmit = (values) => {
     const { teacherId } = values;
-    const teacherName = teachers.find(teacher => teacher.T_id === teacherId).T_name; // Get the teacher's name
+    const teacherName = teachers.find(teacher => teacher.T_id === teacherId).T_name; 
   
-    api.appointHeadOfDepartment(teacherId, teacherName, "Head of Department")
+    api.appointHeadOfDepartment(teacherId, teacherName, "head")
       .then((response) => {
         notification.success({
           message: "Success",

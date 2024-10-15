@@ -3,8 +3,8 @@ import { Breadcrumb, Layout, Menu, theme } from "antd";
 import "../theme/css/sidebar.css";
 import kmutnb from "../public/image/kmutnb.png";
 import { Link, useNavigate } from "react-router-dom";
-
 const { Header, Content, Sider } = Layout;
+
 const menuItemsStudent = [
   {
     key: "/",
@@ -56,55 +56,58 @@ const menuItemsStudent = [
     label: "ตรวจสอบสถานะโครงงาน",
   },
 ];
+const getMenuItemTeacher = (level) => {
+  const menuItemsTeacher = [
+    {
+      key: "/",
+      // icon: React.createElement(LaptopOutlined),
+      label: "หน้าหลัก",
+    },
+    {
+      key: "/approve",
+      // icon: React.createElement(FormOutlined),
+      label: "อนุมัติการยื่นสอบ",
+      children: [
+        {
+          key: "/approve/approve-csb02",
+          label: "อนุมัติการสอบก้าวหน้า",
+        },
+        {
+          key: "/approve/approve-csb03",
+          label: "อนุมัติการยื่นทดสอบโครงงาน",
+        },
+        {
+          key: "/approve/approve-csb04",
+          label: "อนุมัติการสอบป้องกัน",
+        },
+      ],
+    },
+    {
+      key: "/input-score",
+      // icon: React.createElement(FormOutlined),
+      label: "ประเมินคะแนน",
+      children: [
+        {
+          key: "/input-score/inputscore-csb01",
+          label: "ประเมินหัวข้อ",
+        },
+        {
+          key: "/input-score/inputscore-csb02",
+          label: "ประเมินก้าวหน้า",
+        },
+        {
+          key: "/input-score/inputscore-csb04",
+          label: "ประเมินป้องกัน",
+        },
+      ],
+    },
+    
+  ];
 
-const menuItemsTeacher = [
-  {
-    key: "/",
-    // icon: React.createElement(LaptopOutlined),
-    label: "หน้าหลัก",
-  },
-  {
-    key: "/approve",
-    // icon: React.createElement(FormOutlined),
-    label: "อนุมัติการยื่นสอบ",
-    children: [
-      {
-        key: "/approve/approve-csb02",
-        label: "อนุมัติการสอบก้าวหน้า",
-      },
-      {
-        key: "/approve/approve-csb03",
-        label: "อนุมัติการยื่นทดสอบโครงงาน",
-      },
-      {
-        key: "/approve/approve-csb04",
-        label: "อนุมัติการสอบป้องกัน",
-      },
-    ],
-  },
-  {
-    key: "/input-score",
-    // icon: React.createElement(FormOutlined),
-    label: "ประเมินคะแนน",
-    children: [
-      {
-        key: "/input-score/inputscore-csb01",
-        label: "ประเมินหัวข้อ",
-      },
-      {
-        key: "/input-score/inputscore-csb02",
-        label: "ประเมินก้าวหน้า",
-      },
-      {
-        key: "/input-score/inputscore-csb04",
-        label: "ประเมินป้องกัน",
-      },
-    ],
-  },
-  {
+  const chairmanMenu = {
     key: "/chairman-score",
     // icon: React.createElement(FormOutlined),
-    label: "อนุมัติคะแนนสอบ",
+    label: "อนุมัติคะแนนสอบ(ประธานกรรมการ)",
     children: [
       {
         key: "/chairman-score/chairman-score-csb01",
@@ -119,11 +122,15 @@ const menuItemsTeacher = [
         label: "อนุมัติคะแนนสอบป้องกันโดยประธานกรรมการสอบ",
       },
     ],
-  },
-  {
+  }
+  if (level === "chairman"){
+    menuItemsTeacher.push(chairmanMenu)
+  }
+
+  const headMenu = {
     key: "/department-score",
     // icon: React.createElement(FormOutlined),
-    label: "อนุมัติคะแนนสอบ",
+    label: "อนุมัติคะแนนสอบ(หัวหน้าภาควิชา)",
     children: [
       {
         key: "/department-score/department-score-csb01",
@@ -138,8 +145,19 @@ const menuItemsTeacher = [
         label: "อนุมัติคะแนนสอบป้องกันโดยหัวหน้าภาควิชา",
       },
     ],
-  },
-];
+  }
+  if (level === "head"){
+    menuItemsTeacher.push(headMenu)
+  } 
+
+  if (level === "all"){
+    menuItemsTeacher.push(chairmanMenu)
+    menuItemsTeacher.push(headMenu)
+  }
+
+  return menuItemsTeacher;
+}
+
 
 const menuItemsAdmin = [
   {
@@ -249,7 +267,7 @@ const SiderBar = ({ children, role, username, level, logout }) => {
               role === "student"
                 ? menuItemsStudent
                 : role === "teacher"
-                ? menuItemsTeacher
+                ? getMenuItemTeacher(level)
                 : role === "admin"
                 ? menuItemsAdmin
                 : [menuItemsStudent[0]]

@@ -63,7 +63,7 @@ export default function ApproveCSB03() {
 
     try {
       const response = await api.approveCSB03({
-        projectId: selectedProject.projectId,
+        projectId: selectedProject._id,
         activeStatus: 2,
       });
 
@@ -84,7 +84,11 @@ export default function ApproveCSB03() {
     }
 
     try {
-      await api.rejectCSB03(selectedProject.projectId); // Assuming selectedProject contains projectId
+      const response = await api.rejectCSB03({
+        projectId: selectedProject._id, // Use _id from selectedProject
+        activeStatus: 0,
+      });
+      console.log(response.data);
       message.warning(`ปฏิเสธการยื่นสอบป้องกันโครงงาน ${selectedProject.projectName}`);
       resetForm();
     } catch (error) {

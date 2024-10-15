@@ -22,7 +22,7 @@ function InputScoreCSB02() {
         student: [],
         lecturer: [],
       });
-      const [unconfirmScore, setunconfirmScore] = useState([]);
+
 
     // Criteria data
     const criteriaData = [
@@ -120,7 +120,7 @@ function InputScoreCSB02() {
         console.log("Result submitted: ", result);
       
         try {
-          const res = await api.scorecsb02(result); // Sending the result object
+          const res = await api.scorecsb02(result); 
           if (res.data.message === "CSB02 score updated successfully" || res.data.message === "CSB02 score saved successfully") {
             message.success("บันทึกคะแนนสำเร็จ");
             setSuccessfulEvaluations((prev) => new Set(prev).add(selectedProject.projectId));
@@ -300,6 +300,7 @@ function InputScoreCSB02() {
                             <p>ไม่มีข้อมูลนักศึกษา</p>
                         )}
                         <p><strong>วันที่ประเมิน : </strong> {selectedProject?.evaluationDate}</p>
+                        <p><strong>อาจารย์ที่ปรึกษา : </strong> {selectedProject?.lecturer}</p>
                     </Card>
                     <Table dataSource={tableData} columns={columns} pagination={false} />
                     <Form layout="vertical" style={{ marginTop: 16 }}>

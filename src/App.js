@@ -36,7 +36,7 @@ import AppointmentHeadofDepartment from "./module/page/admin/appointment-departm
 function App() {
   const [role, setRole] = useState("");
   const [username, setUsername] = useState("");
-  const [level, setLevel] = useState("");
+  const [level, setLevel] = useState("all");
 
   useEffect(() => {
     try {
@@ -52,6 +52,12 @@ function App() {
           localStorage.setItem("level", level);
           localStorage.setItem("jwtToken", jwtToken);
           setRole(role);
+          setUsername(username);
+          if (role =="teacher") {
+            api.getlevel(username).then((response) => {
+              setLevel(response.data.level);
+            })
+          }
         })
       }
     } catch (error) {

@@ -40,7 +40,7 @@ function ChairmanScoreCSB01() {
     const selected = projects.find((p) => p.projectName === value);
     setSelectedProject(selected);
     setProjectDetails(selected); 
-    setData([{ id: 1, name: 'คะแนนรวม', fullscores: '80', score: selected.Er_CSB03 || '' }]);
+    setData([{ id: 1, name: 'คะแนนรวม', fullscores: '80', score: selected || '' }]);
   };
 
   const handleScoreChange = (e) => {
