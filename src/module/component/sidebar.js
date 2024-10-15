@@ -101,7 +101,6 @@ const getMenuItemTeacher = (level) => {
         },
       ],
     },
-    
   ];
 
   const chairmanMenu = {
@@ -122,9 +121,9 @@ const getMenuItemTeacher = (level) => {
         label: "อนุมัติคะแนนสอบป้องกันโดยประธานกรรมการสอบ",
       },
     ],
-  }
-  if (level === "chairman"){
-    menuItemsTeacher.push(chairmanMenu)
+  };
+  if (level === "chairman") {
+    menuItemsTeacher.push(chairmanMenu);
   }
 
   const headMenu = {
@@ -145,19 +144,18 @@ const getMenuItemTeacher = (level) => {
         label: "อนุมัติคะแนนสอบป้องกันโดยหัวหน้าภาควิชา",
       },
     ],
+  };
+  if (level === "head") {
+    menuItemsTeacher.push(headMenu);
   }
-  if (level === "head"){
-    menuItemsTeacher.push(headMenu)
-  } 
 
-  if (level === "all"){
-    menuItemsTeacher.push(chairmanMenu)
-    menuItemsTeacher.push(headMenu)
+  if (level === "all") {
+    menuItemsTeacher.push(chairmanMenu);
+    menuItemsTeacher.push(headMenu);
   }
 
   return menuItemsTeacher;
-}
-
+};
 
 const menuItemsAdmin = [
   {
@@ -245,7 +243,20 @@ const SiderBar = ({ children, role, username, level, logout }) => {
         <span style={{ fontSize: "20px" }}>
           Special Project Examination Management System for CSB Program
         </span>
-        <span>{username ? <h1 onClick={()=> logout()}>{username}</h1> : <Link to={"/login"}>Log in</Link>}</span>
+        <span>
+          {username ? (
+            <h1
+              onClick={() => {
+                logout();
+                navigate("/login");
+              }}
+            >
+              {username}
+            </h1>
+          ) : (
+            <Link to={"/login"}>Log in</Link>
+          )}
+        </span>
       </Header>
 
       <Layout>

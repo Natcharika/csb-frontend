@@ -107,9 +107,9 @@ export default {
 
 
   getTeacher: (params) => service.get("/teachers", { params }),
-  assignTeacher: (projectName, t_id) => service.post("/assignteacher", {
+  assignTeacher: (projectName, _id) => service.post("/assignteacher", {
     ProjectName: projectName,
-    T_id: t_id
+    T_id: _id
   }),
 
   appointHeadOfDepartment: (t_id, t_name, t_super_role) => service.post("/appointHeadOfDepartment", {

@@ -14,7 +14,7 @@ export default function AddLecture() {
   const fetchData = async () => {
     const body = { projectValidate: [0, 0] };
     try {
-      const res = await api.getAllProject(body);
+      const res = await api.getProjects(body);
       setData(res.data.body);
       const filtered = res.data.body.filter(
         (project) => !project.Teacher || project.Teacher.length === 0
@@ -46,36 +46,39 @@ export default function AddLecture() {
     setIsModalVisible(true);
   };
 
-  // const handleModalOk = async (values) => {
-  //   console.log(values.Teacher);
-  //   try {
-  //     const lecturerData = { id: values.Teacher };
-
-  //     await api.updateProject(currentProject.id, {
-  //       ...values, 
-  //       lecturer: lecturerData, 
-  //     });
-
-  //     notification.success({ message: "Project updated successfully!" });
-  //     setIsModalVisible(false);
-  //     fetchData();
-  //   } catch (err) {
-  //     notification.error({ message: "Failed to update project." });
-  //   }
-  // };
 
   const handleModalCancel = () => {
     setIsModalVisible(false);
   };
 
   const handleSubmit = async (values) => {
-    console.log(values);
-    const data = await api.assignTeacher(values.projectName, [values.lecturer])
-    console.log(data);
+    const payload = {
+      projectId: currentProject._id, 
+      lecturer: values.lecturer,
+    };
     
-    setIsModalVisible(false);
-    
-  }
+    try {
+      const response = await api.assignTeacher(payload.projectId, [payload.lecturer]);
+      console.log(response);
+      
+      fetchData();
+  
+      notification.success({
+        message: "Success",
+        description: "Lecturer assigned successfully!",
+      });
+  
+      setIsModalVisible(false); 
+    } catch (err) {
+      console.error("Error assigning lecturer:", err);
+      notification.error({
+        message: "Error",
+        description: "There was an issue assigning the lecturer.",
+      });
+    }
+  };
+   
+  
 
   const components = {
     header: {
