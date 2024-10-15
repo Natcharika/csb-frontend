@@ -97,8 +97,8 @@ export default {
   departcsb02:( params) => service.post("/depart-csb02", { params }),
 
   getcsb04 : (data) => service.get("/csb04", { data }),
-  chaircsb04 :( params) => service.post("/score-csb04", { params }), 
-  departcsb02:( params) => service.post("/depart-csb02", { params }),
+  chaircsb04 :( params) => service.post("/chair-csb04", { params }), 
+  departcsb04:( params) => service.post("/depart-csb04", { params }),
 
   
 
@@ -115,10 +115,14 @@ export default {
 
 
   getTeacher: (params) => service.get("/teachers", { params }),
-  assignTeacher: (projectName, _id) => service.post("/assignteacher", {
-    ProjectName: projectName,
-    T_id: _id
-  }),
+  // assignTeacher: (params) => service.post("/assignteacher", {  params }),
+  // // In your api.js
+assignTeacher: (params) => {
+  return service.post('/assignteacher', {
+    params
+  });
+},
+
 
   appointHeadOfDepartment: (t_id, t_name, t_super_role) => service.post("/appointHeadOfDepartment", {
     T_id: t_id,

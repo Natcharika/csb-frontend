@@ -28,7 +28,6 @@ export default function AddLecture() {
   const fetchTeacher = async () => {
     try {
       const res = await api.getTeacher();
-      console.log(res.data.body); 
       setTeacher(res.data.body);
     } catch (err) {
       console.error(err);
@@ -41,11 +40,9 @@ export default function AddLecture() {
   }, []);
 
   const handleEdit = (record) => {
-    console.log(record);
     setCurrentProject(record);
     setIsModalVisible(true);
   };
-
 
   const handleModalCancel = () => {
     setIsModalVisible(false);
@@ -53,32 +50,22 @@ export default function AddLecture() {
 
   const handleSubmit = async (values) => {
     const payload = {
-      projectId: currentProject._id, 
-      lecturer: values.lecturer,
+        projectId: currentProject._id, // Ensure this is a valid ID
+        T_name: values.lecturer, // Ensure this is an array of T_id(s)
     };
-    
     try {
-      const response = await api.assignTeacher(payload.projectId, [payload.lecturer]);
-      console.log(response);
-      
-      fetchData();
-  
-      notification.success({
-        message: "Success",
-        description: "Lecturer assigned successfully!",
-      });
-  
-      setIsModalVisible(false); 
+        const response = await api.assignTeacher(payload);
+        // ... handle response
     } catch (err) {
-      console.error("Error assigning lecturer:", err);
-      notification.error({
-        message: "Error",
-        description: "There was an issue assigning the lecturer.",
-      });
+        console.error(err);
+        notification.error({
+            message: "Error",
+            description: err.response?.data.message || "There was an issue assigning the lecturer.",
+        });
     }
-  };
-   
-  
+};
+
+
 
   const components = {
     header: {
@@ -149,46 +136,43 @@ export default function AddLecture() {
       <Modal
         title="Edit Project"
         visible={isModalVisible}
-        footer={[
-        ]}
+        onCancel={handleModalCancel}
+        footer={null} // No footer needed, as we are handling actions in the form
       >
         <Form
           initialValues={{
             projectName: currentProject?.projectName,
-            lecturer: currentProject?.teacher ? currentProject.teacher.id : undefined,
+            lecturer: currentProject?.lecturer ? currentProject.lecturer[0]?.T_id : undefined,
           }}
           onFinish={handleSubmit}
-          
         >
           <Form.Item
             label="Project Name"
             name="projectName"
             rules={[{ required: true, message: "Please input the project name!" }]}
-            
           >
-             
-            <Input value={currentProject?.projectName} disabled /> 
-            {/* Show project name, not editable */}
+            <Input value={currentProject?.projectName} disabled />
           </Form.Item>
 
           <Form.Item
-            label="Lecturer"
-            name="lecturer"
-            rules={[{ required: true, message: "Please select a lecturer!" }]}
-          >
-            <Select >
-              {Teacher.map((teacher) => (
-                <Select.Option key={teacher.T_id} value={teacher.T_id}>
-                  {teacher.T_name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
+    label="Lecturer"
+    name="lecturer"
+    rules={[{ required: true, message: "Please select a lecturer!" }]}
+>
+    <Select>
+        {Teacher.map((teacher) => (
+            <Select.Option key={teacher.T_id} value={teacher.T_id}>
+                {teacher.T_name}
+            </Select.Option>
+        ))}
+    </Select>
+</Form.Item>
+
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-      <Button type="primary" htmlType="submit">
-        Submit
-      </Button>
-    </Form.Item>
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
+          </Form.Item>
         </Form>
       </Modal>
     </div>

@@ -8,9 +8,9 @@ function DepartmentHeadScoreCSB02() {
     const [projects, setProjects] = useState([]);
     const [csb02Data, setCsb02Data] = useState([]); // You might want to use this data later
     const [selectedProject, setSelectedProject] = useState(null);
-    const [projectDetails, setProjectDetails] = useState(null);
     const [data, setData] = useState([{ id: 1, name: 'คะแนนรวม', fullscores: '100', score: '' }]);
     const [confirmScore, setConfirmScore] = useState([]);
+    
     useEffect(() => {
         const fetchProjectsAndCSB02Data = async () => {
             try {

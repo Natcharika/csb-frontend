@@ -1,17 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Table,
-  Input,
-  Modal,
-  Typography,
-  Select,
-  Card,
-  InputNumber,
-  Form,
-  message,
-  notification,
-} from "antd";
+import {  Button,  Table,  Input,  Modal,  Typography,  Select,  Card,  InputNumber, Form, message,notification,} from "antd";
 import api from "../../../../utils/form/api";
 
 const { TextArea } = Input;

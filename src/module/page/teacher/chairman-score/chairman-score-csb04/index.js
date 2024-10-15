@@ -1,95 +1,126 @@
 import React, { useState, useEffect } from 'react';
 import { Select, Input, Button, Table, Form, Row, Col, notification } from 'antd';
+import api from '../../../../utils/form/api';
 
 function ChairmanScoreCSB04() {
   const [projects, setProjects] = useState([]);
+  const [csb04Data, setCsb04Data] = useState([]);
   const [approvedProjects, setApprovedProjects] = useState(new Set());
   const [selectedProject, setSelectedProject] = useState(null);
-  const [data, setData] = useState([{ id: 1, name: 'คะแนนรวม', fullscores: '80', score: '' }]);
-  const [projectDetails, setProjectDetails] = useState(null);
+  const [data, setData] = useState([{ id: 1, name: 'คะแนนรวม', fullscores: '100', score: '' }]);
+  const [logBookScore, setLogBookScore] = useState('');
+  const [exhibitionScore, setExhibitionScore] = useState('');
 
-  const mockProjects = [
-    { Er_Pname: 'Project A', Er_CSB03: '75', Er_CSB03_status: 'ไม่ผ่าน' },
-    { Er_Pname: 'Project B', Er_CSB03: '80', Er_CSB03_status: 'ไม่ผ่าน' },
-  ];
-
-  const mockProjectDetails = {
-    'Project A': { P_S1: 'Student 1A', P_S2: 'Student 2A', P_T: 'Advisor A' },
-    'Project B': { P_S1: 'Student 1B', P_S2: 'Student 2B', P_T: 'Advisor B' },
-  };
+  const SCORE_LIMIT = 80;
+  const EXHIBITION_LIMIT = 10;
+  const LOGBOOK_LIMIT = 10;
 
   useEffect(() => {
-    setProjects(mockProjects);
+    const fetchProjectsAndCSB04Data = async () => {
+      try {
+        const projectRes = await api.getProjects();
+        const csb04Res = await api.getcsb04();
+
+        setProjects(projectRes.data.body || []);
+        setCsb04Data(csb04Res.data.body || []);
+      } catch (error) {
+        handleNotification('Error fetching data', 'Unable to load project and CSB04 data.', 'error');
+      }
+    };
+
+    fetchProjectsAndCSB04Data();
   }, []);
 
+  const handleNotification = (message, description, type) => {
+    notification[type]({
+      message,
+      description,
+    });
+  };
+
   const handleProjectChange = (value) => {
-    const selected = projects.find((p) => p.Er_Pname === value);
-    setSelectedProject(selected);
-    setProjectDetails(mockProjectDetails[value]);
-    setData([{ id: 1, name: 'คะแนนรวม', fullscores: '80', score: selected.Er_CSB03 }]);
+    const selected = projects.find((p) => p.projectName === value);
+    const csb04Entry = csb04Data.find((c) => c.projectId === selected?._id);
+
+    setSelectedProject(selected || null);
+    setData([{ id: 1, name: 'คะแนนรวม', fullscores: '100', score: csb04Entry?.unconfirmScore || '' }]);
+    resetScores();
   };
 
   const handleScoreChange = (e) => {
-    const newScore = e.target.value;
-    const fullScore = Number(data[0].fullscores); // คะแนนเต็ม
+    const newScore = Number(e.target.value);
 
-    // ตรวจสอบว่าคะแนนที่กรอกไม่ติดลบและไม่เกินคะแนนเต็ม
-    if (newScore < 0 || newScore > fullScore) {
-      notification.error({
-        message: 'กรอกคะแนนผิดพลาด',
-        description: `คะแนนต้องอยู่ระหว่าง 0 และ ${fullScore}`,
-      });
+    if (newScore < 0 || newScore > SCORE_LIMIT) {
+      handleNotification('Invalid Score', `Score must be between 0 and ${SCORE_LIMIT}`, 'error');
     } else {
       setData((prevData) => prevData.map((item) => ({ ...item, score: newScore })));
     }
   };
 
+  const handleExhibitionScoreChange = (e) => {
+    const newScore = Number(e.target.value);
+
+    if (newScore < 0 || newScore > EXHIBITION_LIMIT) {
+      handleNotification('Invalid Score', `Exhibition score must be between 0 and ${EXHIBITION_LIMIT}`, 'error');
+    } else {
+      setExhibitionScore(newScore);
+    }
+  };
+
+  const handleLogBookScoreChange = (e) => {
+    const newScore = Number(e.target.value);
+
+    if (newScore < 0 || newScore > LOGBOOK_LIMIT) {
+      handleNotification('Invalid Score', `LogBook score must be between 0 and ${LOGBOOK_LIMIT}`, 'error');
+    } else {
+      setLogBookScore(newScore);
+    }
+  };
+
+  const resetScores = () => {
+    setLogBookScore('');
+    setExhibitionScore('');
+  };
+
   const resetForm = () => {
     setSelectedProject(null);
-    setProjectDetails(null);
-    setData([{ id: 1, name: 'คะแนนรวม', fullscores: '80', score: '' }]);
+    setData([{ id: 1, name: 'คะแนนรวม', fullscores: '100', score: '' }]);
+    resetScores();
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedProject) {
-      notification.error({
-        message: 'ผิดพลาด',
-        description: 'กรุณาเลือกชื่อโครงงานก่อน',
-      });
+      handleNotification('Error', 'Please select a project first.', 'error');
       return;
     }
 
-    const updatedData = data.find((item) => item.name === 'คะแนนรวม')?.score || '';
-    if (!updatedData) {
-      notification.error({
-        message: 'ผิดพลาด',
-        description: 'กรุณากรอกคะแนนให้ครบถ้วน',
-      });
+    const totalScore = Number(data[0].score || 0) + Number(logBookScore) + Number(exhibitionScore);
+    if (Number.isNaN(totalScore)) {
+      handleNotification('Error', 'Please enter valid scores.', 'error');
       return;
     }
 
-    notification.success({
-      message: 'อัปเดตข้อมูลสำเร็จ!',
-      description: `คะแนนที่ได้: ${updatedData}, โครงงาน: ${selectedProject.Er_Pname}`,
-    });
+    try {
+      const response = await api.chaircsb04({
+        projectId: selectedProject._id,
+        confirmScore: totalScore,
+        logBookScore,
+        exhibitionScore,
+      });
 
-    setApprovedProjects((prev) => new Set(prev).add(selectedProject.Er_Pname));
-
-    resetForm();
+      handleNotification('Success', `Project: ${selectedProject.projectName} | Total Score: ${totalScore}`, 'success');
+      setApprovedProjects((prev) => new Set(prev).add(selectedProject.projectName));
+      resetForm();
+    } catch (error) {
+      handleNotification('Error', 'Unable to approve the project. Please try again.', 'error');
+    }
   };
-
-  const handleCancel = () => {
-    resetForm();
-  };
-
-  const filteredProjects = projects.filter((project) => !approvedProjects.has(project.Er_Pname));
 
   const columns = [
     {
       title: 'คะแนนเต็ม',
       dataIndex: 'fullscores',
       key: 'fullscores',
-      render: (text) => <span>{text}</span>,
     },
     {
       title: 'คะแนนได้',
@@ -99,7 +130,7 @@ function ChairmanScoreCSB04() {
         <Input
           value={record.score}
           onChange={handleScoreChange}
-          type="number" // กำหนดให้กรอกเฉพาะตัวเลข
+          type="number"
           style={{ width: '80px', border: '1px solid #d9d9d9', borderRadius: '4px' }}
         />
       ),
@@ -109,73 +140,77 @@ function ChairmanScoreCSB04() {
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <div style={{ width: '60%', textAlign: 'center' }}>
-        <h1 style={{ textAlign: 'center' }}>แบบประเมินโครงงานพิเศษ 1 (สอบก้าวหน้า)</h1>
-
+        <h1>แบบประเมินโครงงานพิเศษ 1 (สอบก้าวหน้า)</h1>
         <Form layout="vertical">
           <Row gutter={16}>
             <Col span={24}>
-              <Form.Item>
-                <h3>เลือกชื่อโครงงาน</h3>
+              <Form.Item label="เลือกชื่อโครงงาน">
                 <Select
-                  value={selectedProject?.Er_Pname}
+                  value={selectedProject?.projectName}
                   onChange={handleProjectChange}
                   placeholder="เลือกโครงงาน"
                 >
-                  {filteredProjects.map((project) => (
-                    <Select.Option key={project.Er_Pname} value={project.Er_Pname}>
-                      {project.Er_Pname}
-                    </Select.Option>
-                  ))}
+                  {projects
+                    .filter((project) => !approvedProjects.has(project.projectName))
+                    .map((project) => (
+                      <Select.Option key={project._id} value={project.projectName}>
+                        {project.projectName}
+                      </Select.Option>
+                    ))}
                 </Select>
               </Form.Item>
             </Col>
           </Row>
 
-          {projectDetails && (
+          {selectedProject && (
             <>
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item label="ชื่อ-สกุลนักศึกษาคนที่ 1">
-                    <Input value={projectDetails.P_S1} disabled style={{ width: '100%', borderRadius: '4px' }} />
+                    <Input
+                      value={`${selectedProject.student[0]?.FirstName || ''} ${selectedProject.student[0]?.LastName || ''}`}
+                      disabled
+                    />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
                   <Form.Item label="ชื่อ-สกุลนักศึกษาคนที่ 2">
-                    <Input value={projectDetails.P_S2} disabled style={{ width: '100%', borderRadius: '4px' }} />
+                    <Input
+                      value={`${selectedProject.student[1]?.FirstName || ''} ${selectedProject.student[1]?.LastName || ''}`}
+                      disabled
+                    />
                   </Form.Item>
                 </Col>
               </Row>
               <Row gutter={16}>
                 <Col span={24}>
                   <Form.Item label="ชื่ออาจารย์ที่ปรึกษา">
-                    <Input value={projectDetails.P_T} disabled style={{ width: '100%', borderRadius: '4px' }} />
+                    <Input value={selectedProject.lecturer[0]?.T_name || ''} disabled />
                   </Form.Item>
                 </Col>
               </Row>
-
-              <h2>ตารางคะแนนสำหรับประธานกรรมการสอบ</h2>
-              <Table
-                dataSource={data}
-                columns={columns}
-                pagination={false}
-                rowKey="id"
-                bordered
-                style={{ marginTop: '16px' }}
-              />
-
-              <Row gutter={16} style={{ marginTop: '16px', justifyContent: 'center' }}>
-                <Col>
-                  <Button type="primary" onClick={handleSubmit}>
-                    อนุมัติคะแนน
-                  </Button>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item label="คะแนน logBook">
+                    <Input value={logBookScore} onChange={handleLogBookScoreChange} type="number" />
+                  </Form.Item>
                 </Col>
-                <Col>
-                  <Button color="danger" onClick={handleCancel} variant="outlined">
-                    ยกเลิก
-                  </Button>
+                <Col span={12}>
+                  <Form.Item label="คะแนน exhibition">
+                    <Input value={exhibitionScore} onChange={handleExhibitionScoreChange} type="number" />
+                  </Form.Item>
                 </Col>
               </Row>
-
+              <h2>ตารางคะแนนสำหรับประธานกรรมการสอบ</h2>
+              <Table dataSource={data} columns={columns} pagination={false} rowKey="id" bordered />
+              <Row gutter={16} style={{ marginTop: '16px', justifyContent: 'center' }}>
+                <Col>
+                  <Button type="primary" onClick={handleSubmit}>อนุมัติคะแนน</Button>
+                </Col>
+                <Col>
+                  <Button onClick={resetForm}>ยกเลิก</Button>
+                </Col>
+              </Row>
             </>
           )}
         </Form>
