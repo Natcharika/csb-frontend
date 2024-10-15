@@ -16,6 +16,13 @@ function InputScoreCSB02() {
     const [evaluatedRows, setEvaluatedRows] = useState({});
     const [successfulEvaluations, setSuccessfulEvaluations] = useState(new Set());
     const [loading, setLoading] = useState(true); // State for loading status
+    const [data, setData] = useState({
+        projectId: "",
+        projectName: "",
+        student: [],
+        lecturer: [],
+      });
+      const [unconfirmScore, setunconfirmScore] = useState([]);
 
     // Criteria data
     const criteriaData = [
@@ -29,20 +36,33 @@ function InputScoreCSB02() {
 
     useEffect(() => {
         const fetchProjectsAndRooms = async () => {
+            setLoading(true);
             try {
-                const resProjects = await api.getAllProject(); // Fetch projects
-                console.log("Response from API (Projects):", resProjects.data.body);
-                if (resProjects.data.body.length > 0) {
-                    setProjects(resProjects.data.body); // Set the projects directly
+                const res = await api.getAllProject();
+                if (res.data.body.length > 0) {
+                    const projectData = res.data.body[0];
+                    console.log("Fetched Projects:", res.data.body); // Log the projects
+
+                    setData({
+                        projectId: projectData._id || "",
+                        projectName: projectData.projectName || "",
+                        student: projectData.student || [],
+                        lecturer: projectData.lecturer || [],
+                    });
                 }
 
-                const resRooms = await api.getRoomPage(); // Fetch rooms
-                console.log("Response from API (Rooms):", resRooms.data.body);
-                // Handle rooms data as necessary; you might want to set it in state if needed
-                // setRooms(resRooms.data.body); // Uncomment if you have a state for rooms
+                const resRooms = await api.getRoomPage();
+                const roomsData = resRooms.data.body;
+                const projects = roomsData.flatMap(room => room.projects.map(project => ({
+                    ...project,
+                    dateExam: room.dateExam,
+                    evaluationDate: room.dateExam,
+                    roomName: room.roomExam,
+                })));
 
+                setProjects(projects);
             } catch (err) {
-                console.log(err);
+                console.error(err);
                 notification.error({
                     message: 'Error Fetching Data',
                     description: 'Unable to fetch project or room data. Please try again later.',
@@ -56,8 +76,7 @@ function InputScoreCSB02() {
         fetchProjectsAndRooms();
     }, []);
 
-    // Get unique dates for evaluation
-    const availableDates = [...new Set(projects.map(project => project.dateExam))];
+    const availableDates = [...new Set(projects.map(project => project.dateExam))].filter(Boolean);
 
     const handleDateChange = (value) => {
         setSelectedDate(value);
@@ -66,12 +85,15 @@ function InputScoreCSB02() {
     };
 
     const handleLinkClick = (index) => {
-        setSelectedProject(filteredProjects[index]);
+        const project = filteredProjects[index];
+        setSelectedProject(project);
         setModalVisible(true);
     };
 
     const handleClose = () => {
         setModalVisible(false);
+        setComment("");
+        setScores({});
     };
 
     const handleScoreChange = (value, key) => {
@@ -88,23 +110,45 @@ function InputScoreCSB02() {
         setTotalScore(total);
     }, [scores]);
 
-    const onSubmit = () => {
+    const onSubmit = async () => {
         const result = {
-            totalScore,
-            comment,
+          projectId: selectedProject.projectId,
+          unconfirmScore: totalScore,
+          comment: comment,
+          referee: [], 
         };
         console.log("Result submitted: ", result);
-
+      
+        try {
+          const res = await api.scorecsb02(result); // Sending the result object
+          if (res.data.message === "CSB02 score updated successfully" || res.data.message === "CSB02 score saved successfully") {
+            message.success("บันทึกคะแนนสำเร็จ");
+            setSuccessfulEvaluations((prev) => new Set(prev).add(selectedProject.projectId));
+            setEvaluatedRows((prev) => ({ ...prev, [selectedProject.projectId]: 'evaluated' }));
+            console.log("555: ", result);
+          } else {
+            notification.error({
+              message: 'Error',
+              description: res.data.message,
+              placement: 'topRight',
+            });
+          }
+        } catch (err) {
+          console.error(err);
+          notification.error({
+            message: 'Error Submitting Score',
+            description: 'Unable to submit the score. Please try again later.',
+            placement: 'topRight',
+          });
+        }
+      
         setScores({});
         setComment("");
         setModalVisible(false);
-        message.success("บันทึกคะแนนสำเร็จ");
-
-        if (selectedProject) {
-            setSuccessfulEvaluations((prev) => new Set(prev).add(selectedProject.P_id));
-            setEvaluatedRows((prev) => ({ ...prev, [selectedProject.P_id]: 'evaluated' })); 
-        }
-    };
+      };
+      
+      
+      
 
     const handleDisableEvaluation = (projectId) => {
         setEvaluatedRows((prev) => ({ ...prev, [projectId]: 'notEvaluated' }));
@@ -149,7 +193,7 @@ function InputScoreCSB02() {
     const tableData = [...criteriaData, totalScoreRow];
 
     const hasEvaluatedProjects = () => {
-        return filteredProjects.some(project => evaluatedRows[project.P_id] === 'evaluated');
+        return filteredProjects.some(project => evaluatedRows[project.projectId] === 'evaluated');
     };
 
     const isScoreComplete = () => {
@@ -165,14 +209,14 @@ function InputScoreCSB02() {
                     style={{ width: '100%' }}
                     placeholder="เลือกวันที่"
                     onChange={handleDateChange}
-                    options={availableDates.map(date => ({ value: date, label: date }))}
+                    options={availableDates.map(dateExam => ({ value: dateExam, label: dateExam }))}
                 />
                 <div style={{ marginTop: 20 }} />
 
                 {selectedDate && filteredProjects.length > 0 ? (
                     <div>
                         <Button
-                            onClick={() => filteredProjects.forEach(project => handleDisableEvaluation(project.P_id))}
+                            onClick={() => filteredProjects.forEach(project => handleDisableEvaluation(project.projectId))}
                             style={{
                                 backgroundColor: hasEvaluatedProjects() ? 'gray' : 'red',
                                 borderColor: hasEvaluatedProjects() ? 'gray' : 'red',
@@ -188,8 +232,8 @@ function InputScoreCSB02() {
                             columns={[ 
                                 {
                                     title: 'ลำดับที่',
-                                    dataIndex: 'P_id',
-                                    key: 'P_id',
+                                    dataIndex: 'projectId',
+                                    key: 'projectId',
                                 },
                                 {
                                     title: 'ชื่อโครงงาน',
@@ -200,7 +244,7 @@ function InputScoreCSB02() {
                                     title: 'ประเมิน',
                                     key: 'evaluate',
                                     render: (_, record) => {
-                                        const evaluationStatus = evaluatedRows[record.P_id];
+                                        const evaluationStatus = evaluatedRows[record.projectId];
 
                                         if (evaluationStatus === 'evaluated') {
                                             return <span style={{ color: 'green' }}>ประเมินสำเร็จ</span>;
@@ -219,7 +263,7 @@ function InputScoreCSB02() {
                                                     ประเมิน
                                                 </Button>
                                                 <Button
-                                                    onClick={() => handleDisableEvaluation(record.P_id)}
+                                                    onClick={() => handleDisableEvaluation(record.projectId)}
                                                     style={{ marginLeft: 8, backgroundColor: 'red', borderColor: 'red', color: 'white' }}
                                                 >
                                                     ไม่ประเมิน
@@ -248,8 +292,13 @@ function InputScoreCSB02() {
                 >
                     <Card>
                         <p><strong>ชื่อโครงงาน : </strong> {selectedProject?.projectName}</p>
-                        <p><strong>นักศึกษาคนที่ 1 : </strong> {selectedProject?.P_S1}</p>
-                        <p><strong>นักศึกษาคนที่ 2 : </strong> {selectedProject?.P_S2}</p>
+                        {selectedProject?.student && selectedProject.student.length > 0 ? (
+                            selectedProject.student.map((s, index) => (
+                                <p key={s.studentId}><strong>นักศึกษา คนที่ {index + 1} : </strong> {s.FirstName} {s.LastName}</p>
+                            ))
+                        ) : (
+                            <p>ไม่มีข้อมูลนักศึกษา</p>
+                        )}
                         <p><strong>วันที่ประเมิน : </strong> {selectedProject?.evaluationDate}</p>
                     </Card>
                     <Table dataSource={tableData} columns={columns} pagination={false} />

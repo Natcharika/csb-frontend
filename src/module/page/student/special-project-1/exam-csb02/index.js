@@ -14,7 +14,6 @@ export default function ExamCSB02() {
   });
 
   const [loading, setLoading] = useState(true);
-  const [referees, setReferees] = useState([]);
 
   const handleAccept = async () => {
     try {

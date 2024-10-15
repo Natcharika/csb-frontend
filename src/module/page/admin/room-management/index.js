@@ -11,6 +11,7 @@ import {
   Input,
   notification,
 } from "antd";
+import dayjs from 'dayjs';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -87,8 +88,7 @@ function RoomManagement() {
     const body = {
       roomExam: values.examRoom,
       nameExam: values.examName,
-      // Format dateExam to be in the 'YYYY-MM-DD' format without time
-      dateExam: values.examDate ? values.examDate.format("YYYY-MM-DD") : "",
+      dateExam: values.examDate ? values.examDate.format("YYYY-MM-DD") : "", // Ensuring the correct format
       teachers,
       projects,
     };
@@ -220,17 +220,23 @@ function RoomManagement() {
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item
-              label="วันที่สอบ (Exam Date)"
-              name="examDate"
-              rules={[{ required: true, message: "กรุณาเลือกวันที่สอบ" }]}
-            >
-              <DatePicker
-                format="YYYY-MM-DD"
-                placeholder="เลือกวันที่สอบ"
-                style={{ width: "100%" }}
-              />
-            </Form.Item>
+          <Form.Item
+  label="วันที่สอบ (Exam Date)"
+  name="examDate"
+  rules={[{ required: true, message: "กรุณาเลือกวันที่สอบ" }]}
+>
+  <DatePicker
+    format="YYYY-MM-DD"
+    placeholder="เลือกวันที่สอบ"
+    style={{ width: "100%" }}
+    picker="date"
+    onChange={(date) => {
+      form.setFieldsValue({ examDate: date });
+      checkFormValidity();
+    }}
+  />
+</Form.Item>
+
           </Col>
         </Row>
 
@@ -303,7 +309,7 @@ function RoomManagement() {
           </Row>
         ))}
 
-<Form.Item label="จำนวนโครงงาน">
+        <Form.Item label="จำนวนโครงงาน">
           <Input
             type="number"
             min={1}

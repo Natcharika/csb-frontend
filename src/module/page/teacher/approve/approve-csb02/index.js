@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Select, Input, Button, Form, Row, Col, message,notification } from 'antd';
+import { Select, Input, Button, Form, Row, Col, message, notification } from 'antd';
 import api from '../../../../utils/form/api';
 
 export default function ApproveCSB02() {
@@ -7,6 +7,7 @@ export default function ApproveCSB02() {
   const [approvedProjects, setApprovedProjects] = useState(new Set());
   const [selectedProject, setSelectedProject] = useState(null);
   const [projectDetails, setProjectDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [data, setData] = useState({
     projectId: "",
     projectName: "",
@@ -15,48 +16,38 @@ export default function ApproveCSB02() {
   });
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await api.getcsb02();
-        console.log(response.data.body);
-        setProjects(response.data.body);
-      } catch (error) {
-        message.error('ไม่สามารถดึงข้อมูลโครงงานได้ กรุณาลองใหม่อีกครั้ง');
-      }
-      
-    };
+    api.getAllProject()
+      .then((res) => {
+        if (res.data.body.length > 0) {
+          setProjects(res.data.body); // Update projects state here
 
-    fetchProjects();
+          const projectData = res.data.body[0];
+          setData({
+            projectId: projectData._id || "",
+            projectName: projectData.projectName || "",
+            student: projectData.student || [],
+            lecturer: projectData.lecturer || [],
+          });
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        notification.error({
+          message: 'Error Fetching Projects',
+          description: 'Unable to fetch project data. Please try again later.',
+          placement: 'topRight',
+        });
+        setLoading(false);
+      });
   }, []);
 
-  // useEffect(() => {
-  //   api.getAllProject()
-  //     .then((res) => {
-  //       if (res.data.body.length > 0) {
-  //         const projectData = res.data.body[0];
-  //         setData({
-  //           projectId: projectData._id || "",
-  //           projectName: projectData.projectName || "",
-  //           student: projectData.student || [],
-  //           lecturer: projectData.lecturer || [],
-  //         });
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //       notification.error({
-  //         message: 'Error Fetching Projects',
-  //         description: 'Unable to fetch project data. Please try again later.',
-  //         placement: 'topRight',
-  //       });
-  //     });
-  // }, []);
-
-
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   const handleProjectChange = (value) => {
     const selected = projects.find((p) => p.projectName === value);
-    console.log(selected);
     setSelectedProject(selected);
     setProjectDetails(selected);
   };
@@ -67,22 +58,24 @@ export default function ApproveCSB02() {
   };
 
   const handleApprove = async () => {
-    console.log(selectedProject._id)
     if (!selectedProject) {
       message.warning('กรุณาเลือกชื่อโครงงานก่อน');
-      console.log("hi")
       return;
     }
-    console.log(selectedProject)
+  
     try {
-      const {data} = await api.approveCSB02(selectedProject._id); 
-      console.log(data)
+      const response = await api.approveCSB02({
+        projectId: selectedProject.projectId,
+        activeStatus: 2,
+      });
+      
+      console.log(response.data);
       message.success(`อนุมัติโครงงาน ${selectedProject.projectName} สำเร็จ`);
       setApprovedProjects((prev) => new Set(prev).add(selectedProject.projectName));
       resetForm();
     } catch (error) {
-      // message.error('ไม่สามารถอนุมัติโครงงานได้ กรุณาลองใหม่อีกครั้ง');
-      console.log(error)
+      console.error(error);
+      message.error('ไม่สามารถอนุมัติโครงงานได้ กรุณาลองใหม่อีกครั้ง');
     }
   };
 
@@ -93,7 +86,7 @@ export default function ApproveCSB02() {
     }
 
     try {
-      await api.rejectCSB02(selectedProject.projectId); // Assuming selectedProject contains projectId
+      await api.rejectCSB02(selectedProject.projectId);
       message.warning(`ปฏิเสธการยื่นสอบป้องกันโครงงาน ${selectedProject.projectName}`);
       resetForm();
     } catch (error) {
@@ -136,35 +129,29 @@ export default function ApproveCSB02() {
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item label="ชื่อ-สกุลนักศึกษาคนที่ 1">
-                    <Input value={`${projectDetails.student[0].FirstName} ${projectDetails.student[0].LastName}`} disabled style={{ width: '100%' }} />
+                    <Input value={`${projectDetails.student[0]?.FirstName || ''} ${projectDetails.student[0]?.LastName || ''}`} disabled style={{ width: '100%' }} />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
                   <Form.Item label="ชื่อ-สกุลนักศึกษาคนที่ 2">
-                    <Input value={`${projectDetails.student[1].FirstName} ${projectDetails.student[1].LastName}`} disabled style={{ width: '100%' }} />
+                    <Input value={`${projectDetails.student[1]?.FirstName || ''} ${projectDetails.student[1]?.LastName || ''}`} disabled style={{ width: '100%' }} />
                   </Form.Item>
                 </Col>
               </Row>
               <Row gutter={16}>
                 <Col span={24}>
-                  {
-                    projectDetails.lecturer.map((lecturer, index) => (
-                      <Form.Item label={`ชื่ออาจารย์ที่ปรึกษา ${index + 1}`}>
-                        <Input value={`${lecturer.T_name}`} disabled style={{ width: '100%' }} />
-                      </Form.Item>
-                    ))
-                  }
-
-                  {/*<Form.Item label="ชื่ออาจารย์ที่ปรึกษา">
-                    <Input value={projectDetails.lecturer} disabled style={{ width: '100%' }} />
-                  </Form.Item>*/}
+                  {projectDetails.lecturer.map((lecturer, index) => (
+                    <Form.Item key={index} label={`ชื่ออาจารย์ที่ปรึกษา ${index + 1}`}>
+                      <Input value={`${lecturer.T_name}`} disabled style={{ width: '100%' }} />
+                    </Form.Item>
+                  ))}
                 </Col>
               </Row>
 
               <Row gutter={16} style={{ marginTop: '16px' }}>
                 <Col span={12} style={{ textAlign: 'right' }}>
                   <Button type="primary" onClick={handleApprove}>
-                    อนุมัติการยื่นสอบก้าวหน้าโครงงาน...................
+                    อนุมัติการยื่นสอบก้าวหน้าโครงงาน
                   </Button>
                 </Col>
                 <Col span={12}>
