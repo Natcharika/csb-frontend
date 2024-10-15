@@ -69,16 +69,16 @@ export default {
 
   studentactivecsb02: (params) => service.post("/student-csb02", { params }),
   approveCSB02 : ( params) => service.post("/approveCSB02", { params }), 
-  rejectCSB02 :  ( ProjectId) => service.post("/rejectCSB02", { projectId : ProjectId}),
+  rejectCSB02 :  ( params) => service.post("/rejectCSB02", {params}),
   scorecsb02:( params) => service.post("/score-csb02", { params }), 
 
-  studentactivecsb03: (ProjectId) => service.post("/student-csb03", { projectId : ProjectId }),
-  approveCSB03 : ( ProjectId) => service.post("/approveCSB03", { projectId : ProjectId}), 
-  rejectCSB03 :  ( ProjectId) => service.post("/rejectCSB03", { projectId : ProjectId}), 
+  studentactivecsb03: (params) => service.post("/student-csb03", { params }),
+  approveCSB03 : ( params ) => service.post("/approveCSB03", {params}), 
+  rejectCSB03 :  ( params) => service.post("/rejectCSB03", {params}), 
 
-  studentactivecsb04: (ProjectId) => service.post("/student-csb04", { projectId : ProjectId }),
-  approveCSB04 : ( ProjectId) => service.post("/approveCSB04", { projectId : ProjectId}), 
-  rejectCSB04 :  ( ProjectId) => service.post("/rejectCSB04", { projectId : ProjectId}), 
+  studentactivecsb04: (params) => service.post("/student-csb04", { params }),
+  approveCSB04 : ( params ) => service.post("/approveCSB04", {params}), 
+  rejectCSB04 :  ( params) => service.post("/rejectCSB04", {params}), 
 
 
 

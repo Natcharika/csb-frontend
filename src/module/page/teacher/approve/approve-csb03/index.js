@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Select, Input, Button, Form, Row, Col, message,notification } from 'antd';
+import { Select, Input, Button, Form, Row, Col, message, notification } from 'antd';
 import api from '../../../../utils/form/api';
 
 export default function ApproveCSB03() {
@@ -7,6 +7,7 @@ export default function ApproveCSB03() {
   const [approvedProjects, setApprovedProjects] = useState(new Set());
   const [selectedProject, setSelectedProject] = useState(null);
   const [projectDetails, setProjectDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [data, setData] = useState({
     projectId: "",
     projectName: "",
@@ -15,24 +16,11 @@ export default function ApproveCSB03() {
   });
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await api.createCSB03();
-        console.log(response.data.body);
-        setProjects(response.data.body);
-      } catch (error) {
-        message.error('ไม่สามารถดึงข้อมูลโครงงานได้ กรุณาลองใหม่อีกครั้ง');
-      }
-      
-    };
-
-    fetchProjects();
-  }, []);
-
-  useEffect(() => {
     api.getAllProject()
       .then((res) => {
         if (res.data.body.length > 0) {
+          setProjects(res.data.body); // Update projects state here
+
           const projectData = res.data.body[0];
           setData({
             projectId: projectData._id || "",
@@ -41,6 +29,7 @@ export default function ApproveCSB03() {
             lecturer: projectData.lecturer || [],
           });
         }
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
@@ -49,6 +38,7 @@ export default function ApproveCSB03() {
           description: 'Unable to fetch project data. Please try again later.',
           placement: 'topRight',
         });
+        setLoading(false);
       });
   }, []);
 
@@ -72,11 +62,17 @@ export default function ApproveCSB03() {
     }
 
     try {
-      await api.approveCSB03(selectedProject.projectId); // Assuming selectedProject contains projectId
+      const response = await api.approveCSB03({
+        projectId: selectedProject.projectId,
+        activeStatus: 2,
+      });
+
+      console.log(response.data);
       message.success(`อนุมัติโครงงาน ${selectedProject.projectName} สำเร็จ`);
       setApprovedProjects((prev) => new Set(prev).add(selectedProject.projectName));
       resetForm();
     } catch (error) {
+      console.error(error);
       message.error('ไม่สามารถอนุมัติโครงงานได้ กรุณาลองใหม่อีกครั้ง');
     }
   };
@@ -108,7 +104,7 @@ export default function ApproveCSB03() {
             <Col span={12}>
               <Form.Item style={{ textAlign: 'center' }}>
                 <h3>เลือกชื่อโครงงาน</h3>
-               
+
                 <Select
                   value={selectedProject?.projectName || ''}
                   placeholder="เลือกโครงงาน"
@@ -121,7 +117,7 @@ export default function ApproveCSB03() {
                     </Select.Option>
                   ))}
                 </Select>
-               
+
               </Form.Item>
             </Col>
           </Row>

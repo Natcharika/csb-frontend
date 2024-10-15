@@ -14,26 +14,13 @@ export default function ExamCSB04() {
   });
 
   const [loading, setLoading] = useState(true);
-  const [confirmScore, setConfirmScore] = useState(0);
-  const [unconfirmScore, setUnconfirmScore] = useState(0);
-  const [referees, setReferees] = useState([]);
-  const [logBookScore, setlogBookScore] = useState(0);
 
   const handleAccept = async () => {
     try {
-      const response = await api.createCSB04({ // Update the API call
+      const response = await api.studentactivecsb04({ // Update the API call
         projectId: data.projectId,
-        confirmScore: confirmScore,
-        unconfirmScore: unconfirmScore,
-        logBookScore: logBookScore,
-        csb04Status: {
-          activeStatus: 1, // Set activeStatus to 1
-          status: "waiting",
-          date: new Date(),
-        },
-        referee: referees,
+        activeStatus: 1,
       });
-      console.log(response.data.body);
       notification.success({
         message: 'Success',
         description: response.data.message,
