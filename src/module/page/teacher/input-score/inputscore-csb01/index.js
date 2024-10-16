@@ -1,5 +1,17 @@
 import React, { useState, useEffect } from "react";
-import {  Button,  Table,  Input,  Modal,  Typography,  Select,  Card,  InputNumber, Form, message,notification,} from "antd";
+import {
+  Button,
+  Table,
+  Input,
+  Modal,
+  Typography,
+  Select,
+  Card,
+  InputNumber,
+  Form,
+  message,
+  notification,
+} from "antd";
 import api from "../../../../utils/form/api";
 
 const { TextArea } = Input;
@@ -1002,12 +1014,35 @@ function InputScoreCSB01() {
 
   const availableDates = [
     ...new Set(projects.map((project) => project.dateExam)),
-  ].filter(Boolean);
+  ]
+    .filter(Boolean)
+    .map((date) =>
+      new Date(date).toLocaleDateString("th-TH", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+    );
 
   const handleDateChange = (value) => {
+    const originalDate = projects.find(
+      (project) =>
+        new Date(project.dateExam).toLocaleDateString("th-TH", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }) === value
+    )?.dateExam;
+
+    if (originalDate) {
+      const filtered = projects.filter(
+        (project) => project.dateExam === originalDate
+      );
+      setFilteredProjects(filtered);
+    } else {
+      setFilteredProjects([]);
+    }
     setSelectedDate(value);
-    const filtered = projects.filter((project) => project.dateExam === value);
-    setFilteredProjects(filtered);
   };
 
   const handleLinkClick = (index) => {
@@ -1180,9 +1215,9 @@ function InputScoreCSB01() {
           style={{ width: "100%" }}
           placeholder="เลือกวันที่"
           onChange={handleDateChange}
-          options={availableDates.map((dateExam) => ({
-            value: dateExam,
-            label: dateExam,
+          options={availableDates.map((formattedDate) => ({
+            value: formattedDate,
+            label: formattedDate,
           }))}
         />
         <div style={{ marginTop: 20 }} />
@@ -1210,8 +1245,8 @@ function InputScoreCSB01() {
               columns={[
                 {
                   title: "ลำดับที่",
-                  dataIndex: "projectId",
-                  key: "projectId",
+                  key: "index",
+                  render: (text, record, index) => index + 1,
                 },
                 {
                   title: "ชื่อโครงงาน",
@@ -1295,7 +1330,14 @@ function InputScoreCSB01() {
             </div>
             <p>
               <strong>วันที่ประเมิน : </strong>{" "}
-              {selectedProject?.evaluationDate}
+              {new Date(selectedProject?.evaluationDate).toLocaleDateString(
+                "th-TH",
+                {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                }
+              )}
             </p>
             <p>
               {data.lecturer.length > 0 ? (
