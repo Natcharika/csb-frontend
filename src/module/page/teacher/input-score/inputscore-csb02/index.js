@@ -34,6 +34,16 @@ function InputScoreCSB02() {
     student: [],
     lecturer: [],
   });
+  const [allDate, setAllDate] = useState([]);
+  const [dataProject, setDataProject] = useState([
+    {
+      dateExam: "",
+      projectId: "",
+      projectName: "",
+      _id: "",
+    }
+  ]);
+
 
   // Criteria data
   const criteriaData = [
@@ -117,26 +127,27 @@ function InputScoreCSB02() {
     );
 
     const handleDateChange = (value) => {
-      // Convert the selected date back to the original format (e.g., "YYYY-MM-DD")
-      const originalDate = projects.find(
-        (project) =>
-          new Date(project.dateExam).toLocaleDateString("th-TH", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          }) === value
-      )?.dateExam;
+      console.log("Selected Date:", value); // ตรวจสอบวันที่ที่เลือก
+
+      // const originalDate = projects.find(
+      //   (project) =>
+      //     new Date(project.dateExam).toLocaleDateString("th-TH", {
+      //       day: "2-digit",
+      //       month: "2-digit",
+      //       year: "numeric",
+      //     }) === value
+      // )?.dateExam;
     
-      if (originalDate) {
-        const filtered = projects
-          .filter((project) => project.dateExam === originalDate)
-          .filter((project) => !project.unconfirmScore);
+      // if (originalDate) {
+      //   const filtered = projects
+      //     .filter((project) => project.dateExam === originalDate)
+      //     .filter((project) => !project.unconfirmScore);
     
-        setFilteredProjects(filtered);
-      } else {
-        setFilteredProjects([]);
-      }
-      setSelectedDate(value);
+      //   setFilteredProjects(filtered);
+      // } else {
+      //   setFilteredProjects([]);
+      // }'
+      setFilteredProjects(dataProject.filter((project) => project.dateExam === value));
     };
     
 
@@ -276,6 +287,37 @@ function InputScoreCSB02() {
     );
   };
 
+  useEffect(() => {
+    api.getSumaryRoom().then((response) => {
+    const progressiveExams = response.data.body.filter(exam => exam.nameExam === "สอบก้าวหน้า");
+    setAllDate(progressiveExams.map((exam) => exam.dateExam));
+    const dataProjects = response.data.body.filter(exam => exam.nameExam === "สอบก้าวหน้า");
+      console.log("Data", dataProjects);
+    // setDataProject(dataProjects.map((exam) =>
+    // {
+    //   return exam.projects.map((project) =>
+    //   {
+    //     return {
+    //       dateExam: exam.dateExam,
+    //       projectId: project.projectId,
+    //       projectName: project.projectName,
+    //       _id: project._id,
+    //     }
+    //   })
+    // }));
+    setDataProject(dataProjects.map((exam) =>
+      {
+          return {
+            dateExam: exam.dateExam,
+            projectId: exam.projects[0].projectId,
+            projectName: exam.projects[0].projectName,
+            _id: exam.projects[0]._id,
+          }
+      }));
+  });
+  }, []);
+
+
   return (
     <div
       style={{
@@ -293,14 +335,23 @@ function InputScoreCSB02() {
           style={{ width: "100%" }}
           placeholder="เลือกวันที่"
           onChange={handleDateChange}
-          options={availableDates.map((formattedDate) => ({
-            value: formattedDate,
-            label: formattedDate,
+          // options={availableDates.map((formattedDate) => ({
+          //   value: formattedDate,
+          //   label: formattedDate,
+          // }))}
+          options = {allDate.map((date) => ({
+            value: date,
+            label: new Date(date).toLocaleDateString("th-TH", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            }),
           }))}
+          
         />
         <div style={{ marginTop: 20 }} />
 
-        {selectedDate && filteredProjects.length > 0 ? (
+        {dataProject.length > 0 ? (
           <div>
             <Button
               onClick={() =>
@@ -355,6 +406,7 @@ function InputScoreCSB02() {
                         <Button
                           onClick={() =>
                             handleLinkClick(filteredProjects.indexOf(record))
+                            
                           }
                           type="primary"
                         >
