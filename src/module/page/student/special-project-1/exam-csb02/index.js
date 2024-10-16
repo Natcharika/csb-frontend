@@ -2,18 +2,23 @@ import React, { useState, useEffect } from "react";
 import { Typography, Button, Row, Col, notification, Input } from "antd"; // Import Input from Ant Design
 import cis from '../../../../public/image/cis.png';
 import api from '../../../../utils/form/api';
+import loadingGif from "../../../../public/image/giphy (1).gif"
+
 
 const { Title, Paragraph } = Typography;
 
 export default function ExamCSB02() {
+
   const [data, setData] = useState({
     projectId: "",
     projectName: "",
     student: [],
     lecturer: [],
   });
-
+  const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(true);
+  const [project, setProject] = useState(null); // Store the entire project object
+
 
   const handleAccept = async () => {
     try {
@@ -37,11 +42,34 @@ export default function ExamCSB02() {
   };
 
   useEffect(() => {
-    api.getAllProject()
-      .then((res) => {
+    const token = localStorage.getItem("jwtToken");
+
+    if (token) {
+      const payload = token.split('.')[1];
+      const decodedPayload = JSON.parse(atob(payload));
+
+      if (decodedPayload.username) {
+        const trimmedUsername = decodedPayload.username.slice(1);
+        setUsername(trimmedUsername);
+      }
+    }
+
+    const fetchProjectData = async () => {
+      try {
+        const res = await api.getAllProject();
         if (res.data.body.length > 0) {
           const projectData = res.data.body[0];
 
+          if (Array.isArray(res.data.body)) {
+            const filteredProjects = res.data.body.filter((project) =>
+              project.student.some((student) => student.studentId === username)
+            );
+
+            setProject(filteredProjects);
+            console.log("Filtered projects:", filteredProjects);
+          } else {
+            console.error("Data body is not an array:", res.data.body);
+          }
           setData({
             projectId: projectData._id || "",
             projectName: projectData.projectName || "",
@@ -50,8 +78,7 @@ export default function ExamCSB02() {
           });
         }
         setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.log(err);
         notification.error({
           message: 'Error Fetching Projects',
@@ -59,11 +86,19 @@ export default function ExamCSB02() {
           placement: 'topRight',
         });
         setLoading(false);
-      });
-  }, []);
+      }
+    };
+
+    if (username) {
+      fetchProjectData();
+    }
+  }, [username]);
+
+  const isCSB01Passed = project[0]?.status?.CSB01?.status;
+  console.log("isCSB01Passed", isCSB01Passed);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>ยังไม่มีโครงงานในระบบ กรุณายื่นสอบหัวข้อให้ผ่านก่อนนะจ้า</div>;
   }
 
   return (
@@ -76,8 +111,11 @@ export default function ExamCSB02() {
           คณะวิทยาศาสตร์ประยุกต์ มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ
         </Paragraph>
       </Typography>
+      {isCSB01Passed ? (
 
-      <div><br />
+
+<>
+<div><br />
         <Paragraph style={{ fontSize: "18px" }}>โครงงาน</Paragraph>
         <Paragraph style={{ fontSize: "16px", color: "#555" }}>{data.projectName}</Paragraph>
       </div>
@@ -112,6 +150,15 @@ export default function ExamCSB02() {
         </Col>
       </Row>
 
+</>
+      ): (
+        <>
+        <Paragraph>ไม่สามารถดำเนินการได้ เนื่องจากสถานะ CSB01 ไม่ผ่าน หรือแกยังไม่ยื่นอะป่าว ?</Paragraph>
+        <img src={loadingGif} alt="Loading..." style={{ width: "100%" }} />
+        </>
+        
+      )}
+      
       <div style={{ display: "flex", justifyContent: "center", marginTop: 40 }}>
         <Row gutter={16}>
           <Col>

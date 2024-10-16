@@ -53,7 +53,7 @@ export default function ProviderSp1() {
     formData.append("std", username);
 
     try {
-      const response = await fetch("http://localhost:8788/files", {
+      const response = await fetch(`http://localhost:8788/files?st_id=${username}`, {
         method: "POST",
         body: formData,
       });

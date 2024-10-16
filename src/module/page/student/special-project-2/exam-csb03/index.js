@@ -14,6 +14,8 @@ export default function ExamCSB03() {
   });
 
   const [loading, setLoading] = useState(true);
+  const [username, setUsername] = useState("");
+
 
   const handleAccept = async () => {
     try {
@@ -37,12 +39,16 @@ export default function ExamCSB03() {
   };
 
   useEffect(() => {
+    if (username) {
     api.getAllProject()
       .then((res) => {
         console.log(res.data.body);
         if (res.data.body.length > 0) {
           const projectData = res.data.body[0];
           console.log(projectData);
+
+          const isAuthorizedUser = projectData.student.some(student => student.studentId === username) ||
+          projectData.lecturer.some(lecturer => lecturer.T_name === username);
 
           setData({
             projectId: projectData._id || "",
@@ -62,10 +68,11 @@ export default function ExamCSB03() {
         });
         setLoading(false);
       });
+    }
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>ไปทำเจคให้เสร็จก่อนค่อยยื่นทดสอบ.....</div>;
   }
 
   return (
