@@ -17,16 +17,6 @@ import api from "../../../../utils/form/api";
 const { TextArea } = Input;
 
 function InputScoreCSB04() {
-  const criteriaData = [
-    { key: "1", criteria: "การออกแบบหรือแนวคิด", maxScore: 10 },
-    { key: "2", criteria: "วิธีการ/การดำเนินงาน", maxScore: 20 },
-    { key: "3", criteria: "ความสมบูรณ์ของผลงาน", maxScore: 20 },
-    { key: "4", criteria: "เนื้อหาและรูปแบบของปริญญานิพนธ์", maxScore: 10 },
-    { key: "5", criteria: "การนำเสนอโครงงาน", maxScore: 10 },
-    { key: "6", criteria: "การนำผลงานไปใช้ประโยชน์", maxScore: 5 },
-    { key: "7", criteria: "สรุป/วิจารณ์/การพัฒนาต่อในอนาคต", maxScore: 5 },
-  ];
-
   const [scores, setScores] = useState({});
   const [totalScore, setTotalScore] = useState(0);
   const [comment, setComment] = useState("");
@@ -37,6 +27,7 @@ function InputScoreCSB04() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [evaluatedRows, setEvaluatedRows] = useState({});
   const [successfulEvaluations, setSuccessfulEvaluations] = useState(new Set());
+  const [loading, setLoading] = useState(true); // State for loading status
   const [data, setData] = useState({
     projectId: "",
     projectName: "",
@@ -44,24 +35,34 @@ function InputScoreCSB04() {
     lecturer: [],
   });
 
+  // Criteria data
+  const criteriaData = [
+    { key: "1", criteria: "วัตถุประสงค์และขอบเขตโครงงาน", maxScore: 10 },
+    {
+      key: "2",
+      criteria:
+        "ความเข้าใจระบบงานเดิม/ทฤษฎีหรืองานวิจัย ที่นำมาใช้พัฒนาโครงงาน",
+      maxScore: 20,
+    },
+    {
+      key: "3",
+      criteria: "การศึกษาความต้องการของระบบ และการออกแบบ",
+      maxScore: 20,
+    },
+    { key: "4", criteria: "การนำเสนอโครงงาน", maxScore: 20 },
+    { key: "5", criteria: "รูปแบบรายงาน", maxScore: 10 },
+    { key: "6", criteria: "แนวทางการดำเนินงาน", maxScore: 10 },
+  ];
+
   useEffect(() => {
     const fetchProjectsAndRooms = async () => {
+      setLoading(true);
       try {
-        const res = await api.getAllProject();
-        if (res.data.body.length > 0) {
-          const projectData = res.data.body[0];
-          console.log("Fetched Projects:", res.data.body); // Log the projects
-
-          setData({
-            projectId: projectData._id || "",
-            projectName: projectData.projectName || "",
-            student: projectData.student || [],
-            lecturer: projectData.lecturer || [],
-          });
-        }
-
+        // Fetching rooms data
         const resRooms = await api.getRoomPage();
         const roomsData = resRooms.data.body;
+
+        // Extracting projects from rooms data
         const projects = roomsData.flatMap((room) =>
           room.projects.map((project) => ({
             ...project,
@@ -71,7 +72,49 @@ function InputScoreCSB04() {
           }))
         );
 
-        setProjects(projects);
+        // Fetching csb04 data
+        const rescsb04 = await api.getcsb04();
+        const csb04Data = rescsb04.data.body;
+
+        // Filter out projects that have a numerical value in unconfirmScore in csb04Data
+        const filteredProjects = projects.filter(
+          (project) =>
+            !csb04Data.some(
+              (csb04) =>
+                csb04.projectId === project.projectId &&
+                typeof csb04.unconfirmScore === "number"
+            )
+        );
+
+        setProjects(filteredProjects);
+
+        // Fetching project details to get student and lecturer data based on projectId
+        if (filteredProjects.length > 0) {
+          const projectDetails = await api.getProjects(
+            filteredProjects[0].projectId
+          );
+          const projectData = projectDetails.data.body;
+          console.log("HI224", projectData);
+          console.log("HI248", projectData.student);
+
+          //projectData มีค่าเป็น array บอกตำแหน่งก่อนถึงขึ้น
+          //ตัวอย่าง
+          const selectedProject = projectData;
+          if (selectedProject) {
+            setData({
+              projectId: selectedProject._id || "",
+              projectName: selectedProject.projectName || "",
+              student: selectedProject.student || [],
+              lecturer: selectedProject.lecturer || [],
+            });
+          }
+          // setData({
+          //   projectId: projectData._id || "",
+          //   projectName: projectData.projectName || "",
+          //   student: projectData.student || [],
+          //   lecturer: projectData.lecturer || [],
+          // });
+        }
       } catch (err) {
         console.error(err);
         notification.error({
@@ -80,6 +123,8 @@ function InputScoreCSB04() {
             "Unable to fetch project or room data. Please try again later.",
           placement: "topRight",
         });
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -99,6 +144,7 @@ function InputScoreCSB04() {
     );
 
   const handleDateChange = (value) => {
+    // Convert the selected date back to the original format (e.g., "YYYY-MM-DD")
     const originalDate = projects.find(
       (project) =>
         new Date(project.dateExam).toLocaleDateString("th-TH", {
@@ -109,9 +155,10 @@ function InputScoreCSB04() {
     )?.dateExam;
 
     if (originalDate) {
-      const filtered = projects.filter(
-        (project) => project.dateExam === originalDate
-      );
+      const filtered = projects
+        .filter((project) => project.dateExam === originalDate)
+        .filter((project) => !project.unconfirmScore);
+
       setFilteredProjects(filtered);
     } else {
       setFilteredProjects([]);
@@ -139,12 +186,12 @@ function InputScoreCSB04() {
   };
 
   useEffect(() => {
-    const total = criteriaData.reduce(
-      (sum, item) => sum + (scores[item.key] || 0),
-      0
-    );
+    const total = criteriaData.reduce((sum, item) => {
+      return sum + (scores[item.key] || 0);
+    }, 0);
     setTotalScore(total);
   }, [scores]);
+
   const onSubmit = async () => {
     const result = {
       projectId: selectedProject.projectId,
@@ -195,8 +242,16 @@ function InputScoreCSB04() {
   };
 
   const columns = [
-    { title: "เกณฑ์พิจารณา", dataIndex: "criteria", key: "criteria" },
-    { title: "คะแนนเต็ม", dataIndex: "maxScore", key: "maxScore" },
+    {
+      title: "เกณฑ์พิจารณา",
+      dataIndex: "criteria",
+      key: "criteria",
+    },
+    {
+      title: "คะแนนเต็ม",
+      dataIndex: "maxScore",
+      key: "maxScore",
+    },
     {
       title: "คะแนนที่ได้",
       key: "score",
@@ -245,7 +300,7 @@ function InputScoreCSB04() {
     >
       <div style={{ width: "60%", textAlign: "center" }}>
         <Typography.Title level={2}>
-          ประเมินการโครงงานพิเศษ 2 (ปริญญานิพนธ์)
+          ประเมินการโครงงานพิเศษ 1 (สอบก้าวหน้า)
         </Typography.Title>
         <Typography.Text>เลือกวันที่ที่จะทำการประเมิน:</Typography.Text>
         <Select
@@ -296,6 +351,13 @@ function InputScoreCSB04() {
                   render: (_, record) => {
                     const evaluationStatus = evaluatedRows[record.projectId];
 
+                    // If the project already has an unconfirmScore, show 'ประเมินสำเร็จ' status
+                    if (record.unconfirmScore) {
+                      return (
+                        <span style={{ color: "green" }}>ประเมินสำเร็จ</span>
+                      );
+                    }
+
                     if (evaluationStatus === "evaluated") {
                       return (
                         <span style={{ color: "green" }}>ประเมินสำเร็จ</span>
@@ -341,7 +403,7 @@ function InputScoreCSB04() {
         ) : (
           <Typography.Text>
             {selectedDate
-              ? "ไม่พบโครงงานที่สามารถประเมินได้"
+              ? null
               : "กรุณาเลือกวันที่เพื่อแสดงโครงงานที่สามารถประเมินได้ !!"}
           </Typography.Text>
         )}
@@ -353,7 +415,7 @@ function InputScoreCSB04() {
           footer={null}
           width={1000}
         >
-          <Card title="ข้อมูลนักศึกษาและโครงงาน">
+          <Card>
             <p>
               <strong>ชื่อโครงงาน : </strong> {selectedProject?.projectName}
             </p>
@@ -388,34 +450,25 @@ function InputScoreCSB04() {
               )}
             </p>
           </Card>
-
-          <Card title="ฟอร์มกรอกคะแนน">
-            <Form onFinish={onSubmit}>
-              <Table
-                dataSource={tableData}
-                columns={columns}
-                pagination={false}
-                bordered
+          <Table dataSource={tableData} columns={columns} pagination={false} />
+          <Form layout="vertical" style={{ marginTop: 16 }}>
+            <Form.Item label="ความคิดเห็น">
+              <TextArea
+                rows={4}
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
               />
-              <Form.Item label="ความคิดเห็น" style={{ marginTop: 16 }}>
-                <TextArea
-                  rows={4}
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                />
-              </Form.Item>
-
-              <Form.Item style={{ textAlign: "center" }}>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  disabled={!isScoreComplete()}
-                >
-                  ส่งคะแนน
-                </Button>
-              </Form.Item>
-            </Form>
-          </Card>
+            </Form.Item>
+            <Form.Item>
+              <Button
+                type="primary"
+                onClick={onSubmit}
+                disabled={!isScoreComplete() || loading}
+              >
+                บันทึกคะแนน
+              </Button>
+            </Form.Item>
+          </Form>
         </Modal>
       </div>
     </div>

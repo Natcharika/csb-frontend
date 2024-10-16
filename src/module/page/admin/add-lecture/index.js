@@ -14,16 +14,17 @@ export default function AddLecture() {
   const fetchData = async () => {
     const body = { projectValidate: [0, 0] };
     try {
-      const res = await api.getProjects(body);
-      setData(res.data.body);
-      const filtered = res.data.body.filter(
-        (project) => !project.Teacher || project.Teacher.length === 0
-      );
-      setFilteredData(filtered);
+        const res = await api.getProjects(body);
+        // Filter projects where the lecturer field is not empty or has at least one lecturer assigned
+        const filtered = res.data.body.filter(
+            (project) => !project.lecturer || project.lecturer.length === 0
+        );
+        setData(filtered);
+        setFilteredData(filtered);
     } catch (err) {
-      console.error(err);
+        console.error(err);
     }
-  };
+};
 
   const fetchTeacher = async () => {
     try {
@@ -49,22 +50,48 @@ export default function AddLecture() {
   };
 
   const handleSubmit = async (values) => {
+    const currentAdvisors = currentProject.lecturer || [];
+    const selectedAdvisors = values.lecturer;
+
+    // Ensure the number of selected advisors is no more than 2
+    if (selectedAdvisors.length + currentAdvisors.length > 2) {
+        notification.error({
+            message: "Error",
+            description: "A maximum of 2 advisors can be assigned.",
+        });
+        return;
+    }
+
+    // Add the new advisors to the list
+    const updatedAdvisors = [
+        ...currentAdvisors,
+        ...selectedAdvisors.map((id) => ({
+            T_id: id,
+        })),
+    ];
+
     const payload = {
-        projectId: currentProject._id, // Ensure this is a valid ID
-        T_name: values.lecturer, // Ensure this is an array of T_id(s)
-    };
+      projectId: currentProject._id,
+      T_name: selectedAdvisors, // Make sure these are the actual T_ids of the selected teachers
+      lecturers: updatedAdvisors,
+  };
+
     try {
         const response = await api.assignTeacher(payload);
-        // ... handle response
+        notification.success({
+            message: "Success",
+            description: "Lecturer(s) have been assigned successfully.",
+        });
+        setIsModalVisible(false);
+        fetchData(); // Refresh the project list
     } catch (err) {
         console.error(err);
         notification.error({
             message: "Error",
-            description: err.response?.data.message || "There was an issue assigning the lecturer.",
+            description: err.response?.data.message || "There was an issue assigning the lecturer(s).",
         });
     }
 };
-
 
 
   const components = {
@@ -157,9 +184,21 @@ export default function AddLecture() {
           <Form.Item
     label="Lecturer"
     name="lecturer"
-    rules={[{ required: true, message: "Please select a lecturer!" }]}
+    rules={[{ required: true, message: "Please select at least one lecturer!" }]}
 >
-    <Select>
+    <Select
+        mode="multiple"
+        maxTagCount={2} // Limit the number of tags displayed
+        placeholder="Select up to 2 advisors"
+        onChange={(value) => {
+            if (value.length > 2) {
+                notification.warning({
+                    message: "Warning",
+                    description: "You can only select up to 2 advisors.",
+                });
+            }
+        }}
+    >
         {Teacher.map((teacher) => (
             <Select.Option key={teacher.T_id} value={teacher.T_id}>
                 {teacher.T_name}

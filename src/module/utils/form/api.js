@@ -100,9 +100,9 @@ export default {
   chaircsb04 :( params) => service.post("/chair-csb04", { params }), 
   departcsb04:( params) => service.post("/depart-csb04", { params }),
 
+  getfiles : (data) => service.get("/files", { data }),
+  anouncement: (data) => service.post("/anouncements", data),
   
-
-
 
   getLogin: (token) => service.get("/auth/login", { 
     headers: {
@@ -111,16 +111,14 @@ export default {
    }),
    getlevel : (username) => service.post("/auth/level", { username }),
 
-
-
-
   getTeacher: (params) => service.get("/teachers", { params }),
   // assignTeacher: (params) => service.post("/assignteacher", {  params }),
   // // In your api.js
-assignTeacher: (params) => {
+  assignTeacher: (params) => {
   return service.post('/assignteacher', {
     params
   });
+
 },
 
 

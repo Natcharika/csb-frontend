@@ -3,8 +3,8 @@ import { Select, Input, Button, Table, Form, Row, Col, notification } from 'antd
 import api from '../../../../utils/form/api';
 
 function ChairmanScoreCSB04() {
-  const [projects, setProjects] = useState([]);
-  const [csb04Data, setCsb04Data] = useState([]);
+  const [projects, setProjects] = useState([]); // State to hold project details
+  const [csb04Data, setCsb04Data] = useState([]); // State for CSB04 data
   const [approvedProjects, setApprovedProjects] = useState(new Set());
   const [selectedProject, setSelectedProject] = useState(null);
   const [data, setData] = useState([{ id: 1, name: 'คะแนนรวม', fullscores: '100', score: '' }]);
@@ -16,19 +16,22 @@ function ChairmanScoreCSB04() {
   const LOGBOOK_LIMIT = 10;
 
   useEffect(() => {
-    const fetchProjectsAndCSB04Data = async () => {
+    const fetchData = async () => {
       try {
-        const projectRes = await api.getProjects();
         const csb04Res = await api.getcsb04();
-
-        setProjects(projectRes.data.body || []);
+        console.log("Fetched CSB04 Data:", csb04Res.data.body);
         setCsb04Data(csb04Res.data.body || []);
+
+        // Fetch project details based on project IDs from csb04Data
+        const projectIds = csb04Res.data.body.map(entry => entry.projectId);
+        const projectsRes = await api.getProjects({ ids: projectIds });
+        setProjects(projectsRes.data.body || []);
       } catch (error) {
-        handleNotification('Error fetching data', 'Unable to load project and CSB04 data.', 'error');
+        handleNotification('Error fetching data', 'Unable to load CSB04 data.', 'error');
       }
     };
 
-    fetchProjectsAndCSB04Data();
+    fetchData();
   }, []);
 
   const handleNotification = (message, description, type) => {
@@ -49,7 +52,6 @@ function ChairmanScoreCSB04() {
 
   const handleScoreChange = (e) => {
     const newScore = Number(e.target.value);
-
     if (newScore < 0 || newScore > SCORE_LIMIT) {
       handleNotification('Invalid Score', `Score must be between 0 and ${SCORE_LIMIT}`, 'error');
     } else {
@@ -59,7 +61,6 @@ function ChairmanScoreCSB04() {
 
   const handleExhibitionScoreChange = (e) => {
     const newScore = Number(e.target.value);
-
     if (newScore < 0 || newScore > EXHIBITION_LIMIT) {
       handleNotification('Invalid Score', `Exhibition score must be between 0 and ${EXHIBITION_LIMIT}`, 'error');
     } else {
@@ -69,7 +70,6 @@ function ChairmanScoreCSB04() {
 
   const handleLogBookScoreChange = (e) => {
     const newScore = Number(e.target.value);
-
     if (newScore < 0 || newScore > LOGBOOK_LIMIT) {
       handleNotification('Invalid Score', `LogBook score must be between 0 and ${LOGBOOK_LIMIT}`, 'error');
     } else {
@@ -88,6 +88,18 @@ function ChairmanScoreCSB04() {
     resetScores();
   };
 
+  const calculateGrade = (totalScore) => {
+    if (totalScore >= 0 && totalScore <= 54) return 'IP';
+    if (totalScore >= 55 && totalScore <= 59) return 'D';
+    if (totalScore >= 60 && totalScore <= 64) return 'D+';
+    if (totalScore >= 65 && totalScore <= 69) return 'C';
+    if (totalScore >= 70 && totalScore <= 74) return 'C+';
+    if (totalScore >= 75 && totalScore <= 79) return 'B';
+    if (totalScore >= 80 && totalScore <= 84) return 'B+';
+    if (totalScore >= 85 && totalScore <= 100) return 'A';
+    return 'Not Graded';
+  };
+
   const handleSubmit = async () => {
     if (!selectedProject) {
       handleNotification('Error', 'Please select a project first.', 'error');
@@ -100,21 +112,30 @@ function ChairmanScoreCSB04() {
       return;
     }
 
+    const grade = calculateGrade(totalScore); // Calculate the grade based on the total score
+
     try {
       const response = await api.chaircsb04({
         projectId: selectedProject._id,
         confirmScore: totalScore,
         logBookScore,
         exhibitionScore,
+        grade,
       });
 
-      handleNotification('Success', `Project: ${selectedProject.projectName} | Total Score: ${totalScore}`, 'success');
+      handleNotification('Success', `Project: ${selectedProject.projectName} | Total Score: ${totalScore} | Grade: ${grade}`, 'success');
       setApprovedProjects((prev) => new Set(prev).add(selectedProject.projectName));
       resetForm();
     } catch (error) {
       handleNotification('Error', 'Unable to approve the project. Please try again.', 'error');
     }
   };
+
+  // Filter projects to show only those with unconfirmScore and without confirmScore
+  const filteredProjects = projects.filter((project) => {
+    const csb04Entry = csb04Data.find((c) => c.projectId === project._id);
+    return !approvedProjects.has(project.projectName) && csb04Entry?.unconfirmScore && !csb04Entry?.confirmScore;
+  });
 
   const columns = [
     {
@@ -150,13 +171,11 @@ function ChairmanScoreCSB04() {
                   onChange={handleProjectChange}
                   placeholder="เลือกโครงงาน"
                 >
-                  {projects
-                    .filter((project) => !approvedProjects.has(project.projectName))
-                    .map((project) => (
-                      <Select.Option key={project._id} value={project.projectName}>
-                        {project.projectName}
-                      </Select.Option>
-                    ))}
+                  {filteredProjects.map((project) => (
+                    <Select.Option key={project._id} value={project.projectName}>
+                      {project.projectName}
+                    </Select.Option>
+                  ))}
                 </Select>
               </Form.Item>
             </Col>

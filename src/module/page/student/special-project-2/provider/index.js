@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Typography, Upload, Button, message, Modal } from "antd";
 import cis from "../../../../public/image/cis.png";
 import axios from "axios";
@@ -10,6 +10,21 @@ export default function ProviderSp2() {
   const [file, setFile] = useState(null); // State to hold the uploaded file
   const [previewVisible, setPreviewVisible] = useState(false); // State to control the preview modal
   const [fileUrl, setFileUrl] = useState(""); // State to hold the file URL for preview
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    const token = localStorage.getItem("jwtToken");
+
+    if (token) {
+      const payload = token.split('.')[1]; // ส่วน Payload
+      const decodedPayload = JSON.parse(atob(payload)); // ถอดรหัส Base64
+
+      // ตรวจสอบว่ามี username ใน Payload หรือไม่
+      if (decodedPayload.username) {
+        const trimmedUsername = decodedPayload.username.slice(1);
+        setUsername(trimmedUsername);      }
+    }
+  }, []);
 
   const handleUploadTranscript = (uploadedFile) => {
     setTranscriptFile(uploadedFile);
@@ -25,8 +40,7 @@ export default function ProviderSp2() {
 
     const formData = new FormData();
     formData.append("transcriptFile", transcriptFile);
-    formData.append("std", "6304062663040");
-    formData.append("stdName", "ทerdgjyhk");
+    formData.append("std", username);
 
     try {
       const response = await fetch("http://localhost:8788/files", {
@@ -40,7 +54,7 @@ export default function ProviderSp2() {
         message.error("การส่งไฟล์ล้มเหลว");
       }
 
-      await handleFileUpload(6304062663040);
+      await handleFileUpload(username);
     } catch (error) {
       console.error("Error uploading file:", error);
       message.error("เกิดข้อผิดพลาดในการอัปโหลดไฟล์");
@@ -67,7 +81,6 @@ export default function ProviderSp2() {
     <div style={{ margin: "auto", padding: 40, backgroundColor: "#fff", borderRadius: 10, maxWidth: 820 }}>
       <img src={cis} alt="logo" style={{ display: "block", margin: "0 auto", width: "150px" }} />
       <center><Title level={3}>ตรวจสอบคุณสมบัติยื่นโครงงานพิเศษ 1</Title></center>
-      
       <Title level={5}>เกณฑ์การประเมิน</Title>
       <Paragraph>
         1. นักศึกษาโครงการพิเศษสองภาษาต้องลงทะเบียนเรียนวิชา 040613142 Special Project II<br/>

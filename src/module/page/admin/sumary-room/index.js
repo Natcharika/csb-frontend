@@ -14,18 +14,24 @@ export default function SumaryRoom() {
       .getSumaryRoom()
       .then((res) => {
         const fetchedData = res.data.body;
-        setData(fetchedData);
-        setFilteredData(fetchedData);
+
+        // Sort the data by date in descending order
+        const sortedData = fetchedData.sort((a, b) => 
+          new Date(b.dateExam) - new Date(a.dateExam)
+        );
+
+        setData(sortedData);
+        setFilteredData(sortedData);
 
         const uniqueDates = [
           ...new Set(
-            fetchedData.map((item) =>
+            sortedData.map((item) =>
               moment(item.dateExam).format("YYYY-MM-DD")
             )
           ),
         ];
         setDates(uniqueDates);
-        console.log(res.data.body);
+        console.log(sortedData);
       })
       .catch((err) => {
         console.log(err);
@@ -39,7 +45,9 @@ export default function SumaryRoom() {
   const handleDateSelect = (date) => {
     setSelectedDate(date);
 
-    if (date) {
+    if (date === "all") {
+      setFilteredData(data); // Show all data when "All" is selected
+    } else if (date) {
       const filtered = data.filter((item) =>
         moment(item.dateExam).isSame(date, "day")
       );
@@ -96,7 +104,7 @@ export default function SumaryRoom() {
     },
     {
       title: "Teachers",
-      dataIndex: "teachers", // Updated from referees to teachers
+      dataIndex: "teachers",
       render: (teachers) => (
         <>
           {Array.isArray(teachers) ? (
@@ -114,7 +122,7 @@ export default function SumaryRoom() {
     },
     {
       title: "Teachers Role",
-      dataIndex: "teachers", // Updated from referees to teachers
+      dataIndex: "teachers",
       render: (teachers) => (
         <>
           {Array.isArray(teachers) ? (
@@ -133,11 +141,10 @@ export default function SumaryRoom() {
     {
       title: "Date",
       dataIndex: "dateExam",
-      render: (dateExam) => (dateExam ? new Date(dateExam).toLocaleDateString() : "No date available"),
+      render: (dateExam) => 
+        dateExam ? moment(dateExam).format("DD/MM/YYYY") : "No date available",
     },
   ];
-  
-  
 
   const onChange = (pagination, filters, sorter, extra) => {
     console.log("params", pagination, filters, sorter, extra);
@@ -155,6 +162,9 @@ export default function SumaryRoom() {
 
   const menu = (
     <Menu>
+      <Menu.Item key="all" onClick={() => handleDateSelect("all")}>
+        All
+      </Menu.Item>
       {dates.map((date, index) => (
         <Menu.Item key={index} onClick={() => handleDateSelect(date)}>
           {moment(date).format("DD/MM/YYYY")}

@@ -13,14 +13,7 @@ function ChairmanScoreCSB02() {
   useEffect(() => {
     const fetchProjectsAndCSB02Data = async () => {
       try {
-        const projectRes = await api.getProjects(); 
         const csb02Res = await api.getcsb02(); 
-
-        if (projectRes.data.body.length > 0) {
-          console.log("Fetched Projects:", projectRes.data.body);
-          setProjects(projectRes.data.body);
-        }
-
         if (csb02Res.data.body.length > 0) {
           console.log("Fetched CSB02 Data:", csb02Res.data.body);
           setCsb02Data(csb02Res.data.body);
@@ -43,7 +36,7 @@ function ChairmanScoreCSB02() {
 
     if (selected && csb02Entry) {
       setSelectedProject(selected);
-      setData([{ id: 1, name: 'คะแนนรวม', fullscores: '90', score: csb02Entry.unconfirmScore }]);
+      setData([{ id: 1, name: 'คะแนนรวม', fullscores: '90', score:' ' }]);
       setLogBookScore(''); // Reset logBookScore when project is changed
     } else {
       setSelectedProject(null);
@@ -68,7 +61,7 @@ function ChairmanScoreCSB02() {
   const handleLogBookScoreChange = (e) => {
     const newLogBookScore = e.target.value;
     // Validate logBookScore (should be between 0 and 100)
-    if (newLogBookScore < 0 || newLogBookScore > 10) {
+    if (newLogBookScore < 1 || newLogBookScore > 10) {
       notification.error({
         message: 'กรอกคะแนนผิดพลาด',
         description: 'logBookScore ต้องอยู่ระหว่าง 0 และ 10',
@@ -82,6 +75,18 @@ function ChairmanScoreCSB02() {
     setSelectedProject(null);
     setData([{ id: 1, name: 'คะแนนรวม', fullscores: '90', score: '' }]);
     setLogBookScore('');
+  };
+
+  const calculateGrade = (totalScore) => {
+    if (totalScore >= 0 && totalScore <= 54) return 'IP';
+    if (totalScore >= 55 && totalScore <= 59) return 'D';
+    if (totalScore >= 60 && totalScore <= 64) return 'D+';
+    if (totalScore >= 65 && totalScore <= 69) return 'C';
+    if (totalScore >= 70 && totalScore <= 74) return 'C+';
+    if (totalScore >= 75 && totalScore <= 79) return 'B';
+    if (totalScore >= 80 && totalScore <= 84) return 'B+';
+    if (totalScore >= 85 && totalScore <= 100) return 'A';
+    return 'Not Graded';
   };
 
   const handleSubmit = async () => {
@@ -102,6 +107,7 @@ function ChairmanScoreCSB02() {
       return;
     }
 
+    const grade = calculateGrade(totalConfirmScore);
     const unconfirmScore = Number(updatedData);
     const totalConfirmScore = unconfirmScore + Number(logBookScore); // Calculate confirmScore
 
@@ -110,6 +116,7 @@ function ChairmanScoreCSB02() {
         projectId: selectedProject._id, // Use _id for projectId
         confirmScore: totalConfirmScore,
         logBookScore: logBookScore,
+        grade,
       });
 
       console.log(response.data);
@@ -132,7 +139,12 @@ function ChairmanScoreCSB02() {
     resetForm();
   };
 
-  const filteredProjects = projects.filter((project) => !approvedProjects.has(project.projectName));
+  const filteredProjects = projects.filter((project) => {
+    const csb02Entry = csb02Data.find((c) => c.projectId === project._id);
+    // Exclude projects where logBookScore is already set
+    return !approvedProjects.has(project.projectName) && (!csb02Entry || !csb02Entry.logBookScore);
+  });
+  
 
   const columns = [
     {

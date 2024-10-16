@@ -3,42 +3,47 @@ import { Select, Input, Button, Table, Form, Row, Col, notification } from 'antd
 import api from '../../../../utils/form/api';
 
 function ChairmanScoreCSB01() {
-  const [projects, setProjects] = useState([]);
-  const [csb01Data, setCsb01Data] = useState([]);
+  const [projects, setProjects] = useState([]); // State to hold projects
+  const [csb01Data, setCsb01Data] = useState([]); // State for CSB01 data
   const [approvedProjects, setApprovedProjects] = useState(new Set());
   const [selectedProject, setSelectedProject] = useState(null);
   const [data, setData] = useState([{ id: 1, name: 'คะแนนรวม', fullscores: '33', score: '' }]);
 
   useEffect(() => {
-    const fetchProjectsAndCSB01Data = async () => {
+    const fetchData = async () => {
       try {
-        const projectRes = await api.getProjects(); 
         const csb01Res = await api.getcsb01(); 
-
-        if (projectRes.data.body.length > 0) {
-          console.log("Fetched Projects:", projectRes.data.body);
-          setProjects(projectRes.data.body);
-        }
-
         if (csb01Res.data.body.length > 0) {
           console.log("Fetched CSB01 Data:", csb01Res.data.body);
           setCsb01Data(csb01Res.data.body);
+
+          const projectIds = csb01Res.data.body.map(entry => entry.projectId);
+          const projectsRes = await api.getProjects({ ids: projectIds }); 
+
+          const projectsWithDetails = projectsRes.data.body.map(project => ({
+            _id: project._id,
+            projectName: project.projectName,
+            student: project.student,
+            lecturer: project.lecturer,
+          }));
+
+          setProjects(projectsWithDetails);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
         notification.error({
           message: 'Error fetching data',
-          description: 'Unable to load project and CSB01 data.',
+          description: 'Unable to load CSB01 data and project details.',
         });
       }
     };
 
-    fetchProjectsAndCSB01Data();
+    fetchData();
   }, []);
 
   const handleProjectChange = (value) => {
     const selected = projects.find((p) => p.projectName === value);
-    const csb01Entry = csb01Data.find((c) => c.projectId === selected._id);
+    const csb01Entry = csb01Data.find((c) => c.projectId === selected?._id);
 
     if (selected && csb01Entry) {
       setSelectedProject(selected);
@@ -86,11 +91,11 @@ function ChairmanScoreCSB01() {
     }
 
     const unconfirmScore = Number(updatedData);
-    const totalConfirmScore = unconfirmScore ; 
+    const totalConfirmScore = unconfirmScore; 
 
     try {
       const response = await api.chaircsb01({
-        projectId: selectedProject._id, // Use _id for projectId
+        projectId: selectedProject._id,
         confirmScore: totalConfirmScore,
       });
 
@@ -114,7 +119,16 @@ function ChairmanScoreCSB01() {
     resetForm();
   };
 
-  const filteredProjects = projects.filter((project) => !approvedProjects.has(project.projectName));
+  // Filter projects to include only those without a confirmScore
+  const filteredProjects = projects.filter((project) => {
+    const csb01Entry = csb01Data.find((c) => c.projectId === project._id);
+    return (
+      !approvedProjects.has(project.projectName) &&
+      csb01Entry && // Ensure there is a CSB01 entry
+      csb01Entry.unconfirmScore && // Check that unconfirmScore exists
+      !csb01Entry.confirmScore // Ensure confirmScore does not exist
+    );
+  });
 
   const columns = [
     {
@@ -168,12 +182,12 @@ function ChairmanScoreCSB01() {
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item label="ชื่อ-สกุลนักศึกษาคนที่ 1">
-                    <Input value={selectedProject.student[0]?.FirstName + ' ' + selectedProject.student[0]?.LastName} disabled style={{ width: '100%', borderRadius: '4px' }} />
+                    <Input value={`${selectedProject.student[0]?.FirstName} ${selectedProject.student[0]?.LastName}`} disabled style={{ width: '100%', borderRadius: '4px' }} />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
                   <Form.Item label="ชื่อ-สกุลนักศึกษาคนที่ 2">
-                    <Input value={selectedProject.student[1]?.FirstName + ' ' + selectedProject.student[1]?.LastName} disabled style={{ width: '100%', borderRadius: '4px' }} />
+                    <Input value={`${selectedProject.student[1]?.FirstName} ${selectedProject.student[1]?.LastName}`} disabled style={{ width: '100%', borderRadius: '4px' }} />
                   </Form.Item>
                 </Col>
               </Row>
@@ -215,4 +229,4 @@ function ChairmanScoreCSB01() {
   );
 }
 
-export default ChairmanScoreCSB01;  
+export default ChairmanScoreCSB01;

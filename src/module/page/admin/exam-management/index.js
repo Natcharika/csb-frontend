@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Typography, Switch, Modal, Row, Col } from 'antd';
+import { Card, Button, Typography, Switch, Modal, Row, Col,notification } from 'antd';
+import api from '../../../utils/form/api';
 
 const ManageExam = () => {
     const [open1, setOpen1] = useState(false);
@@ -8,6 +9,9 @@ const ManageExam = () => {
     const [open4, setOpen4] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogMessage, setDialogMessage] = useState('');
+    const [anouncement, setAnouncement] = useState('');
+
+    
 
     useEffect(() => {
         const savedOpen1 = localStorage.getItem('open1') === 'true';
@@ -28,41 +32,51 @@ const ManageExam = () => {
         localStorage.setItem('open4', open4);
     }, [open1, open2, open3, open4]);
 
-    const handleConfirm = async () => {
-        const examData = {
-            Exam_o_CSB01: open1 ? 'เปิด' : 'ปิด',
-            Exam_o_CSB02: open2 ? 'เปิด' : 'ปิด',
-            Exam_o_CSB03: open3 ? 'เปิด' : 'ปิด',
-            Exam_o_CSB04: open4 ? 'เปิด' : 'ปิด',
-        };
-
-        try {
-            const response = await fetch('http://localhost:8788/Exam', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(examData),
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+    
+    useEffect(() => {
+        const fetchanouncement = async () => {
+            try {
+                const anouncement = await api.anouncement(); 
+                if (anouncement.data && anouncement.data.body && anouncement.data.body.length > 0) {
+                    console.log("Fetched anouncement Data:", anouncement.data.body);
+                    setAnouncement(anouncement.data.body);
+                } else {
+                    // Handle the case where body is empty or undefined
+                    console.log("No announcement data found.");
+                    setAnouncement([]); // Set to empty array or handle as needed
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                notification.error({
+                    message: 'Error fetching data',
+                    description: 'Unable to load project and CSB02 data.',
+                });
             }
+        };
+    
+        fetchanouncement();
+    }, []);
+    
 
-            let message = "";
-            message += `การสอบหัวข้อ: ${examData.Exam_o_CSB01}\n`;
-            message += `การสอบก้าวหน้า: ${examData.Exam_o_CSB02}\n`;
-            message += `การสอบป้องกัน: ${examData.Exam_o_CSB03}\n`;
-            message += `การทดสอบโครงงาน: ${examData.Exam_o_CSB04}`;
-
-            setDialogMessage(message);
-            setDialogOpen(true);
-        } catch (error) {
-            console.error('There was a problem with the fetch operation:', error);
-            setDialogMessage('An error occurred while updating the exam status.');
-            setDialogOpen(true);
-        }
+  const handleConfirm = async () => {
+    const examData = {
+        Exam_o_CSB01: open1 ? 'เปิด' : 'ปิด',
+        Exam_o_CSB02: open2 ? 'เปิด' : 'ปิด',
+        Exam_o_CSB03: open3 ? 'เปิด' : 'ปิด',
+        Exam_o_CSB04: open4 ? 'เปิด' : 'ปิด',
     };
+
+    try {
+        const response = await api.anouncement(examData); // Use the POST method
+        setDialogMessage(response.data.message); // Set success message
+        setDialogOpen(true); // Open the dialog
+    } catch (error) {
+        console.error('Error updating exam status:', error);
+        setDialogMessage('Failed to update exam status.'); // Set error message
+        setDialogOpen(true); // Open the dialog
+    }
+};
+
 
     const handleCloseDialog = () => {
         setDialogOpen(false);
