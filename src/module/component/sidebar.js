@@ -126,32 +126,32 @@ const getMenuItemTeacher = (level) => {
     menuItemsTeacher.push(chairmanMenu);
   }
 
-  const headMenu = {
-    key: "/department-score",
-    // icon: React.createElement(FormOutlined),
-    label: "อนุมัติคะแนนสอบ(หัวหน้าภาควิชา)",
-    children: [
-      {
-        key: "/department-score/department-score-csb01",
-        label: "อนุมัติคะแนนสอบหัวข้อหน้าโดยหัวหน้าภาควิชา",
-      },
-      {
-        key: "/department-score/department-score-csb02",
-        label: "อนุมัติคะแนนสอบก้าวหน้าโดยหัวหน้าภาควิชา",
-      },
-      {
-        key: "/department-score/department-score-csb04",
-        label: "อนุมัติคะแนนสอบป้องกันโดยหัวหน้าภาควิชา",
-      },
-    ],
-  };
-  if (level === "head") {
-    menuItemsTeacher.push(headMenu);
-  }
+  // const headMenu = {
+  //   key: "/department-score",
+  //   // icon: React.createElement(FormOutlined),
+  //   label: "อนุมัติคะแนนสอบ(หัวหน้าภาควิชา)",
+  //   children: [
+  //     {
+  //       key: "/department-score/department-score-csb01",
+  //       label: "อนุมัติคะแนนสอบหัวข้อหน้าโดยหัวหน้าภาควิชา",
+  //     },
+  //     {
+  //       key: "/department-score/department-score-csb02",
+  //       label: "อนุมัติคะแนนสอบก้าวหน้าโดยหัวหน้าภาควิชา",
+  //     },
+  //     {
+  //       key: "/department-score/department-score-csb04",
+  //       label: "อนุมัติคะแนนสอบป้องกันโดยหัวหน้าภาควิชา",
+  //     },
+  //   ],
+  // };
+  // if (level === "head") {
+  //   menuItemsTeacher.push(headMenu);
+  // }
 
   if (level === "all") {
     menuItemsTeacher.push(chairmanMenu);
-    menuItemsTeacher.push(headMenu);
+    // menuItemsTeacher.push(headMenu);
   }
 
   return menuItemsTeacher;
@@ -214,15 +214,20 @@ const menuItemsAdmin = [
     label: "เพิ่มอาจารย์ที่ปรึกษา",
   },
   {
-    key: "/create-project-for-student",
-    // icon: React.createElement(UserOutlined),
-    label: "สร้างโปรเจกต์ให้นักศึกษา",
+    key: "/view-csb03",
+    // icon: React.createElement(UserAddOutlined),
+    label: "ยื่นทดสอบระบบ",
   },
-  {
-    key: "/appointment-department",
-    // icon: React.createElement(UserOutlined),
-    label: "แต่งตั้งหัวหน้าภาค",
-  },
+  // {
+  //   key: "/create-project-for-student",
+  //   // icon: React.createElement(UserOutlined),
+  //   label: "สร้างโปรเจกต์ให้นักศึกษา",
+  // },
+  // {
+  //   key: "/appointment-department",
+  //   // icon: React.createElement(UserOutlined),
+  //   label: "แต่งตั้งหัวหน้าภาค",
+  // },
 ];
 const SiderBar = ({ children, role, username, level, logout }) => {
   const [selectedKey, setSelectedKey] = useState("/");

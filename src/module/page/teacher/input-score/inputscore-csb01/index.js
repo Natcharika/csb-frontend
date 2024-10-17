@@ -35,6 +35,16 @@ function InputScoreCSB01() {
     lecturer: [],
   });
 
+  const [allDate, setAllDate] = useState([]);
+  const [dataProject, setDataProject] = useState([
+    {
+      dateExam: "",
+      projectId: "",
+      projectName: "",
+      _id: "",
+    },
+  ]);
+
   const criteriaData = [
     {
       key: "1",
@@ -972,17 +982,19 @@ function InputScoreCSB01() {
       setLoading(true);
       try {
         const res = await api.getAllProject();
-        if (res.data.body.length > 0) {
-          const projectData = res.data.body[0];
-          console.log("Fetched Projects:", res.data.body); // Log the projects
+        console.log("All Projects Data:", res.data.body); // ตรวจสอบข้อมูลที่ได้จาก API
 
-          setData({
-            projectId: projectData._id || "",
-            projectName: projectData.projectName || "",
-            student: projectData.student || [],
-            lecturer: projectData.lecturer || [],
-          });
-        }
+        // if (res.data.body.length > 0) {
+        //   const projectData = res.data.body[0];
+        //   console.log("First Project Data:", projectData); // ตรวจสอบโครงสร้างของ project ว่ามีฟิลด์ student หรือไม่
+
+        //   setData({
+        //     projectId: projectData._id || "",
+        //     projectName: projectData.projectName || "",
+        //     student: projectData.student || [], // เช็คว่ามีข้อมูล student หรือไม่
+        //     lecturer: projectData.lecturer || [],
+        //   });
+        // }
 
         const resRooms = await api.getRoomPage();
         const roomsData = resRooms.data.body;
@@ -995,7 +1007,20 @@ function InputScoreCSB01() {
           }))
         );
 
-        setProjects(projects);
+        const rescsb01 = await api.getcsb01();
+        const csb01Data = rescsb01.data.body;
+
+        // Filter out projects that have a numerical value in unconfirmScore in csb01Data
+        const filteredProjects = projects.filter(
+          (project) =>
+            !csb01Data.some(
+              (csb01) =>
+                csb01.projectId === project.projectId &&
+                typeof csb01.unconfirmScore === "number"
+            )
+        );
+
+        setProjects(filteredProjects);
       } catch (err) {
         console.error(err);
         notification.error({
@@ -1025,29 +1050,41 @@ function InputScoreCSB01() {
     );
 
   const handleDateChange = (value) => {
-    const originalDate = projects.find(
-      (project) =>
-        new Date(project.dateExam).toLocaleDateString("th-TH", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        }) === value
-    )?.dateExam;
+    console.log("Selected Date:", value); // ตรวจสอบวันที่ที่เลือก
 
-    if (originalDate) {
-      const filtered = projects.filter(
-        (project) => project.dateExam === originalDate
-      );
-      setFilteredProjects(filtered);
-    } else {
-      setFilteredProjects([]);
-    }
-    setSelectedDate(value);
+    // const originalDate = projects.find(
+    //   (project) =>
+    //     new Date(project.dateExam).toLocaleDateString("th-TH", {
+    //       day: "2-digit",
+    //       month: "2-digit",
+    //       year: "numeric",
+    //     }) === value
+    // )?.dateExam;
+
+    // if (originalDate) {
+    //   const filtered = projects
+    //     .filter((project) => project.dateExam === originalDate)
+    //     .filter((project) => !project.unconfirmScore);
+
+    //   setFilteredProjects(filtered);
+    // } else {
+    //   setFilteredProjects([]);
+    // }'
+    setFilteredProjects(
+      dataProject.filter((project) => project.dateExam === value)
+    );
   };
 
   const handleLinkClick = (index) => {
     const project = filteredProjects[index];
+    console.log("Selected Project:", project);
+
+    // Set the selected project
     setSelectedProject(project);
+
+    // Fetch project details based on selectedProject's projectId
+    fetchProjectDetails(project.projectId);
+
     setModalVisible(true);
   };
 
@@ -1188,7 +1225,7 @@ function InputScoreCSB01() {
 
   const hasEvaluatedProjects = () => {
     return filteredProjects.some(
-      (project) => evaluatedRows[project.P_id] === "evaluated"
+      (project) => evaluatedRows[project.projectId] === "evaluated"
     );
   };
 
@@ -1196,6 +1233,60 @@ function InputScoreCSB01() {
     return criteriaData.every(
       (item) => scores[item.key] !== undefined && scores[item.key] !== null
     );
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("jwtToken");
+    api.getSumaryRoomByExamName(token, "สอบหัวข้อ").then((response) => {
+      let { body } = response.data;
+      const allDate = body.map((resp) => resp.dateExam);
+      const dataProjects = body.flatMap((resp) => {
+        return resp.projects.map((project) => {
+          return {
+            dateExam: resp.dateExam,
+            projectId: project.projectId,
+            projectName: project.projectName,
+            _id: project._id,
+          };
+        });
+      });
+      setAllDate(allDate);
+      setDataProject(dataProjects);
+    });
+  }, []);
+
+  // Assuming you have a function to fetch project details
+  const fetchProjectDetails = async (projectId) => {
+    try {
+      const response = await api.getProjectById(projectId); // Fetch project details
+      const projectData = response.data.body;
+
+      // Update the data state with the fetched details
+      setData({
+        projectId: projectData._id || "",
+        projectName: projectData.projectName || "",
+        student: projectData.student || [],
+        lecturer: projectData.lecturer || [],
+      });
+
+      // Log student names and lecturer name
+      projectData.student.forEach((student, index) => {
+        console.log(
+          `นักศึกษาคนที่ ${index + 1}: ${student.FirstName} ${student.LastName}`
+        );
+      });
+
+      projectData.lecturer.forEach((lecturer) => {
+        console.log(`อาจารย์ที่ปรึกษา: ${lecturer.T_name}`);
+      });
+    } catch (error) {
+      console.error("Error fetching project details:", error);
+      notification.error({
+        message: "Error Fetching Project Details",
+        description: "Unable to fetch project details. Please try again later.",
+        placement: "topRight",
+      });
+    }
   };
 
   return (
@@ -1215,14 +1306,22 @@ function InputScoreCSB01() {
           style={{ width: "100%" }}
           placeholder="เลือกวันที่"
           onChange={handleDateChange}
-          options={availableDates.map((formattedDate) => ({
-            value: formattedDate,
-            label: formattedDate,
+          // options={availableDates.map((formattedDate) => ({
+          //   value: formattedDate,
+          //   label: formattedDate,
+          // }))}
+          options={allDate.map((date) => ({
+            value: date,
+            label: new Date(date).toLocaleDateString("th-TH", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            }),
           }))}
         />
         <div style={{ marginTop: 20 }} />
 
-        {selectedDate && filteredProjects.length > 0 ? (
+        {dataProject.length > 0 ? (
           <div>
             <Button
               onClick={() =>
@@ -1258,6 +1357,13 @@ function InputScoreCSB01() {
                   key: "evaluate",
                   render: (_, record) => {
                     const evaluationStatus = evaluatedRows[record.projectId];
+
+                    // If the project already has an unconfirmScore, show 'ประเมินสำเร็จ' status
+                    if (record.unconfirmScore) {
+                      return (
+                        <span style={{ color: "green" }}>ประเมินสำเร็จ</span>
+                      );
+                    }
 
                     if (evaluationStatus === "evaluated") {
                       return (
@@ -1321,87 +1427,68 @@ function InputScoreCSB01() {
               <strong>ชื่อโครงงาน : </strong> {selectedProject?.projectName}
             </p>
             <div>
-              {data.student.map((student, index) => (
-                <p>
-                  <strong>นักศึกษาคนที่ {index + 1} : </strong>
-                  {`${student.FirstName} ${student.LastName}`}
-                </p>
-              ))}
+              {data.student.length > 0 ? (
+                data.student.map((student, index) => {
+                  // Log the student's full name
+                  console.log(
+                    `นักศึกษาคนที่ ${index + 1}: ${student.FirstName} ${
+                      student.LastName
+                    }`
+                  );
+                  return (
+                    <p key={index}>
+                      <strong>นักศึกษาคนที่ {index + 1} : </strong>
+                      {`${student.FirstName} ${student.LastName}`}
+                    </p>
+                  );
+                })
+              ) : (
+                <p>ไม่มีนักศึกษา</p>
+              )}
             </div>
             <p>
               <strong>วันที่ประเมิน : </strong>{" "}
-              {new Date(selectedProject?.evaluationDate).toLocaleDateString(
-                "th-TH",
-                {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                }
-              )}
+              {new Date(selectedProject?.dateExam).toLocaleDateString("th-TH", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              })}
             </p>
             <p>
               {data.lecturer.length > 0 ? (
-                data.lecturer.map((lecturer, index) => (
-                  <p>
-                    <strong>อาจารย์ที่ปรึกษา : </strong> {lecturer.T_name}
-                  </p>
-                ))
+                data.lecturer.map((lecturer, index) => {
+                  // Log the lecturer's name
+                  console.log(`อาจารย์ที่ปรึกษา: ${lecturer.T_name}`);
+                  return (
+                    <p key={index}>
+                      <strong>อาจารย์ที่ปรึกษา : </strong> {lecturer.T_name}
+                    </p>
+                  );
+                })
               ) : (
                 <p>ไม่มีอาจารย์ที่ปรึกษา</p>
               )}
             </p>
           </Card>
-
-          <Card>
-            <Form onFinish={onSubmit}>
-              <Table
-                dataSource={tableData.map((data) => ({
-                  ...data,
-                  backgroundColor: successfulEvaluations.has(
-                    selectedProject?.P_id
-                  )
-                    ? "green"
-                    : "transparent",
-                }))}
-                columns={columns.map((col) => ({
-                  ...col,
-                  onCell: (record) => ({
-                    style: {
-                      backgroundColor:
-                        successfulEvaluations.has(selectedProject?.P_id) &&
-                        col.key === "score"
-                          ? "green"
-                          : "transparent",
-                    },
-                  }),
-                }))}
-                pagination={false}
-                bordered
+          <Table dataSource={tableData} columns={columns} pagination={false} />
+          <Form layout="vertical" style={{ marginTop: 16 }}>
+            <Form.Item label="ความคิดเห็น">
+              <TextArea
+                rows={4}
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
               />
-
-              <Form.Item
-                label="ความคิดเห็นจากอาจารย์"
-                style={{ marginTop: "20px" }}
+            </Form.Item>
+            <Form.Item>
+              <Button
+                type="primary"
+                onClick={onSubmit}
+                disabled={!isScoreComplete() || loading}
               >
-                <TextArea
-                  rows={4}
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder="กรุณากรอกความคิดเห็น"
-                />
-              </Form.Item>
-
-              <Form.Item style={{ marginTop: "20px", textAlign: "center" }}>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  disabled={!isScoreComplete()}
-                >
-                  ส่งคะแนน
-                </Button>
-              </Form.Item>
-            </Form>
-          </Card>
+                บันทึกคะแนน
+              </Button>
+            </Form.Item>
+          </Form>
         </Modal>
       </div>
     </div>

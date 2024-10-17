@@ -1,0 +1,146 @@
+import React, { useState, useEffect } from "react";
+import api from "../../../utils/form/api";
+import { Table } from "antd";
+import moment from "moment";
+
+export default function Viewcsb03() {
+  const [filteredData, setFilteredData] = useState([]);
+
+  const fetchData = async () => {
+    try {
+      const csb03Response = await api.getcsb03();
+      const projectsResponse = await api.getProjects();
+
+      const csb03Data = csb03Response.data.body;
+      const projectsData = projectsResponse.data.body;
+
+      // Create a Map of _id to projectName
+      const projectMap = new Map(
+        projectsData.map((project) => [project._id, project])
+      );
+
+      // Create an array that combines the necessary data to display in the table
+      const combinedData = csb03Data.map((item) => {
+        const project = projectMap.get(item.projectId) || {};
+
+        return {
+          ...item,
+          projectName: project.projectName,
+          organizations: project.organization,
+          startDate: item.startDate,
+          endDate: item.endDate,
+          students: project.student || [], // Get students from the project
+          lecturers: project.lecturer || [], // Get lecturers from the project
+        };
+      });
+
+      setFilteredData(combinedData);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const columns = [
+    {
+      title: "Project Name",
+      dataIndex: "projectName",
+      render: (projectName) => <span>{projectName}</span>,
+    },
+    {
+      title: "Student",
+      dataIndex: "students", // Ensure this matches your combined data structure
+      render: (students) => (
+        <>
+          {Array.isArray(students) && students.length > 0 ? (
+            <span>
+              {students[0].FirstName} {students[0].LastName}
+              {students.length > 1 && (
+                <>
+                  <br />
+                  {students[1].FirstName} {students[1].LastName}
+                </>
+              )}
+            </span>
+          ) : (
+            <span>No students available</span>
+          )}
+        </>
+      ),
+    },
+    {
+      title: "Advisors",
+      dataIndex: "lecturers", // Ensure this matches your combined data structure
+      render: (lecturers) => (
+        <>
+          {Array.isArray(lecturers) ? (
+            lecturers.map((lecturer, index) => (
+              <span key={index}>
+                {lecturer.T_name}
+                <br />
+              </span>
+            ))
+          ) : (
+            <span>No advisors available</span>
+          )}
+        </>
+      ),
+    },
+    {
+      title: "Start Date",
+      dataIndex: "startDate", // Correctly referencing start date
+      render: (date) => date || "No date available", // Directly return the date
+    },
+    {
+      title: "End Date",
+      dataIndex: "endDate", // Correctly referencing end date
+      render: (date) => date || "No date available", // Directly return the date
+    },
+    // ... other columns
+
+    {
+      title: "Organization",
+      dataIndex: "organization",
+      render: (organizations) =>
+        organizations ? organizations : "No organization available",
+    },
+  ];
+
+  const onChange = (pagination, filters, sorter, extra) => {
+    console.log("params", pagination, filters, sorter, extra);
+  };
+
+  const components = {
+    header: {
+      cell: (props) => (
+        <th
+          style={{
+            backgroundColor: "#F77100",
+            color: "#FFFFFF",
+            borderBottom: "2px solid #FFFFFF",
+          }}
+        >
+          {props.children}
+        </th>
+      ),
+    },
+  };
+
+  return (
+    <div>
+      <div id="print-section">
+        <Table
+          className="custom-table"
+          columns={columns}
+          dataSource={filteredData}
+          rowKey="_id"
+          onChange={onChange}
+          components={components}
+        />
+      </div>
+    </div>
+  );
+}

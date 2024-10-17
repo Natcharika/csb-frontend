@@ -49,51 +49,71 @@ export default function ProjectStatus() {
   // Fetch project data and files
   useEffect(() => {
     if (username) {
-      console.log("username", username)
+      console.log("username", username);
       api
         .getAllProject()
         .then((res) => {
           console.log("Response from API:", res.data.body);
           if (res.data.body.length > 0) {
-            const projectData = res.data.body[0];
-
-            // Check if username matches any student or lecturer
-            const isAuthorizedUser = projectData.student.some(student => student.studentId === username) ||
-              projectData.lecturer.some(lecturer => lecturer.T_name === username);
-            console.log("isAuthorizedUser", isAuthorizedUser)
-
-            if (isAuthorizedUser) {
-
-              setData({
-                projectId: projectData._id || "",
-                projectName: projectData.projectName || "",
-                status: projectData.status || {},
-                student: projectData.student || [],
-                lecturer: projectData.lecturer || [],
-              });
-
-              getFiless();
-
-              const updatedStatus = initialData.map((item) => {
-                switch (item.id) {
-                  case 1:
-                    return { ...item, status: dataFiles.fi_status || "waiting", username };
-                  case 2:
-                    return { ...item, status: projectData.status?.CSB01?.status || "No status", username };
-                  case 3:
-                    return { ...item, status: projectData.status?.CSB02?.status || "No status", username };
-                  case 4:
-                    return { ...item, status: dataFiles.fi_status || "waiting", username };
-                  case 5:
-                    return { ...item, status: projectData.status?.CSB03?.status || "No status", username };
-                  case 6:
-                    return { ...item, status: projectData.status?.CSB04?.status || "No status", username };
-                  default:
-                    return item;
+            const projectData = res.data.body; // Get the entire array of projects
+  
+            // Flag to check if any authorized user is found
+            let foundAuthorizedUser = false;
+  
+            // Iterate through all projects
+            projectData.forEach((project) => {
+              // Check if project has student and lecturer arrays
+              if (project.student && project.lecturer) {
+                // Check if username matches any student or lecturer
+                const isAuthorizedUser = project.student.find(student => student.studentId === username) ||
+                  project.lecturer.find(lecturer => lecturer.T_name === username);
+  
+                console.log("isAuthorizedUser", isAuthorizedUser);
+                console.log("projectData.student", project.student);
+  
+                if (isAuthorizedUser) {
+                  foundAuthorizedUser = true;
+  
+                  // Set the data based on the matched project
+                  setData({
+                    projectId: project._id || "",
+                    projectName: project.projectName || "",
+                    status: project.status || {},
+                    student: project.student || [],
+                    lecturer: project.lecturer || [],
+                  });
+  
+                  getFiless();
+  
+                  const updatedStatus = initialData.map((item) => {
+                    switch (item.id) {
+                      case 1:
+                        return { ...item, status: dataFiles.fi_status || "waiting", username };
+                      case 2:
+                        return { ...item, status: project.status?.CSB01?.status || "No status", username };
+                      case 3:
+                        return { ...item, status: project.status?.CSB02?.status || "No status", username };
+                      case 4:
+                        return { ...item, status: dataFiles.fi_status || "waiting", username };
+                      case 5:
+                        return { ...item, status: project.status?.CSB03?.status || "No status", username };
+                      case 6:
+                        return { ...item, status: project.status?.CSB04?.status || "No status", username };
+                      default:
+                        return item;
+                    }
+                  });
+  
+                  setCheckAllStatus(updatedStatus);
                 }
-              });
-
-              setCheckAllStatus(updatedStatus);
+              } else {
+                console.error("Project data does not contain student or lecturer arrays.");
+              }
+            });
+  
+            // If no authorized user is found, you can handle that case here
+            if (!foundAuthorizedUser) {
+              console.log("No authorized user found for any project.");
             }
           }
           setLoading(false);
@@ -104,6 +124,7 @@ export default function ProjectStatus() {
         });
     }
   }, [username]);
+  
 
   const getFiless = () => {
     api.getfiles()
@@ -127,7 +148,7 @@ export default function ProjectStatus() {
 
   return (
     <Content>
-      {data.student.length > 0 && (
+      {/* {data.student.length > 0 && (
         <div>
           <Paragraph style={{ fontSize: "16px", color: "#555" }}>
             {data.projectName}
@@ -154,7 +175,7 @@ export default function ProjectStatus() {
             </Row>
           ))}
         </div>
-      )}
+      )} */}
       <Title level={2} style={{ textAlign: "center" }}>
         ตรวจสอบสถานะต่างๆ
       </Title>

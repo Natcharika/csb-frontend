@@ -32,6 +32,7 @@ import ProviderSp1 from "./module/page/student/special-project-1/provider";
 import ProviderSp2 from "./module/page/student/special-project-2/provider";
 import ProjectStatus from "./module/page/student/project-status"
 import AppointmentHeadofDepartment from "./module/page/admin/appointment-department";
+import Viewcsb03 from "./module/page/admin/view-csb03";
 
 function App() {
   const [role, setRole] = useState("");
@@ -157,7 +158,7 @@ function App() {
                   path="/chairman-score/chairman-score-csb04"
                   element={<ChairmanScoreCSB04 />}
                 />
-                <Route
+                {/* <Route
                   path="/department-score/department-score-csb01"
                   element={<DepartmentHeadScoreCSB01 />}
                 />
@@ -168,7 +169,7 @@ function App() {
                 <Route
                   path="/department-score/department-score-csb04"
                   element={<DepartmentHeadScoreCSB04 />}
-                />
+                /> */}
                 <Route
                   path="/approve/approve-csb02"
                   element={<ApproveCSB02 />}
@@ -191,11 +192,10 @@ function App() {
                 <Route path="/member-spacial-project/sp-2" element={<Sp2 />} />
                 <Route path="/sumary-room" element={<SumaryRoom />} />
                 <Route path="/add-lecture" element={<AddLecture />} />
-                <Route
-                  path="/create-project-for-student"
-                  element={<CreateProjectForStudent />}
-                />
-                <Route path="/appointment-department" element={<AppointmentHeadofDepartment />} />
+                {/* <Route path="/create-project-for-student" element={<CreateProjectForStudent />}/>
+                <Route path="/appointment-department" element={<AppointmentHeadofDepartment />} /> */}
+                <Route path="/view-csb03" element={<Viewcsb03 />} />
+
               </>
             )}
           </Routes>

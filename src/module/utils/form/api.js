@@ -51,6 +51,8 @@ export default {
   updateProject: (data) => service.post("/create-form", { data }), //เพิ่มอาจารย์ที่ปรึกษา
   // createProject: (data) => service.post("/project-students", { data }),
 
+  getProjectById: (projectId) => service.get(`/projects/${projectId}`),
+
   // getStudent
   getStudent: (data) => service.post("/students", { data }),
 
@@ -63,69 +65,90 @@ export default {
   // getSumaryRoom
   getSumaryRoom: (params) => service.get("/sumary-room", { params }),
 
+  getSumaryRoomByExamName: (token, examName) =>
+    service.post(
+      "/sumary-room-by-name-exam",
+      {
+        examName,
+      },
+      { headers: { Authorization: `Bearer ${token}` } } // Adjust the endpoint according to your API structure
+    ),
+
   // getCreateProjectForStudent
   createProject: (data) => service.post("/create-form", { data }),
 
   studentactivecsb01: (params) => service.post("/student-csb01", { params }),
-  approveCSB01 : ( params) => service.post("/approveCSB01", { params }), 
-  rejectCSB01 :  ( params) => service.post("/rejectCSB01", {params}),
-  scorecsb01:( params) => service.post("/score-csb01", { params }),
+  approveCSB01: (params) => service.post("/approveCSB01", { params }),
+  rejectCSB01: (params) => service.post("/rejectCSB01", { params }),
+  scorecsb01: (params) => service.post("/score-csb01", { params }),
 
   studentactivecsb02: (params) => service.post("/student-csb02", { params }),
-  approveCSB02 : ( params) => service.post("/approveCSB02", { params }), 
-  rejectCSB02 :  ( params) => service.post("/rejectCSB02", {params}),
-  scorecsb02:( params) => service.post("/score-csb02", { params }), 
+  approveCSB02: (params) => service.post("/approveCSB02", { params }),
+  rejectCSB02: (params) => service.post("/rejectCSB02", { params }),
+  scorecsb: (params, token) =>
+    service.post(
+      "/score-csb",
+      { params },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    ),
 
   studentactivecsb03: (params) => service.post("/student-csb03", { params }),
-  approveCSB03 : ( params ) => service.post("/approveCSB03", {params}), 
-  rejectCSB03 :  ( params) => service.post("/rejectCSB03", {params}), 
-  scorecsb03:( params) => service.post("/score-csb03", { params }), 
+  approveCSB03: (params) => service.post("/approveCSB03", { params }),
+  rejectCSB03: (params) => service.post("/rejectCSB03", { params }),
+  scorecsb03: (params) => service.post("/score-csb03", { params }),
 
   studentactivecsb04: (params) => service.post("/student-csb04", { params }),
-  approveCSB04 : ( params ) => service.post("/approveCSB04", {params}), 
-  rejectCSB04 :  ( params) => service.post("/rejectCSB04", {params}), 
-  scorecsb04:( params) => service.post("/score-csb04", { params }), 
+  approveCSB04: (params) => service.post("/approveCSB04", { params }),
+  rejectCSB04: (params) => service.post("/rejectCSB04", { params }),
+  scorecsb04: (params) => service.post("/score-csb04", { params }),
 
   getProjects: (data) => service.get("/projects", { data }),
 
   getcsb01: (data) => service.get("/csb01", { data }),
-  chaircsb01 :( params) => service.post("/chair-csb01", { params }),
-  departcsb01:( params) => service.post("/depart-csb01", { params }),
+  chaircsb01: (params) => service.post("/chair-csb01", { params }),
+  departcsb01: (params) => service.post("/depart-csb01", { params }),
 
   getcsb02: (data) => service.get("/csb02", { data }),
-  chaircsb02 :( params) => service.post("/chair-csb02", { params }),
-  departcsb02:( params) => service.post("/depart-csb02", { params }),
+  chaircsb02: (params) => service.post("/chair-csb02", { params }),
+  departcsb02: (params) => service.post("/depart-csb02", { params }),
 
-  getcsb04 : (data) => service.get("/csb04", { data }),
-  chaircsb04 :( params) => service.post("/chair-csb04", { params }), 
-  departcsb04:( params) => service.post("/depart-csb04", { params }),
+  getcsb03: (data) => service.get("/csb03", { data }),
 
-  getfiles : (data) => service.get("/files", { data }),
+  getcsb04: (data) => service.get("/csb04", { data }),
+  chaircsb04: (params) => service.post("/chair-csb04", { params }),
+  departcsb04: (params) => service.post("/depart-csb04", { params }),
+
+  getfiles: (data) => service.get("/files", { data }),
   anouncement: (data) => service.post("/anouncements", data),
-  
 
-  getLogin: (token) => service.get("/auth/login", { 
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-   }),
-   getlevel : (username) => service.post("/auth/level", { username }),
+  getLogin: (token) =>
+    service.get("/auth/login", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  getlevel: (username) => service.post("/auth/level", { username }),
 
   getTeacher: (params) => service.get("/teachers", { params }),
   // assignTeacher: (params) => service.post("/assignteacher", {  params }),
   // // In your api.js
   assignTeacher: (params) => {
-  return service.post('/assignteacher', {
-    params
-  });
+    return service.post("/assignteacher", {
+      params,
+    });
+  },
 
-},
-
-
-  appointHeadOfDepartment: (t_id, t_name, t_super_role) => service.post("/appointHeadOfDepartment", {
-    T_id: t_id,
-    T_name: t_name,
-    T_super_role: t_super_role
-  })
-
+  appointHeadOfDepartment: (t_id, t_name, t_super_role) =>
+    service.post("/appointHeadOfDepartment", {
+      T_id: t_id,
+      T_name: t_name,
+      T_super_role: t_super_role,
+    }),
+};
+export const getProjectById = async (projectId) => {
+  return await axios.get(`/api/projects/${projectId}`); // Adjust the endpoint according to your API structure
 };

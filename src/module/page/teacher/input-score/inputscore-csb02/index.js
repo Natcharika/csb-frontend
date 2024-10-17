@@ -41,15 +41,23 @@ function InputScoreCSB02() {
       projectId: "",
       projectName: "",
       _id: "",
-    }
+    },
   ]);
-
 
   // Criteria data
   const criteriaData = [
     { key: "1", criteria: "วัตถุประสงค์และขอบเขตโครงงาน", maxScore: 10 },
-    { key: "2", criteria: "ความเข้าใจระบบงานเดิม/ทฤษฎีหรืองานวิจัย ที่นำมาใช้พัฒนาโครงงาน", maxScore: 20},
-    { key: "3",criteria: "การศึกษาความต้องการของระบบ และการออกแบบ", maxScore: 20},
+    {
+      key: "2",
+      criteria:
+        "ความเข้าใจระบบงานเดิม/ทฤษฎีหรืองานวิจัย ที่นำมาใช้พัฒนาโครงงาน",
+      maxScore: 20,
+    },
+    {
+      key: "3",
+      criteria: "การศึกษาความต้องการของระบบ และการออกแบบ",
+      maxScore: 20,
+    },
     { key: "4", criteria: "การนำเสนอโครงงาน", maxScore: 20 },
     { key: "5", criteria: "รูปแบบรายงาน", maxScore: 10 },
     { key: "6", criteria: "แนวทางการดำเนินงาน", maxScore: 10 },
@@ -61,19 +69,19 @@ function InputScoreCSB02() {
       try {
         const res = await api.getAllProject();
         console.log("All Projects Data:", res.data.body); // ตรวจสอบข้อมูลที่ได้จาก API
-        
-        if (res.data.body.length > 0) {
-          const projectData = res.data.body[0];
-          console.log("First Project Data:", projectData); // ตรวจสอบโครงสร้างของ project ว่ามีฟิลด์ student หรือไม่
-  
-          setData({
-            projectId: projectData._id || "",
-            projectName: projectData.projectName || "",
-            student: projectData.student || [], // เช็คว่ามีข้อมูล student หรือไม่
-            lecturer: projectData.lecturer || [],
-          });
-        }
-  
+
+        // if (res.data.body.length > 0) {
+        //   const projectData = res.data.body[0];
+        //   console.log("First Project Data:", projectData); // ตรวจสอบโครงสร้างของ project ว่ามีฟิลด์ student หรือไม่
+
+        //   setData({
+        //     projectId: projectData._id || "",
+        //     projectName: projectData.projectName || "",
+        //     student: projectData.student || [], // เช็คว่ามีข้อมูล student หรือไม่
+        //     lecturer: projectData.lecturer || [],
+        //   });
+        // }
+
         const resRooms = await api.getRoomPage();
         const roomsData = resRooms.data.body;
         const projects = roomsData.flatMap((room) =>
@@ -84,18 +92,20 @@ function InputScoreCSB02() {
             roomName: room.roomExam,
           }))
         );
-  
+
         const rescsb02 = await api.getcsb02();
         const csb02Data = rescsb02.data.body;
-  
+
         // Filter out projects that have a numerical value in unconfirmScore in csb02Data
         const filteredProjects = projects.filter(
-          (project) => !csb02Data.some(
-            (csb02) =>
-              csb02.projectId === project.projectId && typeof csb02.unconfirmScore === "number"
-          )
+          (project) =>
+            !csb02Data.some(
+              (csb02) =>
+                csb02.projectId === project.projectId &&
+                typeof csb02.unconfirmScore === "number"
+            )
         );
-  
+
         setProjects(filteredProjects);
       } catch (err) {
         console.error(err);
@@ -109,10 +119,9 @@ function InputScoreCSB02() {
         setLoading(false);
       }
     };
-  
+
     fetchProjectsAndRooms();
   }, []);
-  
 
   const availableDates = [
     ...new Set(projects.map((project) => project.dateExam)),
@@ -126,48 +135,44 @@ function InputScoreCSB02() {
       })
     );
 
-    const handleDateChange = (value) => {
-      console.log("Selected Date:", value); // ตรวจสอบวันที่ที่เลือก
+  const handleDateChange = (value) => {
+    console.log("Selected Date:", value); // ตรวจสอบวันที่ที่เลือก
 
-      // const originalDate = projects.find(
-      //   (project) =>
-      //     new Date(project.dateExam).toLocaleDateString("th-TH", {
-      //       day: "2-digit",
-      //       month: "2-digit",
-      //       year: "numeric",
-      //     }) === value
-      // )?.dateExam;
-    
-      // if (originalDate) {
-      //   const filtered = projects
-      //     .filter((project) => project.dateExam === originalDate)
-      //     .filter((project) => !project.unconfirmScore);
-    
-      //   setFilteredProjects(filtered);
-      // } else {
-      //   setFilteredProjects([]);
-      // }'
-      setFilteredProjects(dataProject.filter((project) => project.dateExam === value));
-    };
-    
+    // const originalDate = projects.find(
+    //   (project) =>
+    //     new Date(project.dateExam).toLocaleDateString("th-TH", {
+    //       day: "2-digit",
+    //       month: "2-digit",
+    //       year: "numeric",
+    //     }) === value
+    // )?.dateExam;
 
-    const handleLinkClick = (index) => {
-      const project = filteredProjects[index];
-      console.log("Selected Project:", project); // ตรวจสอบข้อมูลของ project ที่เลือก
-      setSelectedProject(project);
-      
-      // ตรวจสอบว่า project มีฟิลด์ student หรือไม่
-      if (project.student && project.student.length > 0) {
-        setData((prevData) => ({
-          ...prevData,
-          student: project.student || [], // ถ้ามี ให้ตั้งค่า student
-        }));
-      } else {
-        console.warn("No student data found for this project");
-      }
-    
-      setModalVisible(true);
-    };
+    // if (originalDate) {
+    //   const filtered = projects
+    //     .filter((project) => project.dateExam === originalDate)
+    //     .filter((project) => !project.unconfirmScore);
+
+    //   setFilteredProjects(filtered);
+    // } else {
+    //   setFilteredProjects([]);
+    // }'
+    setFilteredProjects(
+      dataProject.filter((project) => project.dateExam === value)
+    );
+  };
+
+  const handleLinkClick = (index) => {
+    const project = filteredProjects[index];
+    console.log("Selected Project:", project);
+
+    // Set the selected project
+    setSelectedProject(project);
+
+    // Fetch project details based on selectedProject's projectId
+    fetchProjectDetails(project.projectId);
+
+    setModalVisible(true);
+  };
 
   const handleClose = () => {
     setModalVisible(false);
@@ -191,15 +196,15 @@ function InputScoreCSB02() {
 
   const onSubmit = async () => {
     const result = {
-      projectId: selectedProject.projectId,
-      unconfirmScore: totalScore,
+      _id: selectedProject._id,
+      score: totalScore,
       comment: comment,
-      referee: [],
+      nameExam: "สอบก้าวหน้า",
     };
-    console.log("Result submitted: ", result);
 
     try {
-      const res = await api.scorecsb02(result);
+      const token = localStorage.getItem("jwtToken");
+      const res = await api.scorecsb(result, token);
       if (
         res.data.message === "CSB02 score updated successfully" ||
         res.data.message === "CSB02 score saved successfully"
@@ -288,35 +293,58 @@ function InputScoreCSB02() {
   };
 
   useEffect(() => {
-    api.getSumaryRoom().then((response) => {
-    const progressiveExams = response.data.body.filter(exam => exam.nameExam === "สอบก้าวหน้า");
-    setAllDate(progressiveExams.map((exam) => exam.dateExam));
-    const dataProjects = response.data.body.filter(exam => exam.nameExam === "สอบก้าวหน้า");
-      console.log("Data", dataProjects);
-    // setDataProject(dataProjects.map((exam) =>
-    // {
-    //   return exam.projects.map((project) =>
-    //   {
-    //     return {
-    //       dateExam: exam.dateExam,
-    //       projectId: project.projectId,
-    //       projectName: project.projectName,
-    //       _id: project._id,
-    //     }
-    //   })
-    // }));
-    setDataProject(dataProjects.map((exam) =>
-      {
+    const token = localStorage.getItem("jwtToken");
+    api.getSumaryRoomByExamName(token, "สอบก้าวหน้า").then((response) => {
+      let { body } = response.data;
+      const allDate = body.map((resp) => resp.dateExam);
+      const dataProjects = body.flatMap((resp) => {
+        return resp.projects.map((project) => {
           return {
-            dateExam: exam.dateExam,
-            projectId: exam.projects[0].projectId,
-            projectName: exam.projects[0].projectName,
-            _id: exam.projects[0]._id,
-          }
-      }));
-  });
+            dateExam: resp.dateExam,
+            projectId: project.projectId,
+            projectName: project.projectName,
+            _id: project._id,
+          };
+        });
+      });
+      setAllDate(allDate);
+      setDataProject(dataProjects);
+    });
   }, []);
 
+  // Assuming you have a function to fetch project details
+  const fetchProjectDetails = async (projectId) => {
+    try {
+      const response = await api.getProjectById(projectId); // Fetch project details
+      const projectData = response.data.body;
+
+      // Update the data state with the fetched details
+      setData({
+        projectId: projectData._id || "",
+        projectName: projectData.projectName || "",
+        student: projectData.student || [],
+        lecturer: projectData.lecturer || [],
+      });
+
+      // Log student names and lecturer name
+      projectData.student.forEach((student, index) => {
+        console.log(
+          `นักศึกษาคนที่ ${index + 1}: ${student.FirstName} ${student.LastName}`
+        );
+      });
+
+      projectData.lecturer.forEach((lecturer) => {
+        console.log(`อาจารย์ที่ปรึกษา: ${lecturer.T_name}`);
+      });
+    } catch (error) {
+      console.error("Error fetching project details:", error);
+      notification.error({
+        message: "Error Fetching Project Details",
+        description: "Unable to fetch project details. Please try again later.",
+        placement: "topRight",
+      });
+    }
+  };
 
   return (
     <div
@@ -339,7 +367,7 @@ function InputScoreCSB02() {
           //   value: formattedDate,
           //   label: formattedDate,
           // }))}
-          options = {allDate.map((date) => ({
+          options={allDate.map((date) => ({
             value: date,
             label: new Date(date).toLocaleDateString("th-TH", {
               day: "2-digit",
@@ -347,7 +375,6 @@ function InputScoreCSB02() {
               year: "numeric",
             }),
           }))}
-          
         />
         <div style={{ marginTop: 20 }} />
 
@@ -387,33 +414,38 @@ function InputScoreCSB02() {
                   key: "evaluate",
                   render: (_, record) => {
                     const evaluationStatus = evaluatedRows[record.projectId];
-            
+
                     // If the project already has an unconfirmScore, show 'ประเมินสำเร็จ' status
                     if (record.unconfirmScore) {
-                      return <span style={{ color: "green" }}>ประเมินสำเร็จ</span>;
+                      return (
+                        <span style={{ color: "green" }}>ประเมินสำเร็จ</span>
+                      );
                     }
-            
+
                     if (evaluationStatus === "evaluated") {
-                      return <span style={{ color: "green" }}>ประเมินสำเร็จ</span>;
+                      return (
+                        <span style={{ color: "green" }}>ประเมินสำเร็จ</span>
+                      );
                     }
-            
+
                     if (evaluationStatus === "notEvaluated") {
                       return <span style={{ color: "red" }}>ไม่ประเมิน</span>;
                     }
-            
+
                     return (
                       <>
                         <Button
                           onClick={() =>
                             handleLinkClick(filteredProjects.indexOf(record))
-                            
                           }
                           type="primary"
                         >
                           ประเมิน
                         </Button>
                         <Button
-                          onClick={() => handleDisableEvaluation(record.projectId)}
+                          onClick={() =>
+                            handleDisableEvaluation(record.projectId)
+                          }
                           style={{
                             marginLeft: 8,
                             backgroundColor: "red",
@@ -440,49 +472,61 @@ function InputScoreCSB02() {
           </Typography.Text>
         )}
 
-<Modal
-  title="กรอกคะแนน"
-  visible={modalVisible}
-  onCancel={handleClose}
-  footer={null}
-  width={1000}
->
-  <Card>
-    <p>
-      <strong>ชื่อโครงงาน : </strong> {selectedProject?.projectName}
-    </p>
-    <div>
-      {selectedProject?.student && selectedProject.student.length > 0 ? (
-        selectedProject.student.map((student, index) => (
-          <p key={index}>
-            <strong>นักศึกษาคนที่ {index + 1} : </strong>
-            {`${student.FirstName} ${student.LastName}`}
-          </p>
-        ))
-      ) : (
-        <p>ไม่มีนักศึกษา</p>
-      )}
-    </div>
-    <p>
-      <strong>วันที่ประเมิน : </strong>{" "}
-      {new Date(selectedProject?.evaluationDate).toLocaleDateString("th-TH", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })}
-    </p>
-    <p>
-      {data.lecturer.length > 0 ? (
-        data.lecturer.map((lecturer, index) => (
-          <p key={index}>
-            <strong>อาจารย์ที่ปรึกษา : </strong> {lecturer.T_name}
-          </p>
-        ))
-      ) : (
-        <p>ไม่มีอาจารย์ที่ปรึกษา</p>
-      )}
-    </p>
-  </Card>
+        <Modal
+          title="กรอกคะแนน"
+          visible={modalVisible}
+          onCancel={handleClose}
+          footer={null}
+          width={1000}
+        >
+          <Card>
+            <p>
+              <strong>ชื่อโครงงาน : </strong> {selectedProject?.projectName}
+            </p>
+            <div>
+              {data.student.length > 0 ? (
+                data.student.map((student, index) => {
+                  // Log the student's full name
+                  console.log(
+                    `นักศึกษาคนที่ ${index + 1}: ${student.FirstName} ${
+                      student.LastName
+                    }`
+                  );
+                  return (
+                    <p key={index}>
+                      <strong>นักศึกษาคนที่ {index + 1} : </strong>
+                      {`${student.FirstName} ${student.LastName}`}
+                    </p>
+                  );
+                })
+              ) : (
+                <p>ไม่มีนักศึกษา</p>
+              )}
+            </div>
+            <p>
+              <strong>วันที่ประเมิน : </strong>{" "}
+              {new Date(selectedProject?.dateExam).toLocaleDateString("th-TH", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              })}
+            </p>
+            <p>
+              {data.lecturer.length > 0 ? (
+                data.lecturer.map((lecturer, index) => {
+                  // Log the lecturer's name
+                  console.log(`อาจารย์ที่ปรึกษา: ${lecturer.T_name}`);
+                  return (
+                    <p key={index}>
+                      <strong>อาจารย์ที่ปรึกษา : </strong> {lecturer.T_name}
+                    </p>
+                  );
+                })
+              ) : (
+                <p>ไม่มีอาจารย์ที่ปรึกษา</p>
+              )}
+            </p>
+          </Card>
 
           <Table dataSource={tableData} columns={columns} pagination={false} />
           <Form layout="vertical" style={{ marginTop: 16 }}>

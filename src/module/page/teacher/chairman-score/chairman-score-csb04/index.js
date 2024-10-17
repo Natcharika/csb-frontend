@@ -118,6 +118,7 @@ function ChairmanScoreCSB04() {
       const response = await api.chaircsb04({
         projectId: selectedProject._id,
         confirmScore: totalScore,
+        activeStatus:3,
         logBookScore,
         exhibitionScore,
         grade,
