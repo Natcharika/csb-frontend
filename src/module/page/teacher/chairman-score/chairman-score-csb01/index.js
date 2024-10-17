@@ -1,57 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import { Select, Input, Button, Table, Form, Row, Col, notification } from 'antd';
-import api from '../../../../utils/form/api';
+import React, { useState, useEffect } from "react";
+import {
+  Select,
+  Input,
+  Button,
+  Table,
+  Form,
+  Row,
+  Col,
+  notification,
+} from "antd";
+import api from "../../../../utils/form/api";
 
 function ChairmanScoreCSB01() {
   const [projects, setProjects] = useState([]); // State to hold projects
   const [csb01Data, setCsb01Data] = useState([]); // State for CSB01 data
   const [approvedProjects, setApprovedProjects] = useState(new Set());
   const [selectedProject, setSelectedProject] = useState(null);
-  const [data, setData] = useState([{ id: 1, name: 'คะแนนรวม', fullscores: '33', score: '' }]);
+  const [data, setData] = useState([
+    { id: 1, name: "คะแนนรวม", fullscores: "33", score: "" },
+  ]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    //เหมือนกันทุกอันของประธาน
+    const fetchProjectsAndCSB01Data = async () => {
       try {
-        const csb01Res = await api.getcsb01(); 
-        if (csb01Res.data.body.length > 0) {
-          console.log("Fetched CSB01 Data:", csb01Res.data.body);
-          setCsb01Data(csb01Res.data.body);
+        // Fetch projects from your API
+        const token = localStorage.getItem("jwtToken");
+        const projectsRes = await api.getChairManProject("สอบหัวข้อ", token); // Ensure this API exists
+        if (projectsRes.data.data.length > 0) {
+          console.log("Projects fetched:", projectsRes.data.data);
 
-          const projectIds = csb01Res.data.body.map(entry => entry.projectId);
-          const projectsRes = await api.getProjects({ ids: projectIds }); 
-
-          const projectsWithDetails = projectsRes.data.body.map(project => ({
-            _id: project._id,
-            projectName: project.projectName,
-            student: project.student,
-            lecturer: project.lecturer,
-          }));
-
-          setProjects(projectsWithDetails);
+          setProjects(projectsRes.data.data); // Set projects state
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
         notification.error({
-          message: 'Error fetching data',
-          description: 'Unable to load CSB01 data and project details.',
+          message: "Error fetching data",
+          description: "Unable to load project and CSB01 data.",
         });
       }
     };
 
-    fetchData();
+    fetchProjectsAndCSB01Data();
   }, []);
 
   const handleProjectChange = (value) => {
-    const selected = projects.find((p) => p.projectName === value);
-    const csb01Entry = csb01Data.find((c) => c.projectId === selected?._id);
-
-    if (selected && csb01Entry) {
-      setSelectedProject(selected);
-      setData([{ id: 1, name: 'คะแนนรวม', fullscores: '33', score: csb01Entry.unconfirmScore }]);
-    } else {
-      setSelectedProject(null);
-      setData([{ id: 1, name: 'คะแนนรวม', fullscores: '33', score: '' }]);
-    }
+    //เอาอันนี้ไปใส่อันอื่นด้วย
+    const project = projects.find((p) => p.projectName === value);
+    setSelectedProject(project);
+    setData([
+      {
+        id: 1,
+        name: "คะแนนรวม",
+        fullscores: "90",
+        score: project.unconfirmScore || "", // Show unconfirmScore in score
+      },
+    ]);
   };
 
   const handleScoreChange = (e) => {
@@ -59,58 +63,65 @@ function ChairmanScoreCSB01() {
     const fullScore = Number(data[0].fullscores);
     if (newScore < 0 || newScore > fullScore) {
       notification.error({
-        message: 'กรอกคะแนนผิดพลาด',
+        message: "กรอกคะแนนผิดพลาด",
         description: `คะแนนต้องอยู่ระหว่าง 0 และ ${fullScore}`,
       });
     } else {
-      setData((prevData) => prevData.map((item) => ({ ...item, score: newScore })));
+      setData((prevData) =>
+        prevData.map((item) => ({ ...item, score: newScore }))
+      );
     }
   };
 
   const resetForm = () => {
     setSelectedProject(null);
-    setData([{ id: 1, name: 'คะแนนรวม', fullscores: '33', score: '' }]);
+    setData([]);
   };
 
   const handleSubmit = async () => {
-    if (!selectedProject) { 
+    //อันนี้ไปใส่อันอื่นด้วย
+    if (!selectedProject) {
       notification.error({
-        message: 'ผิดพลาด',
-        description: 'กรุณาเลือกชื่อโครงงานก่อน',
+        message: "ผิดพลาด",
+        description: "กรุณาเลือกชื่อโครงงานก่อน",
       });
       return;
     }
 
-    const updatedData = data.find((item) => item.name === 'คะแนนรวม')?.score || '';
+    const updatedData =
+      data.find((item) => item.name === "คะแนนรวม")?.score || "";
     if (!updatedData) {
       notification.error({
-        message: 'ผิดพลาด',
-        description: 'กรุณากรอกคะแนนให้ครบถ้วน',
+        message: "ผิดพลาด",
+        description: "กรุณากรอกคะแนนให้ครบถ้วน",
       });
       return;
     }
 
     const unconfirmScore = Number(updatedData);
-    const totalConfirmScore = unconfirmScore; 
+    const totalConfirmScore = unconfirmScore;
 
     try {
       const response = await api.chaircsb01({
-        projectId: selectedProject._id,
-        confirmScore: totalConfirmScore,
+        _id: selectedProject._id, // Use _id for projectId
+        activeStatus: 3,
+        unconfirmScore: unconfirmScore,
       });
 
       console.log(response.data);
       notification.success({
-        message: 'อนุมัติโครงงานสำเร็จ!',
+        message: "อนุมัติโครงงานสำเร็จ!",
         description: `โครงงาน: ${selectedProject.projectName} | คะแนนที่ได้: ${totalConfirmScore}`,
       });
-      setApprovedProjects((prev) => new Set(prev).add(selectedProject.projectName));
+      setApprovedProjects((prev) =>
+        new Set(prev).add(selectedProject.projectName)
+      );
       resetForm();
     } catch (error) {
       console.error(error);
       notification.error({
-        message: 'ไม่สามารถอนุมัติโครงงานได้',
-        description: 'กรุณาลองใหม่อีกครั้ง',
+        message: "ไม่สามารถอนุมัติโครงงานได้",
+        description: "กรุณาลองใหม่อีกครั้ง",
       });
     }
   };
@@ -119,43 +130,44 @@ function ChairmanScoreCSB01() {
     resetForm();
   };
 
-  // Filter projects to include only those without a confirmScore
-  const filteredProjects = projects.filter((project) => {
-    const csb01Entry = csb01Data.find((c) => c.projectId === project._id);
-    return (
-      !approvedProjects.has(project.projectName) &&
-      csb01Entry && // Ensure there is a CSB01 entry
-      csb01Entry.unconfirmScore && // Check that unconfirmScore exists
-      !csb01Entry.confirmScore // Ensure confirmScore does not exist
-    );
-  });
-
   const columns = [
     {
-      title: 'คะแนนเต็ม',
-      dataIndex: 'fullscores',
-      key: 'fullscores',
+      title: "คะแนนเต็ม",
+      dataIndex: "fullscores",
+      key: "fullscores",
       render: (text) => <span>{text}</span>,
     },
     {
-      title: 'คะแนนได้',
-      dataIndex: 'score',
-      key: 'score',
+      title: "คะแนนได้",
+      dataIndex: "score",
+      key: "score",
       render: (_, record) => (
         <Input
           value={record.score}
           onChange={handleScoreChange}
           type="number"
-          style={{ width: '80px', border: '1px solid #d9d9d9', borderRadius: '4px' }}
+          style={{
+            width: "80px",
+            border: "1px solid #d9d9d9",
+            borderRadius: "4px",
+          }}
         />
       ),
     },
   ];
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <div style={{ width: '60%', textAlign: 'center' }}>
-        <h1 style={{ textAlign: 'center' }}>แบบประเมินโครงงานพิเศษ 1 (สอบก้าวหน้า)</h1>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <div style={{ width: "60%", textAlign: "center" }}>
+        <h1 style={{ textAlign: "center" }}>
+          แบบประเมินโครงงานพิเศษ 1 (สอบหัวข้อ)
+        </h1>
 
         <Form layout="vertical">
           <Row gutter={16}>
@@ -163,12 +175,14 @@ function ChairmanScoreCSB01() {
               <Form.Item>
                 <h3>เลือกชื่อโครงงาน</h3>
                 <Select
-                  value={selectedProject?.projectName}
                   onChange={handleProjectChange}
                   placeholder="เลือกโครงงาน"
                 >
-                  {filteredProjects.map((project) => (
-                    <Select.Option key={project._id} value={project.projectName}>
+                  {projects.map((project) => (
+                    <Select.Option
+                      key={project._id}
+                      value={project.projectName}
+                    >
                       {project.projectName}
                     </Select.Option>
                   ))}
@@ -180,22 +194,42 @@ function ChairmanScoreCSB01() {
           {selectedProject && (
             <>
               <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item label="ชื่อ-สกุลนักศึกษาคนที่ 1">
-                    <Input value={`${selectedProject.student[0]?.FirstName} ${selectedProject.student[0]?.LastName}`} disabled style={{ width: '100%', borderRadius: '4px' }} />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item label="ชื่อ-สกุลนักศึกษาคนที่ 2">
-                    <Input value={`${selectedProject.student[1]?.FirstName} ${selectedProject.student[1]?.LastName}`} disabled style={{ width: '100%', borderRadius: '4px' }} />
-                  </Form.Item>
-                </Col>
+                {selectedProject.student.map(
+                  (
+                    student,
+                    index //01เทียบ
+                  ) => (
+                    <Col span={12} key={student._id}>
+                      <Form.Item label={`ชื่อ-สกุลนักศึกษาคนที่ ${index + 1}`}>
+                        <Input
+                          value={`${student.FirstName} ${student.LastName}`}
+                          disabled
+                          style={{ width: "100%", borderRadius: "4px" }}
+                        />
+                      </Form.Item>
+                    </Col>
+                  )
+                )}
               </Row>
               <Row gutter={16}>
                 <Col span={24}>
-                  <Form.Item label="ชื่ออาจารย์ที่ปรึกษา">
-                    <Input value={selectedProject.lecturer[0]?.T_name} disabled style={{ width: '100%', borderRadius: '4px' }} />
-                  </Form.Item>
+                  {selectedProject.lecturer.map(
+                    (
+                      lecturer,
+                      index //อันนี้ด้วย
+                    ) => (
+                      <Form.Item
+                        label={`ชื่ออาจารย์ที่ปรึกษา ${index + 1}`}
+                        key={lecturer._id}
+                      >
+                        <Input
+                          value={lecturer.T_name}
+                          disabled
+                          style={{ width: "100%", borderRadius: "4px" }}
+                        />
+                      </Form.Item>
+                    )
+                  )}
                 </Col>
               </Row>
 
@@ -206,10 +240,13 @@ function ChairmanScoreCSB01() {
                 pagination={false}
                 rowKey="id"
                 bordered
-                style={{ marginTop: '16px' }}
+                style={{ marginTop: "16px" }}
               />
 
-              <Row gutter={16} style={{ marginTop: '16px', justifyContent: 'center' }}>
+              <Row
+                gutter={16}
+                style={{ marginTop: "16px", justifyContent: "center" }}
+              >
                 <Col>
                   <Button type="primary" onClick={handleSubmit}>
                     อนุมัติคะแนน

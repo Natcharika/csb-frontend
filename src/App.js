@@ -30,7 +30,7 @@ import CreateProjectForStudent from "./module/page/admin/create-project-for-stud
 import RoomManagement from "./module/page/admin/room-management";
 import ProviderSp1 from "./module/page/student/special-project-1/provider";
 import ProviderSp2 from "./module/page/student/special-project-2/provider";
-import ProjectStatus from "./module/page/student/project-status"
+import ProjectStatus from "./module/page/student/project-status";
 import AppointmentHeadofDepartment from "./module/page/admin/appointment-department";
 import Viewcsb03 from "./module/page/admin/view-csb03";
 import CheckApproveCSB01 from "./module/page/admin/check-approve/csb01";
@@ -54,12 +54,12 @@ function App() {
           localStorage.setItem("jwtToken", jwtToken);
           setRole(role);
           setUsername(username);
-          if (role =="teacher") {
+          if (role == "teacher") {
             api.getlevel(username).then((response) => {
               setLevel(response.data.level);
-            })
+            });
           }
-        })
+        });
       }
     } catch (error) {
       console.log(error);
@@ -79,11 +79,11 @@ function App() {
     setRole("");
     setUsername("");
     setLevel("");
-  }
+  };
   return (
     <div>
       <BrowserRouter>
-        <div>
+        {/* <div>
           <button onClick={() => setRole("")}>หายตัว!!!</button>
           <button onClick={() => setRole("teacher")}>
             กลายร่างเป็นอาจารย์
@@ -94,17 +94,20 @@ function App() {
           <button onClick={() => setRole("admin")}>
             กลายร่างเป็นเจ้าหน้าที่
           </button>
-        </div>
+        </div> */}
         <SiderBar role={role} username={username} level={level} logout={logout}>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login onLoginSuccess={onLoginSuccess}/>} />
+            <Route
+              path="/login"
+              element={<Login onLoginSuccess={onLoginSuccess} />}
+            />
             {role === "student" && (
               <>
                 <Route
-                path="/special-project-1/provider"
-                element={<ProviderSp1 />}
-              />
+                  path="/special-project-1/provider"
+                  element={<ProviderSp1 />}
+                />
                 <Route
                   path="/special-project-1/exam-csb01"
                   element={<ExamCSB01 />}
@@ -114,9 +117,9 @@ function App() {
                   element={<ExamCSB02 />}
                 />
                 <Route
-                path="/special-project-2/provider"
-                element={<ProviderSp2 />}
-              />
+                  path="/special-project-2/provider"
+                  element={<ProviderSp2 />}
+                />
                 <Route
                   path="/special-project-2/exam-csb03"
                   element={<ExamCSB03 />}
@@ -125,10 +128,7 @@ function App() {
                   path="/special-project-2/exam-csb04"
                   element={<ExamCSB04 />}
                 />
-                <Route 
-                  path="/project-status" 
-                  element={<ProjectStatus />} 
-                />
+                <Route path="/project-status" element={<ProjectStatus />} />
               </>
             )}
             {role === "teacher" && (
@@ -198,10 +198,18 @@ function App() {
                 {/* <Route path="/create-project-for-student" element={<CreateProjectForStudent />}/>
                 <Route path="/appointment-department" element={<AppointmentHeadofDepartment />} /> */}
                 <Route path="/view-csb03" element={<Viewcsb03 />} />
-                <Route path="/check-approve/csb01" element={<CheckApproveCSB01 />} />
-                <Route path="/check-approve/csb02" element={<CheckApproveCSB02 />} />
-                <Route path="/check-approve/csb03" element={<CheckApproveCSB03 />} />
-
+                <Route
+                  path="/check-approve/csb01"
+                  element={<CheckApproveCSB01 />}
+                />
+                <Route
+                  path="/check-approve/csb02"
+                  element={<CheckApproveCSB02 />}
+                />
+                <Route
+                  path="/check-approve/csb03"
+                  element={<CheckApproveCSB03 />}
+                />
               </>
             )}
           </Routes>
