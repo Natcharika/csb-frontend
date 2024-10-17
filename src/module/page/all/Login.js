@@ -31,9 +31,15 @@ const Login = ({ onLoginSuccess }) => {
         const { username, role, jwtToken } = response.data;
         let level = role;
         if (role == "teacher") {
-          level = await api.getlevel(username);
+          level = await api.getlevel(username)
+          if (level.status === 200) {
+            level = level.data.level
+          } else{
+            level = "teacher"
+          }
         }
-
+        console.log("Login success:", username, role, level, jwtToken);
+        
         onLoginSuccess({ username, role, level, jwtToken });
         redirectToHome();
       }

@@ -142,6 +142,19 @@ export default {
     });
   },
 
+  getChairManProject: (nameExam, token) =>
+    service.post(
+      "/get-chairman-project",
+      {
+        nameExam,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    ),
+
   appointHeadOfDepartment: (t_id, t_name, t_super_role) =>
     service.post("/appointHeadOfDepartment", {
       T_id: t_id,

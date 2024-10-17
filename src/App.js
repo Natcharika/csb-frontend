@@ -33,6 +33,9 @@ import ProviderSp2 from "./module/page/student/special-project-2/provider";
 import ProjectStatus from "./module/page/student/project-status"
 import AppointmentHeadofDepartment from "./module/page/admin/appointment-department";
 import Viewcsb03 from "./module/page/admin/view-csb03";
+import CheckApproveCSB01 from "./module/page/admin/check-approve/csb01";
+import CheckApproveCSB02 from "./module/page/admin/check-approve/csb02";
+import CheckApproveCSB03 from "./module/page/admin/check-approve/csb03";
 
 function App() {
   const [role, setRole] = useState("");
@@ -195,6 +198,9 @@ function App() {
                 {/* <Route path="/create-project-for-student" element={<CreateProjectForStudent />}/>
                 <Route path="/appointment-department" element={<AppointmentHeadofDepartment />} /> */}
                 <Route path="/view-csb03" element={<Viewcsb03 />} />
+                <Route path="/check-approve/csb01" element={<CheckApproveCSB01 />} />
+                <Route path="/check-approve/csb02" element={<CheckApproveCSB02 />} />
+                <Route path="/check-approve/csb03" element={<CheckApproveCSB03 />} />
 
               </>
             )}

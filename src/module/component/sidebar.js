@@ -217,6 +217,26 @@ const menuItemsAdmin = [
     key: "/view-csb03",
     // icon: React.createElement(UserAddOutlined),
     label: "ยื่นทดสอบระบบ",
+    
+  },
+  {
+    key: "/check-approve",
+    // icon: React.createElement(UserOutlined),
+    label: "เช็คสถานะอนุมัติ",
+    children: [
+      {
+        key: "/check-approve/csb01",
+        label: "ApproveCSB01",
+      },
+      {
+        key: "/check-approve/csb02",
+        label: "ApproveCSB02",
+      },
+      {
+        key: "/check-approve/csb03",
+        label: "ApproveCSB03",
+      },
+    ],
   },
   // {
   //   key: "/create-project-for-student",
