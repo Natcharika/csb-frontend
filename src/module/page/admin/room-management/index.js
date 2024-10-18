@@ -969,7 +969,6 @@ function RoomManagement() {
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
   const [data, setData] = useState([]);
   const [teacherNames, setTeacherNames] = useState([]);
-  const [existingRooms, setExistingRooms] = useState([]); // Store existing rooms
 
   const projectTimes = [
     "09:00",
@@ -1017,41 +1016,22 @@ function RoomManagement() {
     api
       .getTeacher()
       .then((res) => {
+        console.log(res.data.body);
         setTeacherNames(res.data.body);
       })
-      .catch(console.error);
-
-    // Fetch existing rooms
-    api
-      .getRoomPage()
-      .then((res) => {
-        const rooms = res.data.body.map((room) => room.roomExam); // Adjust this line based on your API response structure
-        setExistingRooms(rooms);
-      })
-      .catch(console.error);
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
 
   const handleSubmit = (values) => {
-    const selectedRoom = values.examRoom;
-
-    // Check for duplicate rooms
-    if (existingRooms.includes(selectedRoom)) {
-      notification.error({
-        message: "ผิดพลาด",
-        description: "ห้องสอบนี้มีอยู่แล้ว กรุณาเลือกห้องสอบอื่น", // Error message
-        placement: "topRight",
-      });
-      return;
-    }
-
     const body = {
-      roomExam: selectedRoom,
+      roomExam: values.examRoom,
       nameExam: values.examName,
-      dateExam: values.examDate ? values.examDate.format("YYYY-MM-DD") : "",
+      dateExam: values.examDate ? values.examDate.format("YYYY-MM-DD") : "", // Ensuring the correct format
       teachers,
       projects,
     };
-
     api
       .createRoomManagement(body)
       .then((res) => {
@@ -1060,10 +1040,11 @@ function RoomManagement() {
         setProjects([{ projectId: "", projectName: "", start_in_time: "" }]);
         setIsSubmitDisabled(true);
 
+        // Show notification on success
         notification.success({
           message: "สำเร็จ",
-          description: "จัดการห้องสำเร็จ",
-          placement: "topRight",
+          description: "จัดการห้องสำเร็จ", // Success message
+          placement: "topRight", // Position of the notification
         });
       })
       .catch(console.error);
@@ -1175,24 +1156,6 @@ function RoomManagement() {
         <Row gutter={16}>
           <Col span={8}>
             <Form.Item
-              label="วันที่สอบ (Exam Date)"
-              name="examDate"
-              rules={[{ required: true, message: "กรุณาเลือกวันที่สอบ" }]}
-            >
-              <DatePicker
-                format="YYYY-MM-DD"
-                placeholder="เลือกวันที่สอบ"
-                style={{ width: "100%" }}
-                picker="date"
-                onChange={(date) => {
-                  form.setFieldsValue({ examDate: date });
-                  checkFormValidity();
-                }}
-              />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item
               label="ห้องสอบ (Exam Room)"
               name="examRoom"
               rules={[{ required: true, message: "กรุณาเลือกห้องสอบ" }]}
@@ -1220,6 +1183,24 @@ function RoomManagement() {
               </Select>
             </Form.Item>
           </Col>
+          <Col span={8}>
+            <Form.Item
+              label="วันที่สอบ (Exam Date)"
+              name="examDate"
+              rules={[{ required: true, message: "กรุณาเลือกวันที่สอบ" }]}
+            >
+              <DatePicker
+                format="YYYY-MM-DD"
+                placeholder="เลือกวันที่สอบ"
+                style={{ width: "100%" }}
+                picker="date"
+                onChange={(date) => {
+                  form.setFieldsValue({ examDate: date });
+                  checkFormValidity();
+                }}
+              />
+            </Form.Item>
+          </Col>
         </Row>
 
         <Form.Item label="จำนวนกรรมการสอบ">
@@ -1236,43 +1217,65 @@ function RoomManagement() {
                 { T_id: "", T_name: "", role: "" }
               )
             }
-            placeholder="จำนวนกรรมการสอบ"
+            placeholder="กรอกจำนวนกรรมการสอบ"
           />
         </Form.Item>
 
-        {teachers.map((teacher, index) => (
-          <Row key={index} gutter={16}>
-            <Col span={8}>
-              <Form.Item label={`ชื่อกรรมการสอบ ${index + 1}`}>
+        {teachers.map((_, index) => (
+          <Row gutter={16} key={index}>
+            <Col span={12}>
+              <Form.Item
+                label="ชื่อกรรมการสอบ"
+                rules={[
+                  { required: true, message: "กรุณาเลือกชื่อกรรมการสอบ" },
+                ]}
+              >
                 <Select
-                  placeholder="เลือกกรรมการสอบ"
-                  value={teacher.T_id}
+                  placeholder="เลือกชื่อกรรมการสอบ"
+                  value={teachers[index].T_name}
                   onChange={(value) => handleTeacherChange(index, value)}
                 >
-                  {teacherNames.map((teacher) => (
-                    <Option key={teacher.T_id} value={teacher.T_id}>
-                      {teacher.T_name}
+                  {filteredOptions(
+                    teacherNames,
+                    teachers.map((t) => t.T_id),
+                    index
+                  ).map(({ T_id, T_name }) => (
+                    <Option key={T_id} value={T_id}>
+                      {T_name}
                     </Option>
                   ))}
                 </Select>
               </Form.Item>
             </Col>
-            <Col span={8}>
-              <Form.Item label={`บทบาทกรรมการสอบ ${index + 1}`}>
+            <Col span={12}>
+              <Form.Item
+                label="ตำแหน่ง (Role)"
+                rules={[
+                  { required: true, message: "กรุณาเลือกตำแหน่งกรรมการ" },
+                ]}
+              >
                 <Select
-                  placeholder="เลือกบทบาท"
-                  value={teacher.role}
+                  placeholder="เลือกตำแหน่งกรรมการ"
+                  value={teachers[index].role}
                   onChange={(value) => handleRoleChange(index, value)}
+                  disabled={teachers[index].role === "main"}
                 >
-                  <Option value="main">ประธานกรรมการ</Option>
-                  <Option value="normal">กรรมการ</Option>
+                  {teachers.every((teacher) => teacher.role !== "main") ||
+                  teachers[index].role === "main" ? (
+                    <>
+                      <Option value="main">ประธานกรรมการ</Option>
+                      <Option value="sub">กรรมการ</Option>
+                    </>
+                  ) : (
+                    <Option value="sub">กรรมการ</Option>
+                  )}
                 </Select>
               </Form.Item>
             </Col>
           </Row>
         ))}
 
-        <Form.Item label="จำนวนโครงการ">
+        <Form.Item label="จำนวนโครงงาน">
           <Input
             type="number"
             min={1}
@@ -1282,36 +1285,46 @@ function RoomManagement() {
                 setProjects,
                 setProjectCount,
                 e.target.value,
-                5,
+                20,
                 { projectId: "", projectName: "", start_in_time: "" }
               )
             }
-            placeholder="จำนวนโครงการ"
+            placeholder="กรอกจำนวนโครงงาน"
           />
         </Form.Item>
 
-        {projects.map((project, index) => (
-          <Row key={index} gutter={16}>
+        {projects.map((_, index) => (
+          <Row gutter={16} key={index}>
             <Col span={12}>
-              <Form.Item label={`ชื่อโครงการ ${index + 1}`}>
+              <Form.Item
+                label="ชื่อโครงงาน"
+                rules={[{ required: true, message: "กรุณาเลือกชื่อโครงงาน" }]}
+              >
                 <Select
-                  placeholder="เลือกชื่อโครงการ"
-                  value={project.projectName}
+                  placeholder="เลือกชื่อโครงงาน"
+                  value={projects[index].projectName}
                   onChange={(value) => handleProjectNameChange(index, value)}
                 >
-                  {data.map((project) => (
-                    <Option key={project.projectId} value={project.projectName}>
-                      {project.projectName}
+                  {filteredOptions(
+                    data.map(({ projectName }) => projectName),
+                    projects.map(({ projectName }) => projectName),
+                    index
+                  ).map((projectName, idx) => (
+                    <Option key={idx} value={projectName}>
+                      {projectName}
                     </Option>
                   ))}
                 </Select>
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item label={`เวลาที่เริ่ม ${index + 1}`}>
+              <Form.Item
+                label="เวลา (Time)"
+                rules={[{ required: true, message: "กรุณาเลือกเวลา" }]}
+              >
                 <Select
-                  placeholder="เลือกเวลาที่เริ่ม"
-                  value={project.start_in_time}
+                  placeholder="เลือกเวลา"
+                  value={projects[index].start_in_time}
                   onChange={(value) =>
                     handleDynamicFieldChange(
                       setProjects,
@@ -1321,8 +1334,12 @@ function RoomManagement() {
                     )
                   }
                 >
-                  {projectTimes.map((time) => (
-                    <Option key={time} value={time}>
+                  {filteredOptions(
+                    projectTimes,
+                    projects.map(({ start_in_time }) => start_in_time),
+                    index
+                  ).map((time, idx) => (
+                    <Option key={idx} value={time}>
                       {time}
                     </Option>
                   ))}
@@ -1333,8 +1350,13 @@ function RoomManagement() {
         ))}
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" disabled={isSubmitDisabled}>
-            บันทึก (Save)
+          <Button
+            type="primary"
+            htmlType="submit"
+            style={{ width: "100%" }}
+            disabled={isSubmitDisabled}
+          >
+            ส่งข้อมูล
           </Button>
         </Form.Item>
       </Form>
