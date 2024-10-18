@@ -1023,15 +1023,19 @@ function RoomManagement() {
         console.log(err);
       });
   }, []);
-
   const handleSubmit = (values) => {
     const body = {
       roomExam: values.examRoom,
       nameExam: values.examName,
-      dateExam: values.examDate ? values.examDate.format("YYYY-MM-DD") : "", // Ensuring the correct format
+      dateExam: values.examDate ? values.examDate.format("YYYY-MM-DD") : "", // Format the date properly
       teachers,
       projects,
     };
+
+    // Log the body to ensure it's correct before sending
+    console.log("Request body: ", body);
+
+    // First, create the room management
     api
       .createRoomManagement(body)
       .then((res) => {
@@ -1040,14 +1044,28 @@ function RoomManagement() {
         setProjects([{ projectId: "", projectName: "", start_in_time: "" }]);
         setIsSubmitDisabled(true);
 
-        // Show notification on success
         notification.success({
           message: "สำเร็จ",
-          description: "จัดการห้องสำเร็จ", // Success message
-          placement: "topRight", // Position of the notification
+          description: "จัดการห้องสำเร็จ",
+          placement: "topRight",
         });
+
+        // After successful creation, call the summary API for the specific exam
+        const token = localStorage.getItem("jwtToken");
+        api
+          .getSumaryRoomByExamName(token, values.examName)
+          .then((summaryRes) => {
+            console.log("Room Summary: ", summaryRes);
+            // You can handle the display of summary data here
+            // For example, update the UI with the fetched room summary
+          })
+          .catch((summaryError) => {
+            console.error("Error fetching room summary:", summaryError);
+          });
       })
-      .catch(console.error);
+      .catch((error) => {
+        console.error("Error creating room:", error);
+      });
   };
 
   const checkFormValidity = () => {
@@ -1177,7 +1195,7 @@ function RoomManagement() {
               rules={[{ required: true, message: "กรุณาเลือกชื่อการสอบ" }]}
             >
               <Select placeholder="เลือกชื่อการสอบ">
-                <Option value="สอบข้อหัว">สอบข้อหัว</Option>
+                <Option value="สอบหัวข้อ">สอบหัวข้อ</Option>
                 <Option value="สอบก้าวหน้า">สอบก้าวหน้า</Option>
                 <Option value="สอบป้องกัน">สอบป้องกัน</Option>
               </Select>

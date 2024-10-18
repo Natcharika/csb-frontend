@@ -83,7 +83,7 @@ function App() {
   return (
     <div>
       <BrowserRouter>
-        {/* <div>
+        <div>
           <button onClick={() => setRole("")}>หายตัว!!!</button>
           <button onClick={() => setRole("teacher")}>
             กลายร่างเป็นอาจารย์
@@ -94,7 +94,7 @@ function App() {
           <button onClick={() => setRole("admin")}>
             กลายร่างเป็นเจ้าหน้าที่
           </button>
-        </div> */}
+        </div>
         <SiderBar role={role} username={username} level={level} logout={logout}>
           <Routes>
             <Route path="/" element={<Home />} />

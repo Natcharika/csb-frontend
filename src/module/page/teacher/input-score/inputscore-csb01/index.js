@@ -1110,18 +1110,18 @@ function InputScoreCSB01() {
 
   const onSubmit = async () => {
     const result = {
-      projectId: selectedProject.projectId,
-      unconfirmScore: totalScore,
+      _id: selectedProject._id,
+      score: totalScore,
       comment: comment,
-      referee: [],
+      nameExam: "สอบก้าวหน้า",
     };
-    console.log("Result submitted: ", result);
 
     try {
-      const res = await api.scorecsb01(result);
+      const token = localStorage.getItem("jwtToken");
+      const res = await api.scorecsb(result, token);
       if (
-        res.data.message === "CSB01 score updated successfully" ||
-        res.data.message === "CSB01 score saved successfully"
+        res.data.message === "CSB02 score updated successfully" ||
+        res.data.message === "CSB02 score saved successfully"
       ) {
         message.success("บันทึกคะแนนสำเร็จ");
         setSuccessfulEvaluations((prev) =>
