@@ -30,7 +30,7 @@ export default function ProviderSp2() {
       }
   
       try {
-        const response2 = await fetch("http://localhost:8788/project-students", {
+        const response2 = await fetch("http://202.44.40.169:8788/project-students", {
           method: "GET",
         });
   
@@ -79,7 +79,7 @@ export default function ProviderSp2() {
     formData.append("std", username);
 
     try {
-      const response = await fetch("http://localhost:8788/files", {
+      const response = await fetch("http://202.44.40.169:8788/files", {
         method: "POST",
         body: formData,
       });
@@ -99,7 +99,7 @@ export default function ProviderSp2() {
 
   const handleFileUpload = async (fi_id) => {
     try {
-      await axios.patch(`http://localhost:8788/files/${fi_id}`);
+      await axios.patch(`http://202.44.40.169:8788/files/${fi_id}`);
     } catch (error) {
       console.error("Error updating file status:", error);
     }

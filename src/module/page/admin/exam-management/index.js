@@ -58,25 +58,25 @@ const ManageExam = () => {
     }, []);
     
 
-  const handleConfirm = async () => {
-    const examData = {
-        Exam_o_CSB01: open1 ? 'เปิด' : 'ปิด',
-        Exam_o_CSB02: open2 ? 'เปิด' : 'ปิด',
-        Exam_o_CSB03: open3 ? 'เปิด' : 'ปิด',
-        Exam_o_CSB04: open4 ? 'เปิด' : 'ปิด',
+    const handleConfirm = async () => {
+        const examData = {
+            Exam_o_CSB01: open1 ? 'เปิด' : 'ปิด',
+            Exam_o_CSB02: open2 ? 'เปิด' : 'ปิด',
+            Exam_o_CSB03: open3 ? 'เปิด' : 'ปิด',
+            Exam_o_CSB04: open4 ? 'เปิด' : 'ปิด',
+        };
+    
+        try {
+            const response = await api.anouncement(examData); // Make sure this is a POST request
+            setDialogMessage(response.data.message); // Display success message
+            setDialogOpen(true); // Open the dialog
+        } catch (error) {
+            console.error('Error updating exam status:', error);
+            setDialogMessage('Failed to update exam status.'); // Set error message
+            setDialogOpen(true); // Open the dialog
+        }
     };
-
-    try {
-        const response = await api.anouncement(examData); // Use the POST method
-        setDialogMessage(response.data.message); // Set success message
-        setDialogOpen(true); // Open the dialog
-    } catch (error) {
-        console.error('Error updating exam status:', error);
-        setDialogMessage('Failed to update exam status.'); // Set error message
-        setDialogOpen(true); // Open the dialog
-    }
-};
-
+    
 
     const handleCloseDialog = () => {
         setDialogOpen(false);

@@ -239,7 +239,7 @@ function ChairmanScoreCSB04() {
       }}
     >
       <div style={{ width: "60%", textAlign: "center" }}>
-        <h1>แบบประเมินโครงงานพิเศษ 1 (สอบก้าวหน้า)</h1>
+        <h1>แบบประเมินโครงงานพิเศษ 2 (สอบป้องกัน)</h1>
         <Form layout="vertical">
           <Row gutter={16}>
             <Col span={24}>

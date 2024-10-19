@@ -22,7 +22,7 @@ const Login = ({ onLoginSuccess }) => {
 
   const onSubmit = async () => {
     try {
-      const response = await axios.post("http://localhost:8788/auth/login", {
+      const response = await axios.post("http://202.44.40.169:8788/auth/login", {
         username,
         password,
       });
