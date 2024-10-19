@@ -1,40 +1,35 @@
 import React, { useState, useEffect } from "react";
-import api from "../../../utils/form/api";
+import api from '../../../../utils/form/api';
 import { Table } from "antd";
 
-
-export default function CheckApproveCSB01() {
+export default function CheckSP2() {
   const [filteredData, setFilteredData] = useState([]);
 
   const fetchData = async () => {
     try {
-      const csb01Response = await api.getcsb01();
       const projectsResponse = await api.getProjects();
+      console.log("Projects Response:", projectsResponse);
 
-      const csb01Data = csb01Response.data.body;
       const projectsData = projectsResponse.data.body;
 
-      // Create a Map of _id to projectName
-      const projectMap = new Map(
-        projectsData.map((project) => [project._id, project])
-      );
+      // Filter projects where status.CSB01.activeStatus is 1 and status.CSB01.status is "waiting"
+      const filteredProjects = projectsData
+        .filter(
+          (project) =>
+            project.status?.CSB01?.activeStatus === 1 &&
+            project.status?.CSB01?.status === "waiting"
+        )
+        .map((item) => ({
+            projectName: item.projectName,
+            students: item.student || [], // Get students from the project
+            lecturers: item.lecturer || [], // Get lecturers from the project
+            date: item.status.CSB01.date,
+        }))
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
 
-      // Create an array that combines the necessary data to display in the table
-      const combinedData = csb01Data.map((item) => {
-        const project = projectMap.get(item.projectId) || {};
-
-        return {
-          ...item,
-          projectName: project.projectName,
-
-          students: project.student || [], // Get students from the project
-          lecturers: project.lecturer || [], // Get lecturers from the project
-        };
-      });
-
-      setFilteredData(combinedData);
+      setFilteredData(filteredProjects);
     } catch (err) {
-      console.log(err);
+      console.log("Error fetching data:", err);
     }
   };
 
@@ -50,7 +45,7 @@ export default function CheckApproveCSB01() {
     },
     {
       title: "Student",
-      dataIndex: "students", // Ensure this matches your combined data structure
+      dataIndex: "students",
       render: (students) => (
         <>
           {Array.isArray(students) && students.length > 0 ? (
@@ -71,7 +66,7 @@ export default function CheckApproveCSB01() {
     },
     {
       title: "Advisors",
-      dataIndex: "lecturers", // Ensure this matches your combined data structure
+      dataIndex: "lecturers",
       render: (lecturers) => (
         <>
           {Array.isArray(lecturers) ? (
@@ -88,13 +83,31 @@ export default function CheckApproveCSB01() {
       ),
     },
     {
-      title: "Start Date",
-      dataIndex: "startDate", // Correctly referencing start date
-      render: (date) => date || "No date available", // Directly return the date
-    },
-
-
-
+        title: "Date Approve",
+        dataIndex: "date",
+        render: (date) => {
+          if (!date) return "No date available";
+      
+          // Convert the date string to a JavaScript Date object
+          const dateObj = new Date(date);
+      
+          // Format the date to DD/MM/YYYY
+          const formattedDate = dateObj.toLocaleString("en-GB", {
+            timeZone: "Asia/Bangkok", // Set time zone to Bangkok, Thailand
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour24: true,
+          });
+      
+          return formattedDate;
+        },
+      }
+      
+      
+      
   ];
 
   const onChange = (pagination, filters, sorter, extra) => {

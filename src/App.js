@@ -36,6 +36,10 @@ import Viewcsb03 from "./module/page/admin/view-csb03";
 import CheckApproveCSB01 from "./module/page/admin/check-approve/csb01";
 import CheckApproveCSB02 from "./module/page/admin/check-approve/csb02";
 import CheckApproveCSB03 from "./module/page/admin/check-approve/csb03";
+import CheckOCR from "./module/page/admin/checkstatus";
+// import CheckSP1 from "./module/page/admin/approve/sp1/CheckSP1";
+// import CheckSP2 from "./module/page/admin/approve/sp2/CheckSP2";
+
 
 function App() {
   const [role, setRole] = useState("");
@@ -133,10 +137,10 @@ function App() {
             )}
             {role === "teacher" && (
               <>
-                <Route
+                {/* <Route
                   path="/input-score/inputscore-csb02"
                   element={<InputScoreCSB02 />}
-                />
+                /> */}
                 <Route
                   path="/input-score/inputscore-csb01"
                   element={<InputScoreCSB01 />}
@@ -210,6 +214,12 @@ function App() {
                   path="/check-approve/csb03"
                   element={<CheckApproveCSB03 />}
                 />
+                                <Route
+                  path="/checkstatus"
+                  element={<CheckOCR />}
+                />
+
+
               </>
             )}
           </Routes>

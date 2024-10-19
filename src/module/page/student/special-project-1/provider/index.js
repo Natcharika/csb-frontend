@@ -53,7 +53,11 @@ export default function ProviderSp1() {
     formData.append("std", username);
 
     try {
-      const response = await fetch(`http://202.44.40.169/files?=${username}`, {
+      // const response = await fetch(`http://202.44.40.169/files?=${username}`, {
+      //   method: "POST",
+      //   body: formData,
+      // });
+      const response = await fetch(`http://localhost:8788/files?=${username}`, {
         method: "POST",
         body: formData,
       });
@@ -73,7 +77,8 @@ export default function ProviderSp1() {
 
   const handleFileUpload = async (fi_id) => {
     try {
-      await axios.patch(`http://202.44.40.169:8788/files/${fi_id}`);
+      // await axios.patch(`http://202.44.40.169:8788/files/${fi_id}`);
+      await axios.patch(`http://localhost:8788/files/${fi_id}`);
     } catch (error) {
       console.error("Error updating file status:", error);
     }

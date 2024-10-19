@@ -1,101 +1,76 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import { Table } from "antd";
+import React, { useEffect, useState } from "react";
 import api from "../../../../utils/form/api";
+import { Table } from "antd";
 
 export default function Sp2() {
-  const [data, setData] = useState();
+  const [data, setData] = useState([]);
+
   const fetchData = async () => {
-    api
-      .getStudent()
-      .then((res) => {
-        let filterData = res.data.body.filter(
-          (item) => item.projectStatus[0] == 1 && item.projectStatus[1] == 1
-        );
-        console.log(filterData);
-        setData(filterData);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    try {
+      const projectRes = await api.getAllProject(); // Fetch the project data
+      console.log("Fetched Project Data:", projectRes.data.body); // Debug the fetched data
+      const projects = projectRes.data.body;
+
+      // Filter projects where CSB01 status is "ผ่าน" and activeStatus is 2
+      const filteredProjects = projects.filter(
+        (project) =>
+          project.status.CSB02.status === "ผ่าน" &&
+          project.status.CSB02.activeStatus === 3
+      );
+
+      setData(filteredProjects);
+    } catch (error) {
+      console.error("Error fetching project data:", error);
+    }
   };
+
   useEffect(() => {
     fetchData();
   }, []);
 
   const columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      filters: [
-        {
-          text: "Joe",
-          value: "Joe",
-        },
-        {
-          text: "Category 1",
-          value: "Category 1",
-        },
-        {
-          text: "Category 2",
-          value: "Category 2",
-        },
-      ],
+      title: "Project Name",
+      dataIndex: "projectName",
       filterMode: "tree",
       filterSearch: true,
-      onFilter: (value, record) => record.name.startsWith(value),
+      onFilter: (value, record) => record.projectName.startsWith(value),
       width: "30%",
+      sorter: (a, b) => a.projectName.localeCompare(b.projectName),
     },
     {
-      title: "Age",
-      dataIndex: "age",
-      sorter: (a, b) => a.age - b.age,
+      title: "Name Student",
+      dataIndex: "student",
+      render: (students) => (
+        <>
+          {students.map((student, index) => (
+            <span key={index}>
+              {student.FirstName} {student.LastName}
+              <br />
+            </span>
+          ))}
+        </>
+      ),
     },
     {
-      title: "Address",
-      dataIndex: "address",
-      filters: [
-        {
-          text: "London",
-          value: "London",
-        },
-        {
-          text: "New York",
-          value: "New York",
-        },
-      ],
-      onFilter: (value, record) => record.address.startsWith(value),
-      filterSearch: true,
-      width: "40%",
+      title: "Name Lecturer",
+      dataIndex: "lecturer",
+      render: (lecturers) => (
+        <>
+          {lecturers && lecturers.length > 0 ? (
+            lecturers.map((lecturer, index) => (
+              <span key={index}>
+                {lecturer.T_name}
+                <br />
+              </span>
+            ))
+          ) : (
+            <span> </span>
+          )}
+        </>
+      ),
     },
   ];
-  // const data = [
-  //   {
-  //     key: '1',
-  //     name: 'John Brown',
-  //     age: 32,
-  //     address: 'New York No. 1 Lake Park',
-  //   },
-  //   {
-  //     key: '2',
-  //     name: 'Jim Green',
-  //     age: 42,
-  //     address: 'London No. 1 Lake Park',
-  //   },
-  //   {
-  //     key: '3',
-  //     name: 'Joe Black',
-  //     age: 32,
-  //     address: 'Sydney No. 1 Lake Park',
-  //   },
-  //   {
-  //     key: '4',
-  //     name: 'Jim Red',
-  //     age: 32,
-  //     address: 'London No. 2 Lake Park',
-  //   },
-
-  // ];
 
   const onChange = (pagination, filters, sorter, extra) => {
     console.log("params", pagination, filters, sorter, extra);
@@ -119,15 +94,15 @@ export default function Sp2() {
 
   return (
     <div>
-      {/* <h1>{JSON.stringify(data)}</h1> */}
+      <h1>Project List</h1>
       <Table
         className="custom-table"
         columns={columns}
         dataSource={data}
         onChange={onChange}
         components={components}
+        rowKey="_id" // Assuming each project has a unique _id
       />
-      ;
     </div>
   );
 }

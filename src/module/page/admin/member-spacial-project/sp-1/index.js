@@ -1,5 +1,4 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import api from "../../../../utils/form/api";
 import { Table } from "antd";
 
@@ -7,18 +6,22 @@ export default function Sp1() {
   const [data, setData] = useState([]);
 
   const fetchData = async () => {
-    const body = { projectValidate: [1, 0] };
-    api
-      .getStudent(body)
-      .then((res) => {
-        // let filterData = res.data.body.filter((item) => item.projectStatus[0] == 1 && item.projectStatus[1] == 0);
-        // console.log(filterData);
-        setData(res.data.body);
-        console.log(res.data.body);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    try {
+      const projectRes = await api.getAllProject(); // Fetch the project data
+      console.log("Fetched Project Data:", projectRes.data.body); // Debug the fetched data
+      const projects = projectRes.data.body;
+
+      // Filter projects where CSB01 status is "ผ่าน" and activeStatus is 2
+      const filteredProjects = projects.filter(
+        (project) =>
+          project.status.CSB01.status === "ผ่าน" &&
+          project.status.CSB01.activeStatus === 2
+      );
+
+      setData(filteredProjects);
+    } catch (error) {
+      console.error("Error fetching project data:", error);
+    }
   };
 
   useEffect(() => {
@@ -31,7 +34,7 @@ export default function Sp1() {
       dataIndex: "projectName",
       filterMode: "tree",
       filterSearch: true,
-      onFilter: (value, record) => record.name.startsWith(value),
+      onFilter: (value, record) => record.projectName.startsWith(value),
       width: "30%",
       sorter: (a, b) => a.projectName.localeCompare(b.projectName),
     },
@@ -48,30 +51,24 @@ export default function Sp1() {
           ))}
         </>
       ),
-      sorter: (a, b) => {
-        const studentA = a.student[0]?.FirstName || "";
-        const studentB = b.student[0]?.FirstName || "";
-        return studentA.localeCompare(studentB);
-      },
     },
     {
       title: "Name Lecturer",
       dataIndex: "lecturer",
       render: (lecturers) => (
         <>
-          {lecturers.map((lecturer, index) => (
-            <span key={index}>
-              {lecturer.FirstName} {lecturer.LastName}
-              <br />
-            </span>
-          ))}
+          {lecturers && lecturers.length > 0 ? (
+            lecturers.map((lecturer, index) => (
+              <span key={index}>
+                {lecturer.T_name}
+                <br />
+              </span>
+            ))
+          ) : (
+            <span> </span>
+          )}
         </>
       ),
-      sorter: (a, b) => {
-        const lecturerA = a.lecturer[0]?.FirstName || "";
-        const lecturerB = b.lecturer[0]?.FirstName || "";
-        return lecturerA.localeCompare(lecturerB);
-      },
     },
   ];
 
@@ -97,16 +94,15 @@ export default function Sp1() {
 
   return (
     <div>
-      <h1>
-        {/* {JSON.stringify(data)} */}
-        <Table
-          className="custom-table"
-          columns={columns}
-          dataSource={data}
-          onChange={onChange}
-          components={components}
-        />
-      </h1>
+      <h1>Project List</h1>
+      <Table
+        className="custom-table"
+        columns={columns}
+        dataSource={data}
+        onChange={onChange}
+        components={components}
+        rowKey="_id" // Assuming each project has a unique _id
+      />
     </div>
   );
 }

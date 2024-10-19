@@ -56,7 +56,7 @@ export default {
   getProjectById: (projectId) => service.get(`/projects/${projectId}`),
 
   // getStudent
-  getStudent: (data) => service.post("/students", { data }),
+  getStudent: (data) => service.get("/students", { data }),
 
   // getLeacturer
   getLeacturer: (params) => service.get("/lecturers", { params }),
@@ -125,6 +125,9 @@ export default {
   departcsb04: (params) => service.post("/depart-csb04", { params }),
 
   getfiles: (data) => service.get("/files", { data }),
+  updateFileStatus: (params) => service.patch("/files", { params }),
+
+
   // anouncement: (data) => service.post("/anouncements", data),
   anouncement: (data) => service.post("/anouncements", { data }),
 
@@ -164,6 +167,15 @@ export default {
       T_name: t_name,
       T_super_role: t_super_role,
     }),
+
+
+
+
+
+
+
+
+
 };
 export const getProjectById = async (projectId) => {
   return await axios.get(`/api/projects/${projectId}`); // Adjust the endpoint according to your API structure
