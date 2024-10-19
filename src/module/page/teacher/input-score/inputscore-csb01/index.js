@@ -1112,6 +1112,7 @@ function InputScoreCSB01() {
     const result = {
       _id: selectedProject._id,
       score: totalScore,
+      referee: [],
       comment: comment,
       nameExam: "สอบก้าวหน้า",
     };

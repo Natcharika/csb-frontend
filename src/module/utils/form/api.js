@@ -4,6 +4,8 @@ import AuthServices from "./AuthServices";
 
 const BASE = "http://localhost:8788";
 const FRONTEND = "http://localhost:3000";
+// const BASE = "http://202.44.40.169:8788";
+// const FRONTEND = "http://202.44.40.169:3000";
 
 const service = axios.create({ baseURL: BASE });
 
@@ -123,7 +125,8 @@ export default {
   departcsb04: (params) => service.post("/depart-csb04", { params }),
 
   getfiles: (data) => service.get("/files", { data }),
-  anouncement: (data) => service.post("/anouncements", data),
+  // anouncement: (data) => service.post("/anouncements", data),
+  anouncement: (data) => service.post("/anouncements", { data }),
 
   getLogin: (token) =>
     service.get("/auth/login", {
