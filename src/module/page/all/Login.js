@@ -22,7 +22,11 @@ const Login = ({ onLoginSuccess }) => {
 
   const onSubmit = async () => {
     try {
-      const response = await axios.post("http://202.44.40.169:8788/auth/login", {
+      // const response = await axios.post("http://202.44.40.169:8788/auth/login", {
+      //   username,
+      //   password,
+      // });
+      const response = await axios.post("http://localhost:8788/auth/login", {
         username,
         password,
       });
@@ -31,15 +35,15 @@ const Login = ({ onLoginSuccess }) => {
         const { username, role, jwtToken } = response.data;
         let level = role;
         if (role == "teacher") {
-          level = await api.getlevel(username)
+          level = await api.getlevel(username);
           if (level.status === 200) {
-            level = level.data.level
-          } else{
-            level = "teacher"
+            level = level.data.level;
+          } else {
+            level = "teacher";
           }
         }
         console.log("Login success:", username, role, level, jwtToken);
-        
+
         onLoginSuccess({ username, role, level, jwtToken });
         redirectToHome();
       }
