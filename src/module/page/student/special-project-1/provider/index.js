@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Typography, Upload, Button, message, Modal } from "antd";
 import cis from "../../../../public/image/cis.png";
 import axios from "axios";
+import "../../../../theme/css/buttons.css";
 
 const { Title, Paragraph } = Typography;
 
@@ -16,7 +17,7 @@ export default function ProviderSp1() {
     const token = localStorage.getItem("jwtToken");
 
     if (token) {
-      const payload = token.split('.')[1]; // ส่วน Payload
+      const payload = token.split(".")[1]; // ส่วน Payload
       const decodedPayload = JSON.parse(atob(payload)); // ถอดรหัส Base64
 
       // ตรวจสอบว่ามี username ใน Payload หรือไม่
@@ -57,6 +58,7 @@ export default function ProviderSp1() {
       //   method: "POST",
       //   body: formData,
       // });
+      
       const response = await fetch(`http://localhost:8788/files?=${username}`, {
         method: "POST",
         body: formData,
@@ -68,21 +70,61 @@ export default function ProviderSp1() {
         message.error("การส่งไฟล์ล้มเหลว");
       }
 
-      await handleFileUpload(username);
+      // await handleFileUpload(username);
     } catch (error) {
       console.error("Error uploading file:", error);
       message.error("เกิดข้อผิดพลาดในการอัปโหลดไฟล์");
     }
   };
 
-  const handleFileUpload = async (fi_id) => {
-    try {
-      // await axios.patch(`http://202.44.40.169:8788/files/${fi_id}`);
-      await axios.patch(`http://localhost:8788/files/${fi_id}`);
-    } catch (error) {
-      console.error("Error updating file status:", error);
-    }
-  };
+// const handleSubmit = async () => {
+//   if (!transcriptFile || !englishScoreFile) {
+//     message.error(
+//       "กรุณาอัปโหลดทั้งไฟล์ผลการศึกษาและไฟล์คะแนนภาษาอังกฤษก่อนที่จะส่ง"
+//     );
+//     return;
+//   }
+
+//   const formData = new FormData();
+//   formData.append("transcriptFile", transcriptFile);
+//   formData.append("englishScoreFile", englishScoreFile);
+//   formData.append("std", username);
+  
+//   // Append file names
+//   formData.append("transcriptFileName", transcriptFile.name); 
+//   formData.append("englishScoreFileName", englishScoreFile.name); 
+
+//   try {
+//     // const response = await fetch(`http://202.44.40.169/files?=${username}`, {
+//     //   method: "POST",
+//     //   body: formData,
+//     // });
+//     const response = await fetch(`http://localhost:8788/files?=${username}`, {
+//       method: "POST",
+//       body: formData,
+//     });
+
+//     if (response.ok) {
+//       message.success("ส่งไฟล์สำเร็จ!");
+//       await handleFileUpload(username);
+//     } else {
+//       message.error("การส่งไฟล์ล้มเหลว");
+//     }
+//   } catch (error) {
+//     console.error("Error uploading file:", error);
+//     message.error("เกิดข้อผิดพลาดในการอัปโหลดไฟล์");
+//   }
+// };
+
+
+  // const handleFileUpload = async (fi_id) => {
+  //   try {
+  //     // await axios.patch(`http://202.44.40.169:8788/files/${fi_id}`);
+  //     await axios.patch(`http://localhost:8788/files/${fi_id}`);
+  //   } catch (error) {
+  //     console.error("Error updating file status:", error);
+  //   }
+  // };
 
   const handlePreview = () => {
     setPreviewVisible(true);
@@ -113,23 +155,22 @@ export default function ProviderSp1() {
 
       <Title level={5}>เกณฑ์การประเมิน</Title>
       <Paragraph>
-        1. นักศึกษาโครงการพิเศษสองภาษาต้องลงทะเบียนเรียนวิชา 040613141 Special
-        Project I<br />
-        2. นักศึกษาโครงการพิเศษสองภาษาได้ผลการเรียนรวม ≥ 102 หน่วยกิต
-        และได้ผลการเรียนรายวิชาภาคฯ 0406xxxxx ≥ 57 หน่วยกิต
-        <br />
-        3. โดยใช้ ผลการศึกษา จาก Reg Kmutnb
-        <br />
-        <div style={{ marginLeft: "20px" }}>
-          3.1 ผลการศึกษา สามารถ Ctrl + p และเลือก Printer เป็น Microsoft Print
-          to PDF และบันทึกไฟล์ได้
-        </div>
-        4. ไฟล์คะแนนภาษาอังกฤษ
-      </Paragraph>
+  1. นักศึกษาโครงการพิเศษสองภาษาต้องลงทะเบียนเรียนวิชา 040613404 SpecialProject I ได้ผลการเรียนรวม ≥ 102 หน่วยกิต และได้ผลการเรียนรายวิชาภาคฯ 0406xxxxx ≥ 57 หน่วยกิต
+  <br />
+  <div style={{ marginLeft: "20px" }}>
+    1.1 โดยใช้ ไฟล์ผลการศึกษา จาก Reg Kmutnb สามารถ Ctrl + p และเลือก Printer เป็น Save as PDF และบันทึกไฟล์ได้
+    <br />
+    <a href="https://reg.kmutnb.ac.th/registrar/grade" target="_blank" rel="noopener noreferrer">
+      https://reg.kmutnb.ac.th/registrar/grade
+    </a>
+  </div>
+  2. นักศึกษาโครงการพิเศษสองภาษาต้องอัปไฟล์คะแนนภาษาอังกฤษ
+</Paragraph>
+
 
       {/* Upload for Transcript File */}
       <Upload beforeUpload={handleUploadTranscript} showUploadList={false}>
-        <Button type="primary">ไฟล์ผลการศึกษา</Button>
+        <Button type="primary" className="All-button">อัปโหลดไฟล์ผลการศึกษา</Button>
       </Upload>
       {transcriptFile && (
         <div style={{ marginTop: 16 }}>
@@ -140,6 +181,7 @@ export default function ProviderSp1() {
             type="default"
             onClick={handlePreview}
             style={{ marginTop: 10 }}
+            className="AddLecture-button"
           >
             ดูไฟล์
           </Button>
@@ -150,7 +192,7 @@ export default function ProviderSp1() {
       <br />
       <br />
       <Upload beforeUpload={handleUploadEnglishScore} showUploadList={false}>
-        <Button type="primary">ไฟล์คะแนนภาษาอังกฤษ</Button>
+        <Button type="primary" className="All-button">อัปโหลดไฟล์คะแนนภาษาอังกฤษ</Button>
       </Upload>
       {englishScoreFile && (
         <div style={{ marginTop: 16 }}>
@@ -161,6 +203,7 @@ export default function ProviderSp1() {
             type="default"
             onClick={handlePreview}
             style={{ marginTop: 10 }}
+            className="AddLecture-button"
           >
             ดูไฟล์
           </Button>
@@ -168,8 +211,8 @@ export default function ProviderSp1() {
       )}
 
       <div style={{ display: "flex", justifyContent: "center", marginTop: 20 }}>
-        <Button type="primary" onClick={handleSubmit}>
-          ส่งไฟล์
+        <Button type="primary" onClick={handleSubmit} className="All-button">
+        ส่งไฟล์
         </Button>
       </div>
 

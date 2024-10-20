@@ -217,7 +217,6 @@ function InputScoreCSB02() {
           ...prev,
           [selectedProject.projectId]: "evaluated",
         }));
-        console.log("555: ", result);
       } else {
         notification.error({
           message: "Error",

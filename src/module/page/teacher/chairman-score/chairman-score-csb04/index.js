@@ -28,11 +28,11 @@ function ChairmanScoreCSB04() {
 
   useEffect(() => {
     //เหมือนกันทุกอันของประธาน
-    const fetchProjectsAndCSB02Data = async () => {
+    const fetchProjectsAndCSB04Data = async () => {
       try {
         // Fetch projects from your API
         const token = localStorage.getItem("jwtToken");
-        const projectsRes = await api.getChairManProject("สอบก้าวหน้า", token); // Ensure this API exists
+        const projectsRes = await api.getChairManProject("สอบป้องกัน", token); // Ensure this API exists
         if (projectsRes.data.data.length > 0) {
           console.log("Projects fetched:", projectsRes.data.data);
 
@@ -42,12 +42,12 @@ function ChairmanScoreCSB04() {
         console.error("Error fetching data:", error);
         notification.error({
           message: "Error fetching data",
-          description: "Unable to load project and CSB02 data.",
+          description: "Unable to load project and CSB03 data.",
         });
       }
     };
 
-    fetchProjectsAndCSB02Data();
+    fetchProjectsAndCSB04Data();
   }, []);
 
   const handleNotification = (message, description, type) => {
@@ -173,13 +173,13 @@ function ChairmanScoreCSB04() {
     }
 
     const unconfirmScore = Number(updatedData);
-    const totalConfirmScore = unconfirmScore + Number(logBookScore); // Calculate confirmScore //ใน04เปลี่ยนด้วย
-
+    const totalConfirmScore = unconfirmScore + Number(logBookScore) + Number(exhibitionScore);
     try {
-      const response = await api.chaircsb02({
+      const response = await api.chaircsb04({
         _id: selectedProject._id, // Use _id for projectId
         activeStatus: 3,
         unconfirmScore: unconfirmScore,
+        exhibitionScore: exhibitionScore,
         logBookScore: logBookScore, //ใน04ต้องเปลี่ยน 01ไม่มีลบทิ้ง
       });
 

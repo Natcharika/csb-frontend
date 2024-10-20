@@ -15,7 +15,9 @@ export default function Sp2() {
       const filteredProjects = projects.filter(
         (project) =>
           project.status.CSB02.status === "ผ่าน" &&
-          project.status.CSB02.activeStatus === 3
+          project.status.CSB02.activeStatus === 2 &&
+          // Ensure CSB02 status is not "ผ่าน" with activeStatus 3
+          !(project.status.CSB04.status === "ผ่าน" && project.status.CSB04.activeStatus === 3)
       );
 
       setData(filteredProjects);
@@ -23,6 +25,7 @@ export default function Sp2() {
       console.error("Error fetching project data:", error);
     }
   };
+
 
   useEffect(() => {
     fetchData();
@@ -81,8 +84,7 @@ export default function Sp2() {
       cell: (props) => (
         <th
           style={{
-            backgroundColor: "#F77100",
-            color: "#FFFFFF",
+            backgroundColor: "rgb(253 186 116)",
             borderBottom: "2px solid #FFFFFF",
           }}
         >

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../utils/form/api";
+import "../../../theme/css/buttons.css";
 import { Table, Button, notification, Modal, Form, Input, Select } from "antd";
 
 export default function AddLecture() {
@@ -99,8 +100,7 @@ export default function AddLecture() {
       cell: (props) => (
         <th
           style={{
-            backgroundColor: "#F77100",
-            color: "#FFFFFF",
+            backgroundColor: "rgb(253 186 116)",
             borderBottom: "2px solid #FFFFFF",
           }}
         >
@@ -141,7 +141,7 @@ export default function AddLecture() {
       key: "action",
       render: (text, record) => (
         <Button
-          className="Add-button"
+          className="AddLecture-button"
           onClick={() => handleEdit(record)}
           style={{ marginRight: 8 }}
         >

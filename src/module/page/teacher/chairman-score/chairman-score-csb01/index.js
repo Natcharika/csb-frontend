@@ -104,7 +104,7 @@ function ChairmanScoreCSB01() {
     try {
       const response = await api.chaircsb01({
         _id: selectedProject._id, // Use _id for projectId
-        activeStatus: 3,
+        activeStatus: 2,
         unconfirmScore: unconfirmScore,
       });
 

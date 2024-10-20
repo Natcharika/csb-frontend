@@ -1,62 +1,23 @@
 import React, { useState, useEffect } from "react";
-import api from '../../../utils/form/api';
-import { Table, Button, message } from "antd";
+import api from "../../../utils/form/api";
+import { Table, Button, message, Tag } from "antd";
+import "../../../theme/css/buttons.css";
 
 export default function CheckOCR() {
   const [filteredData, setFilteredData] = useState([]);
+  
 
   const fetchData = async () => {
     try {
-      const filesResponse = await api.getfiles();
-      console.log("Files Response:", filesResponse);
-      const studentResponse = await api.getStudent();
-      console.log("Student Response:", studentResponse);
+      const token = localStorage.getItem("jwtToken");
+      const { data } = await api.getfiles(token);
+      console.log("Data:", data.body);
 
-      const filesData = filesResponse.data.body || [];
-      const studentsData = studentResponse.data.body || [];
-
-      // Map the students to a dictionary for easier lookup by S_id
-      const studentMap = studentsData.reduce((acc, student) => {
-        acc[student.S_id] = student; // Use S_id as the key for mapping
-        return acc;
-      }, {});
-      console.log("Student Map:", studentMap);
-
-      // Group files by student
-      const studentFilesMap = {};
-      filesData.forEach((file) => {
-        const student = studentMap[file.fi_id];
-        if (student) {
-          const studentId = student.S_id;
-          if (!studentFilesMap[studentId]) {
-            studentFilesMap[studentId] = {
-              student,
-              files: [],
-            };
-          }
-          studentFilesMap[studentId].files.push(file); // Add file to the student's file array
-        }
-      });
-      
-
-      // Convert grouped data to an array for the table
-      const mergedData = Object.values(studentFilesMap).flatMap(({ student, files }) =>
-        files.map((file) => ({
-          ...file,
-          students: student,
-        }))
-      );
-
-      console.log("Merged Data:", mergedData);
-
-      // Sort the projects by date in descending order
-      const sortedProjects = mergedData.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-      setFilteredData(sortedProjects);
-      console.log("Sorted Projects:", sortedProjects);
-    } catch (err) {
-      console.log("Error fetching data:", err);
+      setFilteredData(data.body);
+    } catch (error) {
+      console.log("Error fetching data:", error);
     }
+    
   };
 
   useEffect(() => {
@@ -65,50 +26,52 @@ export default function CheckOCR() {
 
   const handleApprove = async (record) => {
     try {
-      await api.updateFileStatus(record._id, { fi_status: "ผ่าน" });
+      await api.updateFileStatus(record._id, { fi_status: "ผ่าน" }); // Only send fi_status
       message.success("สถานะถูกอัพเดตเป็น 'ผ่าน' เรียบร้อยแล้ว");
-      fetchData();
+      fetchData(); // Refresh the data to reflect the updated status
     } catch (error) {
       message.error("การอัพเดตสถานะล้มเหลว");
       console.log("Error updating status:", error);
     }
   };
-  
   
 
   const handleReject = async (record) => {
     try {
-      await api.updateFileStatus(record._id, { fi_status: "ไม่ผ่าน" });
+      await api.updateFileStatus(record._id, { fi_status: "ไม่ผ่าน" }); // Only send fi_status
       message.success("สถานะถูกอัพเดตเป็น 'ไม่ผ่าน' เรียบร้อยแล้ว");
-      fetchData();
+      fetchData(); // Refresh the data to reflect the updated status
     } catch (error) {
       message.error("การอัพเดตสถานะล้มเหลว");
       console.log("Error updating status:", error);
     }
   };
+  
 
   const columns = [
     {
       title: "ชื่อนักศึกษา",
-      dataIndex: "students",
-      render: (students) => (
-        <span>{students ? students.S_name : "No student"}</span>
-      ),
-      width: 100
+      dataIndex: "studentName",
+      render: (students) => <span>{students ? students : "ไม่มีข้อมูล"}</span>,
+      width: 100,
     },
     {
       title: "ไฟล์",
       dataIndex: "fi_file",
-      render: (fi_file, record) => {
-        // Join file names with a line break if there are multiple files
-        const files = filteredData
-          .filter(item => item.students.S_id === record.students.S_id) // Find all files for the same student
-          .map(item => item.fi_file)
-          .join('\n'); // Use '\n' to create new lines
-          
-        return <span>{files || "No file name available"}</span>;
+      render: (fi_file) => {
+        return fi_file.map((file, index) => (
+          <Tag key={index} color="blue">
+            <a
+              href={`http://localhost:8788/view/${file.linkFile}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {file.fileName}
+            </a>
+          </Tag>
+        ));
       },
-      width: 300
+      width: 300,
     },
     {
       title: "ผลการตรวจไฟล์",
@@ -116,13 +79,14 @@ export default function CheckOCR() {
       render: (fi_result) => (
         <span>{fi_result ? fi_result : "No result available"}</span>
       ),
-      width: 175
+      width: 180,
     },
     {
       title: "จัดการ",
       render: (text, record) => (
         <>
           <Button
+            className="All-button"
             type="primary"
             style={{ marginRight: 8 }}
             onClick={() => handleApprove(record)}
@@ -130,6 +94,7 @@ export default function CheckOCR() {
             ผ่าน
           </Button>
           <Button
+            className="All-button"
             type="danger"
             onClick={() => handleReject(record)}
           >
@@ -137,7 +102,7 @@ export default function CheckOCR() {
           </Button>
         </>
       ),
-      width: 100
+      width: 100,
     },
   ];
 
@@ -150,8 +115,7 @@ export default function CheckOCR() {
       cell: (props) => (
         <th
           style={{
-            backgroundColor: "#F77100",
-            color: "#FFFFFF",
+            backgroundColor: "rgb(253 186 116)",
             borderBottom: "2px solid #FFFFFF",
           }}
         >

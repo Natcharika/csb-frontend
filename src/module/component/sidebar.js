@@ -170,8 +170,6 @@
 //     label: "เช็คสถานะนักศึกษา",
 //   },
 
-  
-
 //   {
 //     key: "/exam-management",
 //     // icon: React.createElement(FormOutlined),
@@ -246,9 +244,6 @@
 //       },
 //     ],
 //   },
-
-
-
 
 //   // {
 //   //   key: "/create-project-for-student",
@@ -518,8 +513,6 @@ const menuItemsAdmin = [
     label: "เช็คสถานะนักศึกษา",
   },
 
-  
-
   {
     key: "/exam-management",
     // icon: React.createElement(FormOutlined),
@@ -570,11 +563,11 @@ const menuItemsAdmin = [
     // icon: React.createElement(UserAddOutlined),
     label: "เพิ่มอาจารย์ที่ปรึกษา",
   },
-  {
-    key: "/view-csb03",
-    // icon: React.createElement(UserAddOutlined),
-    label: "ยื่นทดสอบระบบ",
-  },
+  // {
+  //   key: "/view-csb03",
+  //   // icon: React.createElement(UserAddOutlined),
+  //   label: "ยื่นทดสอบระบบ",
+  // },
   {
     key: "/check-approve",
     // icon: React.createElement(UserOutlined),
@@ -590,13 +583,20 @@ const menuItemsAdmin = [
       },
       {
         key: "/check-approve/csb03",
+        label: "ยื่นทดสอบโครงงาน",
+      },
+      {
+        key: "/check-approve/csb04",
         label: "ยื่นสอบป้องกัน",
       },
+
     ],
   },
-
-
-
+  // {
+  //   key: "/whitelist",
+  //   // icon: React.createElement(UserOutlined),
+  //   label: "จัดการผู้ใช้งาน",
+  // },
 
   // {
   //   key: "/create-project-for-student",
@@ -609,6 +609,20 @@ const menuItemsAdmin = [
   //   label: "แต่งตั้งหัวหน้าภาค",
   // },
 ];
+
+const menuItemsSuperAdmin = [
+  {
+    key: "/",
+    // icon: React.createElement(HomeOutlined),
+    label: "หน้าหลัก",
+  },
+  {
+    key: "/whitelist",
+    // icon: React.createElement(UserOutlined),
+    label: "จัดการผู้ใช้งาน",
+  },
+];
+
 const SiderBar = ({ children, role, username, level, logout }) => {
   const [selectedKey, setSelectedKey] = useState("/");
   const navigate = useNavigate();
@@ -631,7 +645,18 @@ const SiderBar = ({ children, role, username, level, logout }) => {
         <span>
           {username ? (
             <div className="flex items-center space-x-4">
-              <h1>{username}</h1>
+              <h1>
+                {role === "student"
+                  ? "นักศึกษา: "
+                  : role === "teacher"
+                  ? "อาจารย์: "
+                  : role === "admin"
+                  ? "เจ้าหน้าที่: "
+                  : role === "superAdmin"
+                  ? "ผู้ดูแลระบบ: "
+                  : ""}{" "}
+                {username}
+              </h1>
               <button
                 onClick={() => {
                   logout();
@@ -650,16 +675,8 @@ const SiderBar = ({ children, role, username, level, logout }) => {
 
       <Layout>
         <Sider className="sider bg-white">
-          <h1 style={{ marginLeft: "20px" }}>
-            {role === "student"
-              ? "นักศึกษา"
-              : role === "teacher"
-              ? "อาจารย์"
-              : role === "admin"
-              ? "เจ้าหน้าที่"
-              : ""}
-          </h1>
           <Menu
+            // className="menu bg-orange-400"
             mode="inline"
             selectedKeys={[selectedKey]}
             // defaultOpenKeys={["sub1"]}
@@ -670,6 +687,8 @@ const SiderBar = ({ children, role, username, level, logout }) => {
                 ? getMenuItemTeacher(level)
                 : role === "admin"
                 ? menuItemsAdmin
+                : role === "superAdmin"
+                ? menuItemsSuperAdmin
                 : [menuItemsStudent[0]]
             }
             onClick={handleMenuClick}
@@ -681,7 +700,7 @@ const SiderBar = ({ children, role, username, level, logout }) => {
             className="breadcrumb"
             items={[{ title: pageName }, { title: pageSub ?? "" }]}
           /> */}
-          
+
           <Content
             className="content"
             style={{

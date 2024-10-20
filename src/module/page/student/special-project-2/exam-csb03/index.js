@@ -13,6 +13,8 @@ import {
 import cis from "../../../../public/image/cis.png";
 import api from "../../../../utils/form/api";
 import loadingGif from "../../../../public/image/giphy (1).gif";
+import "../../../../theme/css/buttons.css";
+import "../../../../theme/css/texts.css";
 
 const { Title, Paragraph } = Typography;
 
@@ -113,8 +115,10 @@ export default function ExamCSB03() {
             });
             setProject(filteredProjects);
 
-            // Check if CSB03 status is "approved"
-            if (projectData.status?.CSB03?.status === "approved") {
+            // Check if CSB03 status is "ผ่านการอนุมัติจากอาจารย์"
+            if (
+              projectData.status?.CSB03?.status === "ผ่านการอนุมัติจากอาจารย์"
+            ) {
               setIsCSB03Approved(true);
             }
           } else {
@@ -283,6 +287,7 @@ export default function ExamCSB03() {
                       type="primary"
                       htmlType="submit"
                       style={{ padding: "6px 30px", fontSize: "16px" }}
+                      className="All-button"
                     >
                       ยินยอม
                     </Button>
@@ -297,7 +302,7 @@ export default function ExamCSB03() {
           <Paragraph>
             ไม่สามารถดำเนินการได้ เนื่องจากสถานะ CSB02 ไม่ผ่าน{" "}
           </Paragraph>
-          <img src={loadingGif} alt="Loading..." style={{ width: "100%" }} />
+          {/* <img src={loadingGif} alt="Loading..." style={{ width: "100%" }} /> */}
         </>
       )}
     </div>

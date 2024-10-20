@@ -212,15 +212,15 @@ function InputScoreCSB04() {
 
   const onSubmit = async () => {
     const result = {
-      projectId: selectedProject.projectId,
-      unconfirmScore: totalScore,
+      _id: selectedProject._id,
+      score: totalScore,
       comment: comment,
-      referee: [],
+      nameExam: "สอบป้องกัน",
     };
-    console.log("Result submitted: ", result);
 
     try {
-      const res = await api.scorecsb04(result);
+      const token = localStorage.getItem("jwtToken");
+      const res = await api.scorecsb(result, token);
       if (
         res.data.message === "CSB04 score updated successfully" ||
         res.data.message === "CSB04 score saved successfully"
@@ -233,7 +233,6 @@ function InputScoreCSB04() {
           ...prev,
           [selectedProject.projectId]: "evaluated",
         }));
-        console.log("555: ", result);
       } else {
         notification.error({
           message: "Error",

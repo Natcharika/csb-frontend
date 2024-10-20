@@ -20,12 +20,40 @@
 
 .content {
   padding: 24px;
-  margin: 0;
+  margin-top: 20px;
   min-height: 280px;
   word-break: break-word;
   white-space: normal;
+  background-color: rgb(255, 255, 255);
 }
 
 .breadcrumb {
   margin: 16px 0;
 }
+
+
+
+
+.ant-menu-item:hover {
+  background-color: rgb(242, 188, 131) !important;
+  /* / สีเมื่อ hover / */
+  color: rgb(0, 0, 0) !important;
+}
+
+.ant-menu-item-selected {
+  background-color: rgb(242, 188, 131) !important;
+  /* / สีเมื่อถูกเลือก / */
+  color: rgb(0, 0, 0) !important;
+}
+
+/* / เปลี่ยนสีของ SubMenu (menu ที่มี children) / */
+.ant-menu-submenu-title {
+  color: rgb(0, 0, 0) !important;
+}
+
+/* / เปลี่ยนสีเมื่อ hover บน SubMenu */
+.ant-menu-submenu-title:hover {
+  background-color: rgba(242, 188, 131) !important;
+  color: rgb(0, 0, 0) !important;
+}
+

@@ -14,32 +14,31 @@ export default function ApproveCSB03() {
     student: [],
     lecturer: [],
   });
+  const fetchProjects = async () => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      const { data } = await api.getProjectAcceptace("CSB03", token);
 
-  useEffect(() => {
-    api.getAllProject()
-      .then((res) => {
-        if (res.data.body.length > 0) {
-          setProjects(res.data.body); // Update projects state here
-
-          const projectData = res.data.body[0];
-          setData({
-            projectId: projectData._id || "",
-            projectName: projectData.projectName || "",
-            student: projectData.student || [],
-            lecturer: projectData.lecturer || [],
-          });
-        }
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        notification.error({
-          message: 'Error Fetching Projects',
-          description: 'Unable to fetch project data. Please try again later.',
-          placement: 'topRight',
-        });
-        setLoading(false);
+      if (data.body.length > 0) {
+        setProjects(data.body);
+        // Set initial data for the first project if needed
+        const projectData = data.body[0];
+        setProjectDetails(projectData);
+        setSelectedProject(projectData); // Store the first project as selected
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      notification.error({
+        message: "Error Fetching Projects",
+        description: "Unable to fetch project data. Please try again later.",
+        placement: "topRight",
       });
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchProjects()
   }, []);
 
 
@@ -71,6 +70,7 @@ export default function ApproveCSB03() {
       message.success(`อนุมัติโครงงาน ${selectedProject.projectName} สำเร็จ`);
       setApprovedProjects((prev) => new Set(prev).add(selectedProject.projectName));
       resetForm();
+      fetchProjects();
     } catch (error) {
       console.error(error);
       message.error('ไม่สามารถอนุมัติโครงงานได้ กรุณาลองใหม่อีกครั้ง');
@@ -96,8 +96,6 @@ export default function ApproveCSB03() {
     }
   };
 
-  const filteredProjects = projects.filter((project) => !approvedProjects.has(project.projectName));
-
   return (
     <div style={{ display: 'flex', justifyContent: 'center', padding: '24px', fontFamily: 'Arial, sans-serif' }}>
       <div style={{ width: '100%', maxWidth: '600px' }}>
@@ -115,7 +113,7 @@ export default function ApproveCSB03() {
                   style={{ width: '100%' }}
                   onChange={handleProjectChange}
                 >
-                  {filteredProjects.map((project) => (
+                  {projects.map((project) => (
                     <Select.Option key={project.projectId} value={project.projectName}>
                       {project.projectName}
                     </Select.Option>

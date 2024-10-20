@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from '../../../../utils/form/api';
+import api from "../../../../utils/form/api";
 import { Table } from "antd";
 
 export default function CheckApproveCSB02() {
@@ -12,21 +12,20 @@ export default function CheckApproveCSB02() {
 
       const projectsData = projectsResponse.data.body;
 
-      // Filter projects where status.CSB01.activeStatus is 1 and status.CSB01.status is "waiting"
+      // Filter projects where status.CSB01.activeStatus is 1 and status.CSB01.status is "รอดำเนินการ"
       const filteredProjects = projectsData
         .filter(
           (project) =>
             project.status?.CSB02?.activeStatus === 2 &&
-            project.status?.CSB02?.status === "approved"
+            project.status?.CSB02?.status === "ผ่านการอนุมัติจากอาจารย์"
         )
         .map((item) => ({
-            projectName: item.projectName,
-            students: item.student || [], // Get students from the project
-            lecturers: item.lecturer || [], // Get lecturers from the project
-            date: item.status.CSB02.date,
+          projectName: item.projectName,
+          students: item.student || [], // Get students from the project
+          lecturers: item.lecturer || [], // Get lecturers from the project
+          date: item.status.CSB02.date,
         }))
         .sort((a, b) => new Date(b.date) - new Date(a.date));
-
 
       setFilteredData(filteredProjects);
     } catch (err) {
@@ -84,31 +83,28 @@ export default function CheckApproveCSB02() {
       ),
     },
     {
-        title: "Date Approve",
-        dataIndex: "date",
-        render: (date) => {
-          if (!date) return "No date available";
-      
-          // Convert the date string to a JavaScript Date object
-          const dateObj = new Date(date);
-      
-          // Format the date to DD/MM/YYYY
-          const formattedDate = dateObj.toLocaleString("en-GB", {
-            timeZone: "Asia/Bangkok", // Set time zone to Bangkok, Thailand
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            hour24: true,
-          });
-      
-          return formattedDate;
-        },
-      }
-      
-      
-      
+      title: "Date Approve",
+      dataIndex: "date",
+      render: (date) => {
+        if (!date) return "No date available";
+
+        // Convert the date string to a JavaScript Date object
+        const dateObj = new Date(date);
+
+        // Format the date to DD/MM/YYYY
+        const formattedDate = dateObj.toLocaleString("en-GB", {
+          timeZone: "Asia/Bangkok", // Set time zone to Bangkok, Thailand
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour24: true,
+        });
+
+        return formattedDate;
+      },
+    },
   ];
 
   const onChange = (pagination, filters, sorter, extra) => {
@@ -120,8 +116,7 @@ export default function CheckApproveCSB02() {
       cell: (props) => (
         <th
           style={{
-            backgroundColor: "#F77100",
-            color: "#FFFFFF",
+            backgroundColor: "rgb(253 186 116)",
             borderBottom: "2px solid #FFFFFF",
           }}
         >

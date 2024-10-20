@@ -1114,15 +1114,15 @@ function InputScoreCSB01() {
       score: totalScore,
       referee: [],
       comment: comment,
-      nameExam: "สอบก้าวหน้า",
+      nameExam: "สอบหัวข้อ",
     };
 
     try {
       const token = localStorage.getItem("jwtToken");
       const res = await api.scorecsb(result, token);
       if (
-        res.data.message === "CSB02 score updated successfully" ||
-        res.data.message === "CSB02 score saved successfully"
+        res.data.message === "CSB01 score updated successfully" ||
+        res.data.message === "CSB01 score saved successfully"
       ) {
         message.success("บันทึกคะแนนสำเร็จ");
         setSuccessfulEvaluations((prev) =>
@@ -1277,9 +1277,9 @@ function InputScoreCSB01() {
         );
       });
 
-      projectData.lecturer.forEach((lecturer) => {
-        console.log(`อาจารย์ที่ปรึกษา: ${lecturer.T_name}`);
-      });
+      // projectData.lecturer.forEach((lecturer) => {
+      //   console.log(`อาจารย์ที่ปรึกษา: ${lecturer.T_name}`);
+      // });
     } catch (error) {
       console.error("Error fetching project details:", error);
       notification.error({
@@ -1455,7 +1455,7 @@ function InputScoreCSB01() {
                 year: "numeric",
               })}
             </p>
-            <p>
+            {/* <p>
               {data.lecturer.length > 0 ? (
                 data.lecturer.map((lecturer, index) => {
                   // Log the lecturer's name
@@ -1469,7 +1469,7 @@ function InputScoreCSB01() {
               ) : (
                 <p>ไม่มีอาจารย์ที่ปรึกษา</p>
               )}
-            </p>
+            </p> */}
           </Card>
           <Table dataSource={tableData} columns={columns} pagination={false} />
           <Form layout="vertical" style={{ marginTop: 16 }}>

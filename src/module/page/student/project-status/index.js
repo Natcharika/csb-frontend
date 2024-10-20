@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Typography, Layout, Table, Row, Col } from "antd";
 import api from "../../../utils/form/api";
+import "../../../theme/css/tables.css";
 
 const { Title, Paragraph } = Typography;
 const { Content } = Layout;
@@ -23,10 +24,20 @@ export default function ProjectStatus() {
   });
 
   const initialData = [
-    { id: 1, name: "ตรวจสอบคุณสมบัติการยื่นสอบโครงงานพิเศษ 1", status: "", remark: "" },
+    {
+      id: 1,
+      name: "ตรวจสอบคุณสมบัติการยื่นสอบโครงงานพิเศษ 1",
+      status: "",
+      remark: "",
+    },
     { id: 2, name: "การสอบหัวข้อ", status: "", remark: "" },
     { id: 3, name: "การสอบก้าวหน้า", status: "", remark: "" },
-    { id: 4, name: "ตรวจสอบคุณสมบัติการยื่นสอบโครงงานพิเศษ 2", status: "", remark: "" },
+    {
+      id: 4,
+      name: "ตรวจสอบคุณสมบัติการยื่นสอบโครงงานพิเศษ 2",
+      status: "",
+      remark: "",
+    },
     { id: 5, name: "การยื่นทดสอบโครงงาน", status: "", remark: "" },
     { id: 6, name: "การสอบป้องกัน", status: "", remark: "" },
   ];
@@ -36,7 +47,7 @@ export default function ProjectStatus() {
     const token = localStorage.getItem("jwtToken");
 
     if (token) {
-      const payload = token.split('.')[1];
+      const payload = token.split(".")[1];
       const decodedPayload = JSON.parse(atob(payload));
 
       if (decodedPayload.username) {
@@ -56,24 +67,29 @@ export default function ProjectStatus() {
           console.log("Response from API:", res.data.body);
           if (res.data.body.length > 0) {
             const projectData = res.data.body; // Get the entire array of projects
-  
+
             // Flag to check if any authorized user is found
             let foundAuthorizedUser = false;
-  
+
             // Iterate through all projects
             projectData.forEach((project) => {
               // Check if project has student and lecturer arrays
               if (project.student && project.lecturer) {
                 // Check if username matches any student or lecturer
-                const isAuthorizedUser = project.student.find(student => student.studentId === username) ||
-                  project.lecturer.find(lecturer => lecturer.T_name === username);
-  
+                const isAuthorizedUser =
+                  project.student.find(
+                    (student) => student.studentId === username
+                  ) ||
+                  project.lecturer.find(
+                    (lecturer) => lecturer.T_name === username
+                  );
+
                 console.log("isAuthorizedUser", isAuthorizedUser);
                 console.log("projectData.student", project.student);
-  
+
                 if (isAuthorizedUser) {
                   foundAuthorizedUser = true;
-  
+
                   // Set the data based on the matched project
                   setData({
                     projectId: project._id || "",
@@ -82,35 +98,61 @@ export default function ProjectStatus() {
                     student: project.student || [],
                     lecturer: project.lecturer || [],
                   });
-  
+
                   getFiless();
-  
+
                   const updatedStatus = initialData.map((item) => {
                     switch (item.id) {
                       case 1:
-                        return { ...item, status: dataFiles.fi_status || "waiting", username };
+                        return {
+                          ...item,
+                          status: dataFiles.fi_status || "รอดำเนินการ",
+                          username,
+                        };
                       case 2:
-                        return { ...item, status: project.status?.CSB01?.status || "No status", username };
+                        return {
+                          ...item,
+                          status: project.status?.CSB01?.status || "No status",
+                          username,
+                        };
                       case 3:
-                        return { ...item, status: project.status?.CSB02?.status || "No status", username };
+                        return {
+                          ...item,
+                          status: project.status?.CSB02?.status || "No status",
+                          username,
+                        };
                       case 4:
-                        return { ...item, status: dataFiles.fi_status || "waiting", username };
+                        return {
+                          ...item,
+                          status: dataFiles.fi_status || "รอดำเนินการ",
+                          username,
+                        };
                       case 5:
-                        return { ...item, status: project.status?.CSB03?.status || "No status", username };
+                        return {
+                          ...item,
+                          status: project.status?.CSB03?.status || "No status",
+                          username,
+                        };
                       case 6:
-                        return { ...item, status: project.status?.CSB04?.status || "No status", username };
+                        return {
+                          ...item,
+                          status: project.status?.CSB04?.status || "No status",
+                          username,
+                        };
                       default:
                         return item;
                     }
                   });
-  
+
                   setCheckAllStatus(updatedStatus);
                 }
               } else {
-                console.error("Project data does not contain student or lecturer arrays.");
+                console.error(
+                  "Project data does not contain student or lecturer arrays."
+                );
               }
             });
-  
+
             // If no authorized user is found, you can handle that case here
             if (!foundAuthorizedUser) {
               console.log("No authorized user found for any project.");
@@ -124,17 +166,17 @@ export default function ProjectStatus() {
         });
     }
   }, [username]);
-  
 
   const getFiless = () => {
-    api.getfiles()
+    api
+      .getfiles()
       .then((res) => {
         console.log("Get File:", res.data.body);
         const files = res.data.body[1];
         setDataFiles({
           fi_id: files.fi_id || "",
           fi_result: files.fi_result || "",
-          fi_status: files.fi_status || ""
+          fi_status: files.fi_status || "",
         });
       })
       .catch((err) => {
@@ -145,6 +187,21 @@ export default function ProjectStatus() {
   if (loading) {
     return <div>Loading...</div>;
   }
+
+  const components = {
+    header: {
+      cell: (props) => (
+        <th
+          style={{
+            backgroundColor: "rgb(253 186 116)",
+            borderBottom: "2px solid #FFFFFF",
+          }}
+        >
+          {props.children}
+        </th>
+      ),
+    },
+  };
 
   return (
     <Content>
@@ -180,6 +237,7 @@ export default function ProjectStatus() {
         ตรวจสอบสถานะต่างๆ
       </Title>
       <Table
+        className="custom-table"
         dataSource={checkAllStatus}
         columns={[
           { title: "ลำดับที่", dataIndex: "id", key: "id" },
@@ -189,6 +247,7 @@ export default function ProjectStatus() {
         ]}
         rowKey="id"
         pagination={false}
+        components={components}
       />
     </Content>
   );

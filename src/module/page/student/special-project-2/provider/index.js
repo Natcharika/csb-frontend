@@ -3,6 +3,7 @@ import { Typography, Upload, Button, message, Modal } from "antd";
 import cis from "../../../../public/image/cis.png";
 import loadingGif from "../../../../public/image/giphy (1).gif"
 import axios from "axios";
+import "../../../../theme/css/buttons.css";
 
 const { Title, Paragraph } = Typography;
 
@@ -30,9 +31,13 @@ export default function ProviderSp2() {
       }
   
       try {
-        const response2 = await fetch("http://202.44.40.169:8788/project-students", {
+
+        const response2 = await fetch("http://localhost:8788/project-students", {
           method: "GET",
         });
+        // const response2 = await fetch("http://202.44.40.169:8788/project-students", {
+        //   method: "GET",
+        // });
   
         const data = await response2.json();
   
@@ -57,11 +62,24 @@ export default function ProviderSp2() {
   }, [username]); // เพิ่ม username ใน dependencies
   
 
+  // const handleUploadTranscript = (uploadedFile) => {
+  //   setTranscriptFile(uploadedFile);
+  //   setFileUrl(URL.createObjectURL(uploadedFile));
+  //   return false;
+  // };
+
   const handleUploadTranscript = (uploadedFile) => {
+    // Check if the uploaded file is a PDF
+    if (uploadedFile.type !== "application/pdf") {
+      message.error("กรุณาอัปโหลดไฟล์ PDF เท่านั้น");
+      return false;
+    }
+  
     setTranscriptFile(uploadedFile);
     setFileUrl(URL.createObjectURL(uploadedFile));
     return false;
   };
+  
 
   const handleSubmit = async () => {
     if (!username) {
@@ -79,10 +97,17 @@ export default function ProviderSp2() {
     formData.append("std", username);
 
     try {
-      const response = await fetch("http://202.44.40.169:8788/files", {
+
+      const response = await fetch("http://localhost:8788/files", {
         method: "POST",
         body: formData,
       });
+
+      // const response = await fetch("http://202.44.40.169:8788/files", {
+      //   method: "POST",
+      //   body: formData,
+      // });
+
 
       if (response.ok) {
         message.success("ส่งไฟล์สำเร็จ!");
@@ -99,7 +124,9 @@ export default function ProviderSp2() {
 
   const handleFileUpload = async (fi_id) => {
     try {
-      await axios.patch(`http://202.44.40.169:8788/files/${fi_id}`);
+      await axios.patch(`http://localhost:8788/files/${fi_id}`);
+      
+      // await axios.patch(`http://202.44.40.169:8788/files/${fi_id}`);
     } catch (error) {
       console.error("Error updating file status:", error);
     }
@@ -117,47 +144,51 @@ export default function ProviderSp2() {
   if (!project) {
     return <div>Loading...</div>;
   }
-  const isCSB02Passed = project[0]?.status?.CSB02?.status === "passed";
+  const isCSB02Passed = project[0]?.status?.CSB02?.status === "ผ่าน";
   console.log("isCSB02Passed",isCSB02Passed)
 
   return (
     <div style={{ margin: "auto", padding: 40, backgroundColor: "#fff", borderRadius: 10, maxWidth: 820 }}>
       <img src={cis} alt="logo" style={{ display: "block", margin: "0 auto", width: "150px" }} />
-      <center><Title level={3}>ตรวจสอบคุณสมบัติยื่นโครงงานพิเศษ 1</Title></center>
+      <center><Title level={3}>ตรวจสอบคุณสมบัติยื่นโครงงานพิเศษ 2</Title></center>
       {isCSB02Passed ? (
         <>
           <Title level={5}>เกณฑ์การประเมิน</Title>
           <Paragraph>
-            1. นักศึกษาโครงการพิเศษสองภาษาต้องลงทะเบียนเรียนวิชา 040613142 Special Project II<br/>
-            2. โดยใช้ ผลการศึกษา จาก Reg Kmutnb<br/>
+            1. นักศึกษาโครงการพิเศษสองภาษาต้องลงทะเบียนเรียนวิชา 040613405 Special Project II <br/>
+            2. โดยใช้ ไฟล์ผลการศึกษา จาก Reg Kmutnb<br/>
             <div style={{ marginLeft: "20px" }}>
-              2.1 ผลการศึกษา สามารถ Ctrl + p  และเลือก Printer เป็น Microsoft Print to PDF และบันทึกไฟล์ได้
-            </div>
+    2.1 ผลการศึกษา สามารถ Ctrl + p และเลือก Printer เป็น Save as PDF และบันทึกไฟล์ได้ จาก Reg Kmutnb
+    <br />
+    <a href="https://reg.kmutnb.ac.th/registrar/grade" target="_blank" rel="noopener noreferrer">
+      https://reg.kmutnb.ac.th/registrar/grade
+    </a>
+  </div>
           </Paragraph>
 
           <Upload beforeUpload={handleUploadTranscript} showUploadList={false}>
-            <Button type="primary">ไฟล์ผลการศึกษา</Button>
+            <Button className="All-button" type="primary">อัปโหลดไฟล์ผลการศึกษา</Button>
           </Upload>
           {transcriptFile && (
             <div style={{ marginTop: 16 }}>
               <Paragraph>
                 <strong>ชื่อไฟล์ผลการศึกษา: </strong> {transcriptFile.name}
               </Paragraph>
-              <Button type="default" onClick={handlePreview} style={{ marginTop: 10 }}>
+              <Button className="All-button" type="default" onClick={handlePreview} style={{ marginTop: 10 }}>
                 ดูไฟล์
               </Button>
             </div>
           )}
           <div style={{ display: "flex", justifyContent: "center", marginTop: 20 }}>
-            <Button type="primary" onClick={handleSubmit}>
+            <Button className="All-button" type="primary" onClick={handleSubmit}>
               ส่งไฟล์
             </Button>
           </div>
         </>
       ) : (
         <>
-        <Paragraph>ไม่สามารถดำเนินการได้ เนื่องจากสถานะ CSB02 ไม่ผ่าน หรือแกยังไม่ยื่นอะป่าว ?</Paragraph>
-        <img src={loadingGif} alt="Loading..." style={{ width: "100%" }} />
+        <Paragraph>ไม่สามารถดำเนินการได้ เนื่องจากสถานะ CSB02 ไม่ผ่าน</Paragraph>
+        {/* <img src={loadingGif} alt="Loading..." style={{ width: "100%" }} /> */}
         </>
         
       )}

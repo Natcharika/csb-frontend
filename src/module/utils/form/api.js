@@ -109,6 +109,16 @@ export default {
   scorecsb04: (params) => service.post("/score-csb04", { params }),
 
   getProjects: (data) => service.get("/projects", { data }),
+  getProjectAcceptace: (examName, token) =>
+    service.post(
+      "/project-acceptance",
+      { examName },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    ),
 
   getcsb01: (data) => service.get("/csb01", { data }),
   chaircsb01: (params) => service.post("/chair-csb01", { params }),
@@ -124,12 +134,16 @@ export default {
   chaircsb04: (params) => service.post("/chair-csb04", { params }),
   departcsb04: (params) => service.post("/depart-csb04", { params }),
 
-  getfiles: (data) => service.get("/files", { data }),
+  getfiles: (token) => service.get("/files", { 
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+   }),
   updateFileStatus: (params) => service.patch("/files", { params }),
 
-
   // anouncement: (data) => service.post("/anouncements", data),
-  anouncement: (data) => service.post("/anouncements", { data }),
+  getanouncement: (data) => service.get("/anouncements", { data }),
+  postanouncement: (data) => service.post("/anouncements", { data }),
 
   getLogin: (token) =>
     service.get("/auth/login", {
@@ -168,15 +182,37 @@ export default {
       T_super_role: t_super_role,
     }),
 
+  getWhitelist: (token) =>
+    service.get("/whitelist", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 
+  addWhitelist: (data, token) =>
+    service.post("/whitelist", data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 
-
-
-
-
-
-
+  deleteWhitelist: (data, token) =>
+    service.delete("/whitelist", {
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 export const getProjectById = async (projectId) => {
   return await axios.get(`/api/projects/${projectId}`); // Adjust the endpoint according to your API structure
+};
+
+export const updateFileStatus = (fi_id, status) => {
+  const token = localStorage.getItem("jwtToken");
+  return axios.patch(`http://localhost:8788/files/${fi_id}`, status, {
+    headers: {
+      Authorization: `Bearer ${token}`, // If you are using authentication
+    },
+  });
 };

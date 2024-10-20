@@ -2,6 +2,8 @@ import React, { useState,useEffect  } from "react";
 import { Form, Input, Checkbox, Button, Typography, Row, Col, notification} from "antd";
 import cis from '../../../../public/image/cis.png';
 import api from '../../../../utils/form/api'; 
+import "../../../../theme/css/buttons.css";
+import "../../../../theme/css/texts.css";
 
 const { Title, Paragraph } = Typography;
 
@@ -53,7 +55,7 @@ export default function ExamCSB01() {
           // If a student is already in a project, show a notification and stop the submission
           notification.error({
             message: "เกิดข้อผิดพลาด",
-            description: "นักศึกษาอยู่ในโครงงานอยู่แล้ว ไม่สามารถสร้างโครงงานใหม่ได้",
+            description: "นักศึกษามีโครงงานอยู่แล้ว ไม่สามารถสร้างโครงงานใหม่ได้",
             placement: "topRight",
           });
           return; // Stop the form submission
@@ -209,12 +211,19 @@ if (studentExists) {
         </Form.Item>
 
         <Form.Item
-          label="ชื่อโครงงานภาษาอังกฤษ"
-          name="projectName"
-          rules={[{ required: true, message: "กรุณากรอกชื่อโครงงานภาษาอังกฤษ" }]}
-        >
-          <Input placeholder="ชื่อโครงงานภาษาอังกฤษ" />
-        </Form.Item>
+  label="ชื่อโครงงานภาษาอังกฤษ"
+  name="projectName"
+  rules={[
+    { required: true, message: "กรุณากรอกชื่อโครงงานภาษาอังกฤษ" },
+    {
+      pattern: /^[A-Za-z\s]+$/, // Regular expression for English letters and spaces
+      message: "กรุณากรอกเฉพาะตัวอักษรภาษาอังกฤษ",
+    },
+  ]}
+>
+  <Input placeholder="ชื่อโครงงานภาษาอังกฤษ" />
+</Form.Item>
+
 
         <Form.Item
           label="ประเภทโครงงาน"
@@ -272,7 +281,7 @@ if (studentExists) {
         </Form.Item>
 
         <Form.Item style={{ display: 'flex', justifyContent: 'center' }}>
-          <Button type="primary" htmlType="submit" disabled={isSubmitDisabled}>
+          <Button type="primary" htmlType="submit" disabled={isSubmitDisabled} className="All-button">
             บันทึก
           </Button>
         </Form.Item>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Typography, Switch, Modal, Row, Col,notification } from 'antd';
+import { Card, Button, Typography, Switch, Modal, Row, Col, notification } from 'antd';
 import api from '../../../utils/form/api';
 
 const ManageExam = () => {
@@ -11,52 +11,44 @@ const ManageExam = () => {
     const [dialogMessage, setDialogMessage] = useState('');
     const [anouncement, setAnouncement] = useState('');
 
-    
+    const fetchanouncement = async () => {
+        try {
+            const response = await api.getanouncement(); 
+            console.log("Announcement API Response:", response); // Log the entire response
+            if (response.data && response.data.body && response.data.body.length > 0) {
+                console.log("Fetched announcement Data:", response.data.body);
+                setAnouncement(response.data.body);
+
+                // Initialize switch states based on fetched announcement data
+                const fetchedData = response.data.body;
+                setOpen1(fetchedData.Exam_o_CSB01 === 'เปิด');
+                setOpen2(fetchedData.Exam_o_CSB02 === 'เปิด');
+                setOpen3(fetchedData.Exam_o_CSB03 === 'เปิด');
+                setOpen4(fetchedData.Exam_o_CSB04 === 'เปิด');
+            } else {
+                console.log("No announcement data found.");
+                setAnouncement([]); // Set to empty array or handle as needed
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            notification.error({
+                message: 'Error fetching data',
+                description: 'Unable to load project and CSB02 data.',
+            });
+        }
+    };
 
     useEffect(() => {
-        const savedOpen1 = localStorage.getItem('open1') === 'true';
-        const savedOpen2 = localStorage.getItem('open2') === 'true';
-        const savedOpen3 = localStorage.getItem('open3') === 'true';
-        const savedOpen4 = localStorage.getItem('open4') === 'true';
-
-        setOpen1(savedOpen1);
-        setOpen2(savedOpen2);
-        setOpen3(savedOpen3);
-        setOpen4(savedOpen4);
+        fetchanouncement();
     }, []);
 
+    // Handle the switch state persistence in localStorage
     useEffect(() => {
         localStorage.setItem('open1', open1);
         localStorage.setItem('open2', open2);
         localStorage.setItem('open3', open3);
         localStorage.setItem('open4', open4);
     }, [open1, open2, open3, open4]);
-
-    
-    useEffect(() => {
-        const fetchanouncement = async () => {
-            try {
-                const anouncement = await api.anouncement(); 
-                if (anouncement.data && anouncement.data.body && anouncement.data.body.length > 0) {
-                    console.log("Fetched anouncement Data:", anouncement.data.body);
-                    setAnouncement(anouncement.data.body);
-                } else {
-                    // Handle the case where body is empty or undefined
-                    console.log("No announcement data found.");
-                    setAnouncement([]); // Set to empty array or handle as needed
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                notification.error({
-                    message: 'Error fetching data',
-                    description: 'Unable to load project and CSB02 data.',
-                });
-            }
-        };
-    
-        fetchanouncement();
-    }, []);
-    
 
     const handleConfirm = async () => {
         const examData = {
@@ -65,18 +57,20 @@ const ManageExam = () => {
             Exam_o_CSB03: open3 ? 'เปิด' : 'ปิด',
             Exam_o_CSB04: open4 ? 'เปิด' : 'ปิด',
         };
-    
+
         try {
-            const response = await api.anouncement(examData); // Make sure this is a POST request
-            setDialogMessage(response.data.message); // Display success message
-            setDialogOpen(true); // Open the dialog
+            const response = await api.postanouncement(examData);
+            setDialogMessage(response.data.message);
+            setDialogOpen(true);
+            await fetchanouncement();  // Fetch updated announcement data after confirmation
+            console.log("examData",examData)
+            console.log("response",response)
         } catch (error) {
             console.error('Error updating exam status:', error);
-            setDialogMessage('Failed to update exam status.'); // Set error message
-            setDialogOpen(true); // Open the dialog
+            setDialogMessage('Failed to update exam status.');
+            setDialogOpen(true);
         }
     };
-    
 
     const handleCloseDialog = () => {
         setDialogOpen(false);

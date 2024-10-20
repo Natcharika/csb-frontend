@@ -1,0 +1,55 @@
+/* src/theme/css/table.css */
+
+.custom-table .ant-table {
+    font-family: "Sarabun";
+    font-weight: 400;
+    font-style: normal;
+}
+
+/* ลบพื้นหลังสีเทาสำหรับแถวทั้งหมด */
+.custom-table .ant-table-row {
+    background-color: transparent !important;
+    /* ลบสีพื้นหลังสีเทา */
+}
+
+/* เมื่อ hover แถว */
+.custom-table .ant-table-row:hover {
+    background-color: rgb(253, 186, 116, 0.5) !important;
+    /* สีพื้นหลังเมื่อ hover เป็นสีส้ม */
+}
+
+/* ปรับให้แน่ใจว่าสีพื้นหลังของเซลล์เข้ากันเมื่อ hover */
+.custom-table .ant-table-cell {
+    background-color: transparent !important;
+    /* ให้เซลล์มีพื้นหลังโปร่งใส */
+}
+
+/* เปลี่ยนสีเส้นคั้นระหว่างแถว */
+.custom-table .ant-table-tbody>tr>td {
+    border-bottom: 1px solid #f76f0032 !important;
+    /* เปลี่ยนสีเส้นคั้นเป็นสีส้ม */
+  }
+  
+  /* ปรับสีของตัวเลขหน้าปัจจุบัน */
+  .custom-table .ant-pagination-item-active a {
+    color: #F77100 !important;
+    /* เปลี่ยนสีตัวเลขเป็นสีส้ม */
+  }
+  
+  /* ปรับสีกรอบของเลขหน้าปัจจุบัน */
+  .custom-table .ant-pagination-item-active {
+    border-color: #F77100 !important;
+    /* เปลี่ยนกรอบเป็นสีส้ม */
+  }
+  
+  /* เปลี่ยนสีไอคอนเลื่อนซ้าย */
+  .custom-table .ant-pagination-prev .ant-pagination-item-link {
+    color: #F77100 !important;
+    /* เปลี่ยนสีของไอคอนเป็นสีส้ม */
+  }
+  
+  /* เปลี่ยนสีไอคอนเลื่อนขวา */
+  .custom-table .ant-pagination-next .ant-pagination-item-link {
+    color: #F77100 !important;
+    /* เปลี่ยนสีของไอคอนเป็นสีส้ม */
+  }

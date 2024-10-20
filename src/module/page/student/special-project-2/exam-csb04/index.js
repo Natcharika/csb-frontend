@@ -23,7 +23,7 @@
 //       const response = await api.studentactivecsb04({
 //                 projectId: data.projectId,
 //                 activeStatus: 1, // ส่ง activeStatus เป็น 1
-//                 status: "waiting", // ส่ง status เป็น "waiting"
+//                 status: "รอดำเนินการ", // ส่ง status เป็น "รอดำเนินการ"
 //               });
 
 //       notification.success({
@@ -95,10 +95,10 @@
 //     }
 //   }, [username]);
 
-//   // Check if CSB01 is passed for the filtered project
+//   // Check if CSB01 is ผ่าน for the filtered project
 //   const isCSB03Passed = Array.isArray(project) &&
 //   project.length > 0 &&
-//   (project[0]?.status?.CSB03?.status === "approved" || project[0]?.status?.CSB03?.status === "passed");
+//   (project[0]?.status?.CSB03?.status === "ผ่านการอนุมัติจากอาจารย์" || project[0]?.status?.CSB03?.status === "ผ่าน");
 
 //   const hasLecturer = Array.isArray(data.lecturer) && data.lecturer.length > 0;
 
@@ -180,6 +180,7 @@ import { Typography, Button, Row, Col, notification } from "antd";
 import cis from "../../../../public/image/cis.png";
 import api from "../../../../utils/form/api";
 import loadingGif from "../../../../public/image/giphy (1).gif";
+import "../../../../theme/css/buttons.css";
 
 const { Title, Paragraph } = Typography;
 
@@ -201,7 +202,7 @@ export default function ExamCSB04() {
       const response = await api.studentactivecsb04({
         projectId: data.projectId,
         activeStatus: 1, // ส่ง activeStatus เป็น 1
-        status: "waiting", // ส่ง status เป็น "waiting"
+        status: "รอดำเนินการ", // ส่ง status เป็น "รอดำเนินการ"
       });
 
       notification.success({
@@ -254,10 +255,10 @@ export default function ExamCSB04() {
             });
             setProject(filteredProjects); // Update the project state with the filtered projects
 
-            // Check if CSB04 status is approved or passed
+            // Check if CSB04 status is ผ่านการอนุมัติจากอาจารย์ or ผ่าน
             if (
-              projectData.status.CSB04?.status === "approved" ||
-              projectData.status.CSB04?.status === "passed"
+              projectData.status.CSB04?.status === "ผ่านการอนุมัติจากอาจารย์" ||
+              projectData.status.CSB04?.status === "ผ่าน"
             ) {
               setIsCSB04Submitted(true);
             }
@@ -287,11 +288,11 @@ export default function ExamCSB04() {
     }
   }, [username]);
 
-  // Check if CSB03 is passed for the filtered project
+  // Check if CSB03 is ผ่าน for the filtered project
   const isCSB03Passed =
     Array.isArray(project) &&
     project.length > 0 &&
-    project[0]?.status?.CSB03?.status === "approved";
+    project[0]?.status?.CSB03?.status === "ผ่านการอนุมัติจากอาจารย์";
 
   const hasLecturer = Array.isArray(data.lecturer) && data.lecturer.length > 0;
 
@@ -401,6 +402,7 @@ export default function ExamCSB04() {
                       type="primary"
                       onClick={handleAccept}
                       style={{ padding: "6px 30px", fontSize: "16px" }}
+                      className="All-button"
                     >
                       ยินยอม
                     </Button>
@@ -411,7 +413,7 @@ export default function ExamCSB04() {
           ) : (
             <Paragraph>
               ไม่สามารถดำเนินการได้ เนื่องจากสถานะ CSB03
-              ยังไม่ผ่านกการอนุมัติจากอาจารย์ที่ปรึกษา หรือแกยังไม่ยื่นอะป่าว ?
+              ยังไม่ผ่านการอนุมัติจากอาจารย์ที่ปรึกษา
             </Paragraph>
           )}
         </>

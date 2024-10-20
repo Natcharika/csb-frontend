@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import api from "../../../utils/form/api";
 import { Table, Tag, Button, Dropdown, Menu } from "antd";
 import moment from "moment";
+import "../../../theme/css/tables.css";
+import "../../../theme/css/buttons.css";
 
 export default function SumaryRoom() {
   const [data, setData] = useState([]);
@@ -178,8 +180,7 @@ export default function SumaryRoom() {
       cell: (props) => (
         <th
           style={{
-            backgroundColor: "#F77100",
-            color: "#FFFFFF",
+            backgroundColor: "rgb(253 186 116)",
             borderBottom: "2px solid #FFFFFF",
           }}
         >
@@ -215,7 +216,7 @@ export default function SumaryRoom() {
         />
       </div>
       <div style={{ textAlign: "center" }}>
-        <Button className="Print-button" type="primary" onClick={handlePrint}>
+        <Button className="All-button" type="primary" onClick={handlePrint}>
           พิมพ์เอกสาร
         </Button>
       </div>
