@@ -1,55 +1,76 @@
 .All-button {
-    background-color: #F77100 !important;
-    /* เปลี่ยนสีพื้นหลัง */
-    border-color: #F77100 !important;
-    /* เปลี่ยนสีกรอบ */
-    color: #FFFFFF !important;
-    /* เปลี่ยนสีข้อความ */
-    font-family: "Sarabun";
-    font-weight: 400;
-    font-style: normal;
+  background-color: #20950D !important;
+  /* เปลี่ยนสีพื้นหลัง */
+  border-color: #20950D !important;
+  /* เปลี่ยนสีกรอบ */
+  color: #ffffff !important;
+  /* เปลี่ยนสีข้อความ */
+  font-family: "Sarabun";
+  font-weight: 400;
+  font-style: normal;
 }
 
 .All-button:hover {
-    background-color: rgba(247, 113, 0, 0.5) !important;
-    /* เปลี่ยนสีพื้นหลังเมื่อ hover */
-    border-color: rgba(247, 113, 0, 0.5) !important;
-    /* เปลี่ยนสีกรอบเมื่อ hover */
-    color: #FFFFFF !important;
-    /* สีข้อความเมื่อ hover */
+  background-color: #1f950d79 !important;
+  /* เปลี่ยนสีพื้นหลังเมื่อ hover */
+  border-color: #1f950d79 !important;
+  /* เปลี่ยนสีกรอบเมื่อ hover */
+  color: #ffffff !important;
+  /* สีข้อความเมื่อ hover */
+}
+
+.red-button {
+  background-color: rgb(255, 0, 0) !important;
+  /* เปลี่ยนสีพื้นหลัง */
+  border-color: rgb(255, 0, 0) !important;
+  /* เปลี่ยนสีกรอบ */
+  color: #ffffff !important;
+  /* เปลี่ยนสีข้อความ */
+  font-family: "Sarabun";
+  font-weight: 400;
+  font-style: normal;
+}
+
+.red-button:hover {
+  background-color: rgba(255, 0, 0, 0.518) !important;
+  /* เปลี่ยนสีพื้นหลังเมื่อ hover */
+  border-color: rgba(255, 0, 0, 0.518) !important;
+  /* เปลี่ยนสีกรอบเมื่อ hover */
+  color: #ffffff !important;
+  /* สีข้อความเมื่อ hover */
 }
 
 .AddLecture-button:hover {
-    background-color: rgb(248, 230, 216) !important;
-    /* เปลี่ยนสีพื้นหลังเมื่อ hover */
-    border-color: rgb(247, 111, 0) !important;
-    /* เปลี่ยนสีกรอบเมื่อ hover */
-    color: rgb(247, 111, 0) !important;
-    /* สีข้อความเมื่อ hover */
+  background-color: rgb(248, 230, 216) !important;
+  /* เปลี่ยนสีพื้นหลังเมื่อ hover */
+  border-color: rgb(247, 111, 0) !important;
+  /* เปลี่ยนสีกรอบเมื่อ hover */
+  color: rgb(247, 111, 0) !important;
+  /* สีข้อความเมื่อ hover */
 }
 
 .All-button:disabled {
-    background-color: rgb(219, 218, 218) !important;
-    /* เปลี่ยนสีพื้นหลังเมื่อ hover */
-    border-color: rgba(143, 143, 143, 0.6) !important;
-    /* เปลี่ยนสีกรอบเมื่อ hover */
-    color: rgb(143, 143, 143) !important;
-    /* สีข้อความเมื่อ hover */
+  background-color: rgb(219, 218, 218) !important;
+  /* เปลี่ยนสีพื้นหลังเมื่อ hover */
+  border-color: rgba(143, 143, 143, 0.6) !important;
+  /* เปลี่ยนสีกรอบเมื่อ hover */
+  color: rgb(143, 143, 143) !important;
+  /* สีข้อความเมื่อ hover */
 }
 
 .custom-dropdown-button {
-    background-color: #F77100 !important;
-    /* เปลี่ยนสีพื้นหลังของปุ่ม */
-    color: #FFFFFF !important;
-    /* เปลี่ยนสีข้อความในปุ่ม */
-    border: none !important;
-    /* ลบเส้นขอบถ้าต้องการ */
-    font-family: "Sarabun";
-    font-weight: 400;
-    font-style: normal;
+  background-color: #f77100 !important;
+  /* เปลี่ยนสีพื้นหลังของปุ่ม */
+  color: #ffffff !important;
+  /* เปลี่ยนสีข้อความในปุ่ม */
+  border: none !important;
+  /* ลบเส้นขอบถ้าต้องการ */
+  font-family: "Sarabun";
+  font-weight: 400;
+  font-style: normal;
 }
 
 .custom-dropdown-button:hover {
-    background-color: rgba(247, 113, 0, 0.5) !important;
-    /* เปลี่ยนสีเมื่อ hover */
+  background-color: rgba(247, 113, 0, 0.5) !important;
+  /* เปลี่ยนสีเมื่อ hover */
 }

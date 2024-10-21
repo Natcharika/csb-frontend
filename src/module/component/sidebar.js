@@ -362,7 +362,7 @@ const menuItemsStudent = [
       {
         key: "/special-project-1/provider",
         // label: "ตรวจสอบคุณสมบัตินักศึกษา" <br/> "Special Project 1",
-        label: `${"ตรวจสอบคุณสมบัตินักศึกษา"} <br/> ${"Special Project 1"}`,
+        label: "ตรวจสอบคุณสมบัติ",
       },
       {
         key: "/special-project-1/exam-csb01",
@@ -589,7 +589,6 @@ const menuItemsAdmin = [
         key: "/check-approve/csb04",
         label: "ยื่นสอบป้องกัน",
       },
-
     ],
   },
   // {

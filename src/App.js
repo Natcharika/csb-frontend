@@ -40,8 +40,6 @@ import CheckApproveCSB04 from "./module/page/admin/check-approve/csb04";
 import CheckOCR from "./module/page/admin/checkstatus";
 import Whitelist from "./module/page/multiRole/whitelist";
 
-
-
 function App() {
   const [role, setRole] = useState("");
   const [username, setUsername] = useState("");
@@ -88,7 +86,7 @@ function App() {
   return (
     <div>
       <BrowserRouter>
-        <div>
+        {/* <div>
           <button onClick={() => setRole("")}>หายตัว!!!</button>
           <button onClick={() => setRole("teacher")}>
             กลายร่างเป็นอาจารย์
@@ -99,10 +97,10 @@ function App() {
           <button onClick={() => setRole("admin")}>
             กลายร่างเป็นเจ้าหน้าที่
           </button>
-        </div>
+        </div> */}
         <SiderBar role={role} username={username} level={level} logout={logout}>
           <Routes>
-            <Route path="/" element={<Home role={role}/>} />
+            <Route path="/" element={<Home role={role} />} />
             <Route
               path="/login"
               element={<Login onLoginSuccess={onLoginSuccess} />}
@@ -210,24 +208,20 @@ function App() {
                   path="/check-approve/csb03"
                   element={<CheckApproveCSB03 />}
                 />
-                                <Route
+                <Route
                   path="/check-approve/csb04"
                   element={<CheckApproveCSB04 />}
                 />
-                                <Route
-                  path="/checkstatus"
-                  element={<CheckOCR />}
-                />
-
-
+                <Route path="/checkstatus" element={<CheckOCR />} />
               </>
             )}
 
-            {role === "admin" || role === "superAdmin" && (<>
-              <Route path="/whitelist" element={<Whitelist/>}/>
-              
-            </>)}
-
+            {role === "admin" ||
+              (role === "superAdmin" && (
+                <>
+                  <Route path="/whitelist" element={<Whitelist />} />
+                </>
+              ))}
           </Routes>
         </SiderBar>
       </BrowserRouter>

@@ -306,7 +306,7 @@ export default function ExamCSB04() {
   );
 
   if (loading) {
-    return <div>ทำเจคให้ไม่มีบัคก่อนค่อยยื่นทดสอบจ้า</div>;
+    return <div></div>;
   }
 
   return (
@@ -338,7 +338,7 @@ export default function ExamCSB04() {
       </Typography>
 
       {isCSB04Submitted ? (
-        <Paragraph>ท่านยื่นสอบป้องกันเเล้ว</Paragraph>
+        <Paragraph>ท่านยื่นขอสอบป้องกันเเล้ว</Paragraph>
       ) : (
         <>
           {isCSB03Passed && hasLecturer ? (
@@ -404,7 +404,7 @@ export default function ExamCSB04() {
                       style={{ padding: "6px 30px", fontSize: "16px" }}
                       className="All-button"
                     >
-                      ยินยอม
+                      ยินยอมขอสอบป้องกัน
                     </Button>
                   </Col>
                 </Row>
@@ -413,7 +413,7 @@ export default function ExamCSB04() {
           ) : (
             <Paragraph>
               ไม่สามารถดำเนินการได้ เนื่องจากสถานะ CSB03
-              ยังไม่ผ่านการอนุมัติจากอาจารย์ที่ปรึกษา
+              {/* ยังไม่ผ่านการอนุมัติจากอาจารย์ที่ปรึกษา */}
             </Paragraph>
           )}
         </>

@@ -10,6 +10,8 @@ import {
   notification,
 } from "antd";
 import api from "../../../../utils/form/api";
+import "../../../../theme/css/texts.css";
+import "../../../../theme/css/tables.css";
 
 function ChairmanScoreCSB01() {
   const [projects, setProjects] = useState([]); // State to hold projects
@@ -52,7 +54,7 @@ function ChairmanScoreCSB01() {
       {
         id: 1,
         name: "คะแนนรวม",
-        fullscores: "90",
+        fullscores: "100",
         score: project.unconfirmScore || "", // Show unconfirmScore in score
       },
     ]);
@@ -156,6 +158,21 @@ function ChairmanScoreCSB01() {
     },
   ];
 
+  const components = {
+    header: {
+      cell: (props) => (
+        <th
+          style={{
+            backgroundColor: "rgb(253 186 116)",
+            borderBottom: "2px solid #FFFFFF",
+          }}
+        >
+          {props.children}
+        </th>
+      ),
+    },
+  };
+
   return (
     <div
       style={{
@@ -235,12 +252,14 @@ function ChairmanScoreCSB01() {
 
               <h2>ตารางคะแนนสำหรับประธานกรรมการสอบ</h2>
               <Table
+                className="custom-table"
                 dataSource={data}
                 columns={columns}
                 pagination={false}
                 rowKey="id"
                 bordered
                 style={{ marginTop: "16px" }}
+                components={components}
               />
 
               <Row

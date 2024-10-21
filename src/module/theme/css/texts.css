@@ -1,84 +1,61 @@
 /* เปลี่ยนสีกรอบของ Input เมื่อเอาเมาส์ไปชี้ */
 .ant-input:hover {
-    border-color: #ffb340 !important; /* สีกรอบเมื่อ hover */
-    box-shadow: 0 0 5px rgba(255, 175, 64, 0.5) !important; /* เพิ่มเงา */
-  }
+  border-color: #ffb340 !important; /* สีกรอบเมื่อ hover */
+  box-shadow: 0 0 5px rgba(255, 175, 64, 0.5) !important; /* เพิ่มเงา */
+}
 
 .ant-input:focus {
-    border-color: #ffb340 !important; /* สีกรอบที่ต้องการเมื่อคลิก */
-    box-shadow: 0 0 5px rgba(255, 175, 64, 0.5) !important;
-  }
+  border-color: #ffb340 !important; /* สีกรอบที่ต้องการเมื่อคลิก */
+  box-shadow: 0 0 5px rgba(255, 175, 64, 0.5) !important;
+}
 
 .ant-input:not(:placeholder-shown) {
-    background-color: #fee9c4; /* สีพื้นหลังที่ต้องการ */
-    border-color: #ffd28f !important;
-  }
-
-
+  background-color: #fee9c4; /* สีพื้นหลังที่ต้องการ */
+  border-color: #ffd28f !important;
+}
 
 /* เปลี่ยนสีพื้นหลังของ checkbox เมื่อถูกเลือก */
 .ant-checkbox-checked .ant-checkbox-inner {
-    background-color: #ffb340; /* สีพื้นหลังที่ต้องการเมื่อถูกเลือก */
-    border-color: #ffb340; /* สีกรอบเมื่อ checkbox ถูกเลือก */
-  }
-  
-  /* เปลี่ยนสีกรอบของ checkbox */
-  .ant-checkbox .ant-checkbox-inner {
-    border-color: #ffb340; /* สีกรอบ checkbox */
-  }
-  
-  /* เปลี่ยนสี icon ติ๊กถูกเมื่อ checkbox ถูกเลือก */
-  .ant-checkbox-checked .ant-checkbox-inner::after {
-    border-color: #fff; /* สีของเครื่องหมายถูก */
-  }
-  
-  /* เปลี่ยนสีเมื่อ checkbox อยู่ในสถานะ hover */
-  .ant-checkbox-wrapper:hover .ant-checkbox-inner {
-    border-color: #ffb340; /* สีกรอบเมื่อ hover */
-    background-color: #ffb340; /* สีพื้นหลังเมื่อ hover */
-  }
-  
-  /* เปลี่ยนสีพื้นหลังเมื่อ checkbox ถูกเลือกและ hover */
-  .ant-checkbox-checked:hover .ant-checkbox-inner {
-    background-color: #ffb340; /* สีพื้นหลังที่เปลี่ยนเมื่อถูกเลือกและ hover */
-  }
+  background-color: #ffb340; /* สีพื้นหลังที่ต้องการเมื่อถูกเลือก */
+  border-color: #ffb340; /* สีกรอบเมื่อ checkbox ถูกเลือก */
+}
 
+/* เปลี่ยนสีกรอบของ checkbox */
+.ant-checkbox .ant-checkbox-inner {
+  border-color: #ffb340; /* สีกรอบ checkbox */
+}
 
+/* เปลี่ยนสี icon ติ๊กถูกเมื่อ checkbox ถูกเลือก */
+.ant-checkbox-checked .ant-checkbox-inner::after {
+  border-color: #fff; /* สีของเครื่องหมายถูก */
+}
 
+/* เปลี่ยนสีเมื่อ checkbox อยู่ในสถานะ hover */
+.ant-checkbox-wrapper:hover .ant-checkbox-inner {
+  border-color: #ffb340; /* สีกรอบเมื่อ hover */
+  background-color: #ffb340; /* สีพื้นหลังเมื่อ hover */
+}
 
+/* เปลี่ยนสีพื้นหลังเมื่อ checkbox ถูกเลือกและ hover */
+.ant-checkbox-checked:hover .ant-checkbox-inner {
+  background-color: #ffb340; /* สีพื้นหลังที่เปลี่ยนเมื่อถูกเลือกและ hover */
+}
 
 /* Custom styles for the Select component */
-.custom-select .ant-select-selector {
-    border-color: #ffb340 !important; /* เปลี่ยนสีกรอบ */
-    background-color: #ffb340 !important; /* เปลี่ยนสีพื้นหลัง */
-  }
-  
-  /* เปลี่ยนสีกรอบเมื่อ Select ถูกเลือก */
-  .custom-select .ant-select-selector.ant-select-selector:focus {
-    border-color: #ffb340 !important; /* เปลี่ยนสีกรอบเมื่อถูกโฟกัส */
-    box-shadow: 0 0 0 2px rgba(255, 175, 64, 0.5) !important; /* เพิ่มเงาเมื่อโฟกัส */
-  }
-  
-  /* เปลี่ยนสีพื้นหลังและกรอบเมื่อ hover */
-  .custom-select .ant-select-selector:hover {
-    border-color: #ffb340 !important; /* เปลี่ยนสีกรอบเมื่อ hover */
-    background-color: #ffb3407e !important; /* เปลี่ยนสีพื้นหลังเมื่อ hover */
-  }
-  
 
+/* เปลี่ยนสีกรอบเมื่อ Select ถูกเลือก */
+.ant-select-selector.ant-select-selector:focus {
+  border-color: #fee9c4 !important; /* เปลี่ยนสีกรอบเมื่อถูกโฟกัส */
+  box-shadow: 0 0 0 2px rgba(255, 175, 64, 0.5) !important; /* เพิ่มเงาเมื่อโฟกัส */
+}
 
-  /* เปลี่ยนสีพื้นหลังของ Select.Option เมื่อ hover */
-.custom-select .ant-select-item:hover {
-    background-color: #f71606 !important; /* เปลี่ยนสีพื้นหลังเมื่อ hover */
-    color: #000000 !important; /* เปลี่ยนสีข้อความเมื่อ hover */
-  }
-  
-  /* เปลี่ยนสีพื้นหลังของ Select.Option ที่ถูกเลือก */
-  .custom-select .ant-select-item.ant-select-item-selected {
-    background-color: #00f535 !important; /* เปลี่ยนสีพื้นหลังเมื่อเลือก */
-    color: #ee7402 !important; /* เปลี่ยนสีข้อความเมื่อเลือก */
-  }
+/* เปลี่ยนสีพื้นหลังและกรอบเมื่อ hover */
+.ant-select-selector:hover {
+  border-color: #fee9c4 !important; /* เปลี่ยนสีกรอบเมื่อ hover */
+  background-color: #ffb3407e !important; /* เปลี่ยนสีพื้นหลังเมื่อ hover */
+}
 
-
-  
-  
+.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  background-color: #fee9c4; /* สีพื้นหลังที่ต้องการ */
+  border-color: #ffd28f !important;
+}

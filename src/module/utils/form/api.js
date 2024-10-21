@@ -134,11 +134,12 @@ export default {
   chaircsb04: (params) => service.post("/chair-csb04", { params }),
   departcsb04: (params) => service.post("/depart-csb04", { params }),
 
-  getfiles: (token) => service.get("/files", { 
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-   }),
+  getfiles: (token) =>
+    service.get(`/files`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
   updateFileStatus: (params) => service.patch("/files", { params }),
 
   // anouncement: (data) => service.post("/anouncements", data),

@@ -13,6 +13,8 @@ import {
   notification,
 } from "antd";
 import api from "../../../../utils/form/api";
+import "../../../../theme/css/tables.css";
+import "../../../../theme/css/buttons.css";
 
 const { TextArea } = Input;
 
@@ -345,6 +347,21 @@ function InputScoreCSB02() {
     }
   };
 
+  const components = {
+    header: {
+      cell: (props) => (
+        <th
+          style={{
+            backgroundColor: "rgb(253 186 116)",
+            borderBottom: "2px solid #FFFFFF",
+          }}
+        >
+          {props.children}
+        </th>
+      ),
+    },
+  };
+
   return (
     <div
       style={{
@@ -396,6 +413,8 @@ function InputScoreCSB02() {
               ไม่ประเมินทั้งหมด
             </Button>
             <Table
+              className="custom-table"
+              components={components}
               dataSource={filteredProjects}
               columns={[
                 {

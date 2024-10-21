@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Select, Input, Button, Form, Row, Col, message, notification } from 'antd';
 import api from '../../../../utils/form/api';
+import "../../../../theme/css/texts.css";
+import "../../../../theme/css/buttons.css";
 
 export default function ApproveCSB03() {
   const [projects, setProjects] = useState([]);
@@ -156,12 +158,12 @@ export default function ApproveCSB03() {
 
               <Row gutter={16} style={{ marginTop: '16px' }}>
                 <Col span={12} style={{ textAlign: 'right' }}>
-                  <Button type="primary" onClick={handleApprove}>
+                  <Button className='All-button' type="primary" onClick={handleApprove}>
                     อนุมัติการยื่นสอบป้องกันโครงงาน
                   </Button>
                 </Col>
                 <Col span={12}>
-                  <Button type="primary" danger onClick={handleReject}>
+                  <Button className='red-button' type="primary" danger onClick={handleReject}>
                     ปฏิเสธการยื่นสอบป้องกันโครงงาน
                   </Button>
                 </Col>

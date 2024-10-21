@@ -13,6 +13,8 @@ import {
   notification,
 } from "antd";
 import api from "../../../../utils/form/api";
+import "../../../../theme/css/tables.css";
+import "../../../../theme/css/buttons.css";
 
 const { TextArea } = Input;
 
@@ -1111,8 +1113,7 @@ function InputScoreCSB01() {
   const onSubmit = async () => {
     const result = {
       _id: selectedProject._id,
-      score: totalScore,
-      referee: [],
+      score: totalScore * 3 + 1,
       comment: comment,
       nameExam: "สอบหัวข้อ",
     };
@@ -1290,6 +1291,21 @@ function InputScoreCSB01() {
     }
   };
 
+  const components = {
+    header: {
+      cell: (props) => (
+        <th
+          style={{
+            backgroundColor: "rgb(253 186 116)",
+            borderBottom: "2px solid #FFFFFF",
+          }}
+        >
+          {props.children}
+        </th>
+      ),
+    },
+  };
+
   return (
     <div
       style={{
@@ -1325,6 +1341,7 @@ function InputScoreCSB01() {
         {dataProject.length > 0 ? (
           <div>
             <Button
+              className="red-button"
               onClick={() =>
                 filteredProjects.forEach((project) =>
                   handleDisableEvaluation(project.projectId)
@@ -1341,7 +1358,9 @@ function InputScoreCSB01() {
               ไม่ประเมินทั้งหมด
             </Button>
             <Table
+              className="custom-table"
               dataSource={filteredProjects}
+              components={components}
               columns={[
                 {
                   title: "ลำดับที่",
@@ -1379,6 +1398,7 @@ function InputScoreCSB01() {
                     return (
                       <>
                         <Button
+                          className="All-button"
                           onClick={() =>
                             handleLinkClick(filteredProjects.indexOf(record))
                           }
@@ -1387,6 +1407,7 @@ function InputScoreCSB01() {
                           ประเมิน
                         </Button>
                         <Button
+                          className="red-button"
                           onClick={() =>
                             handleDisableEvaluation(record.projectId)
                           }
@@ -1471,16 +1492,23 @@ function InputScoreCSB01() {
               )}
             </p> */}
           </Card>
-          <Table dataSource={tableData} columns={columns} pagination={false} />
+          <Table
+            className="custom-table"
+            dataSource={tableData}
+            columns={columns}
+            pagination={false}
+            // components={components}
+          />
           <Form layout="vertical" style={{ marginTop: 16 }}>
             <Form.Item label="ความคิดเห็น">
               <TextArea
+                style={{ backgroundColor: "#FFF" }}
                 rows={4}
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
               />
             </Form.Item>
-            <Form.Item>
+            <Form.Item style={{ textAlign: "center" }}>
               <Button
                 type="primary"
                 onClick={onSubmit}

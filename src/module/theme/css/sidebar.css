@@ -31,9 +31,6 @@
   margin: 16px 0;
 }
 
-
-
-
 .ant-menu-item:hover {
   background-color: rgb(242, 188, 131) !important;
   /* / สีเมื่อ hover / */
@@ -56,4 +53,3 @@
   background-color: rgba(242, 188, 131) !important;
   color: rgb(0, 0, 0) !important;
 }
-

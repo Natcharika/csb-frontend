@@ -11,6 +11,7 @@ import {
 } from "antd";
 import api from "../../../../utils/form/api";
 import "../../../../theme/css/texts.css";
+import "../../../../theme/css/buttons.css";
 
 export default function ApproveCSB02() {
   const [projects, setProjects] = useState([]);
@@ -130,10 +131,13 @@ export default function ApproveCSB02() {
                   placeholder="เลือกโครงงาน"
                   style={{ width: "100%" }}
                   onChange={handleProjectChange}
-                  className="custom-select"
                 >
                   {projects.map((project) => (
-                    <Select.Option key={project._id} value={project._id}>
+                    <Select.Option
+                      key={project._id}
+                      value={project._id}
+                      style={{ backgroundColor: "#fad59e" }}
+                    >
                       {project.projectName}
                     </Select.Option>
                   ))}
@@ -187,12 +191,12 @@ export default function ApproveCSB02() {
 
               <Row gutter={16} style={{ marginTop: "16px" }}>
                 <Col span={12} style={{ textAlign: "right" }}>
-                  <Button type="primary" onClick={handleApprove}>
+                  <Button className="All-button" type="primary" onClick={handleApprove}>
                     อนุมัติการยื่นสอบก้าวหน้าโครงงาน
                   </Button>
                 </Col>
                 <Col span={12}>
-                  <Button type="primary" danger onClick={handleReject}>
+                  <Button className="red-button" type="primary" danger onClick={handleReject}>
                     ปฏิเสธการยื่นสอบก้าวหน้าโครงงาน
                   </Button>
                 </Col>

@@ -84,6 +84,7 @@ function RoomManagement() {
         console.log(err);
       });
   }, []);
+  
   const handleSubmit = (values) => {
     const body = {
       roomExam: values.examRoom,
@@ -126,12 +127,13 @@ function RoomManagement() {
       })
       .catch((error) => {
         console.error("Error creating room:", error);
-        
+
         // Extract error message from response
-        const errorMessage = error.response && error.response.data.error 
-          ? error.response.data.error 
-          : "จัดการห้องไม่สำเร็จ"; // Fallback message
-    
+        const errorMessage =
+          error.response && error.response.data.error
+            ? error.response.data.error
+            : "จัดการห้องไม่สำเร็จ"; // Fallback message
+
         notification.error({
           message: "ไม่สำเร็จ",
           description: errorMessage,
