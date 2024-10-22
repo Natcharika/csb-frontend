@@ -24,9 +24,15 @@ const Home = (props) => {
           image: teacher,
           altText: "teacher logo",
         };
-      default:
+      case "admin":
         return {
           title: "ยินดีต้อนรับเจ้าหน้าที่ทุกท่าน",
+          image: teacher,
+          altText: "teacher logo",
+        };
+      default:
+        return {
+          title: "ยินดีต้อนรับทุกท่าน",
           image: staff,
           altText: "staff logo",
         };
@@ -45,8 +51,8 @@ const Home = (props) => {
       </Card>
 
       <div style={styles.footer}>
-          <Paragraph style={styles.credit}>ผู้จัดทำ: ทีมพัฒนาระบบ</Paragraph>
-        </div>
+        <Paragraph style={styles.credit}>ผู้จัดทำ: ทีมพัฒนาระบบ</Paragraph>
+      </div>
     </div>
   );
 };
