@@ -13,24 +13,23 @@ export default function AddLecture() {
   const navigate = useNavigate();
 
   const fetchData = async () => {
-    const body = { projectValidate: [0, 0] };
     try {
-      const res = await api.getProjects(body);
+      const res = await api.getProjects();
       // Filter projects where CSB01 has status "ผ่าน" and activeStatus is 2
+      console.log(res);
       const filtered = res.data.body.filter(
         (project) =>
-          project.CSB01 &&
-          project.CSB01.status === "ผ่าน" &&
-          project.CSB01.activeStatus === 2 &&
+          project.status.CSB01.status === "ผ่าน" &&
+          project.status.CSB01.activeStatus === 2 &&
           (!project.lecturer || project.lecturer.length === 0)
       );
       setData(filtered);
       setFilteredData(filtered);
+      console.log("Filtered Projects: ", filtered);
     } catch (err) {
       console.error(err);
     }
   };
-  
 
   const fetchTeacher = async () => {
     try {
@@ -61,44 +60,45 @@ export default function AddLecture() {
 
     // Ensure the number of selected advisors is no more than 2
     if (selectedAdvisors.length + currentAdvisors.length > 2) {
-        notification.error({
-            message: "Error",
-            description: "A maximum of 2 advisors can be assigned.",
-        });
-        return;
+      notification.error({
+        message: "Error",
+        description: "A maximum of 2 advisors can be assigned.",
+      });
+      return;
     }
 
     // Add the new advisors to the list
     const updatedAdvisors = [
-        ...currentAdvisors,
-        ...selectedAdvisors.map((id) => ({
-            T_id: id,
-        })),
+      ...currentAdvisors,
+      ...selectedAdvisors.map((id) => ({
+        T_id: id,
+      })),
     ];
 
     const payload = {
       projectId: currentProject._id,
       T_name: selectedAdvisors, // Make sure these are the actual T_ids of the selected teachers
       lecturers: updatedAdvisors,
-  };
+    };
 
     try {
-        const response = await api.assignTeacher(payload);
-        notification.success({
-            message: "Success",
-            description: "Lecturer(s) have been assigned successfully.",
-        });
-        setIsModalVisible(false);
-        fetchData(); // Refresh the project list
+      const response = await api.assignTeacher(payload);
+      notification.success({
+        message: "Success",
+        description: "Lecturer(s) have been assigned successfully.",
+      });
+      setIsModalVisible(false);
+      fetchData(); // Refresh the project list
     } catch (err) {
-        console.error(err);
-        notification.error({
-            message: "Error",
-            description: err.response?.data.message || "There was an issue assigning the lecturer(s).",
-        });
+      console.error(err);
+      notification.error({
+        message: "Error",
+        description:
+          err.response?.data.message ||
+          "There was an issue assigning the lecturer(s).",
+      });
     }
-};
-
+  };
 
   const components = {
     header: {
@@ -117,13 +117,13 @@ export default function AddLecture() {
 
   const columns = [
     {
-      title: "Project Name",
+      title: "รายชื่อโครงงาน",
       dataIndex: "projectName",
       width: "30%",
       sorter: (a, b) => a.projectName.localeCompare(b.projectName),
     },
     {
-      title: "Name Student",
+      title: "รายชื่อนักศึกษา",
       dataIndex: "student",
       render: (students) => (
         <>
@@ -142,7 +142,7 @@ export default function AddLecture() {
       },
     },
     {
-      title: "Action",
+      title: "เพิ่มอาจารย์ที่ปรึกษาโครงงาน",
       key: "action",
       render: (text, record) => (
         <Button
@@ -158,6 +158,17 @@ export default function AddLecture() {
 
   return (
     <div>
+      <div style={{ textAlign: "center" }}>
+        <h1
+          style={{
+            fontSize: "20px",
+            textAlign: "center",
+            marginBottom: "10px",
+          }}
+        >
+          <b>เพิ่มอาจารย์ที่ปรึกษาโครงงาน</b>
+        </h1>
+      </div>
       <Table
         className="custom-table"
         columns={columns}
@@ -174,43 +185,52 @@ export default function AddLecture() {
         <Form
           initialValues={{
             projectName: currentProject?.projectName,
-            lecturer: currentProject?.lecturer ? currentProject.lecturer[0]?.T_id : undefined,
+            lecturer: currentProject?.lecturer
+              ? currentProject.lecturer[0]?.T_id
+              : undefined,
           }}
           onFinish={handleSubmit}
         >
           <Form.Item
             label="Project Name"
             name="projectName"
-            rules={[{ required: true, message: "Please input the project name!" }]}
+            rules={[
+              { required: true, message: "Please input the project name!" },
+            ]}
           >
             <Input value={currentProject?.projectName} disabled />
           </Form.Item>
 
           <Form.Item
-    label="Lecturer"
-    name="lecturer"
-    rules={[{ required: true, message: "Please select at least one lecturer!" }]}
->
-    <Select
-        mode="multiple"
-        maxTagCount={2} // Limit the number of tags displayed
-        placeholder="Select up to 2 advisors"
-        onChange={(value) => {
-            if (value.length > 2) {
-                notification.warning({
+            label="Lecturer"
+            name="lecturer"
+            rules={[
+              {
+                required: true,
+                message: "Please select at least one lecturer!",
+              },
+            ]}
+          >
+            <Select
+              mode="multiple"
+              maxTagCount={2} // Limit the number of tags displayed
+              placeholder="Select up to 2 advisors"
+              onChange={(value) => {
+                if (value.length > 2) {
+                  notification.warning({
                     message: "Warning",
                     description: "You can only select up to 2 advisors.",
-                });
-            }
-        }}
-    >
-        {Teacher.map((teacher) => (
-            <Select.Option key={teacher.T_id} value={teacher.T_id}>
-                {teacher.T_name}
-            </Select.Option>
-        ))}
-    </Select>
-</Form.Item>
+                  });
+                }
+              }}
+            >
+              {Teacher.map((teacher) => (
+                <Select.Option key={teacher.T_id} value={teacher.T_id}>
+                  {teacher.T_name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
 
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
             <Button type="primary" htmlType="submit">

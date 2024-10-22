@@ -45,12 +45,12 @@ export default function CheckApproveCSB03() {
 
   const columns = [
     {
-      title: "Project Name",
+      title: "รายชื่อโครงงาน",
       dataIndex: "projectName",
       render: (projectName) => <span>{projectName}</span>,
     },
     {
-      title: "Student",
+      title: "รายชื่อนักศึกษา",
       dataIndex: "students", // Ensure this matches your combined data structure
       render: (students) => (
         <>
@@ -71,7 +71,7 @@ export default function CheckApproveCSB03() {
       ),
     },
     {
-      title: "Advisors",
+      title: "รายชื่ออาจารย์ที่ปรึกษาโครงงาน",
       dataIndex: "lecturers", // Ensure this matches your combined data structure
       render: (lecturers) => (
         <>
@@ -89,19 +89,19 @@ export default function CheckApproveCSB03() {
       ),
     },
     {
-      title: "Start Date",
+      title: "วันที่เริ่มการทดสอบ",
       dataIndex: "startDate", // Correctly referencing start date
       render: (date) => date || "No date available", // Directly return the date
     },
     {
-      title: "End Date",
+      title: "วันที่สิ้นสุดการทดสอบ",
       dataIndex: "endDate", // Correctly referencing end date
       render: (date) => date || "No date available", // Directly return the date
     },
     // ... other columns
 
     {
-      title: "Organization",
+      title: "หน่วยงานที่ทำการทดสอบ",
       dataIndex: "organization",
       render: (organizations) =>
         organizations ? organizations : "No organization available",
@@ -129,6 +129,17 @@ export default function CheckApproveCSB03() {
 
   return (
     <div>
+      <div style={{ textAlign: "center" }}>
+        <h1
+          style={{
+            fontSize: "20px",
+            textAlign: "center",
+            marginBottom: "10px",
+          }}
+        >
+          <b>ข้อมูลการยื่นขอทดสอบโครงงาน</b>
+        </h1>
+      </div>
       <div id="print-section">
         <Table
           className="custom-table"

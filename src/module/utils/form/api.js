@@ -216,13 +216,13 @@ export default {
       },
     }),
 
-  getExamPeriod: () => service.get("/exam-period"),
-  patchExamPeriod: (data, token) =>
-    service.patch("/exam-period", data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
+  // getExamPeriod: () => service.get("/exam-period"),
+  // patchExamPeriod: (data, token) =>
+  //   service.patch("/exam-period", data, {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   }),
 };
 export const getProjectById = async (projectId) => {
   return await axios.get(`/api/projects/${projectId}`); // Adjust the endpoint according to your API structure

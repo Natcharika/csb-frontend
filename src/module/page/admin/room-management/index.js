@@ -29,34 +29,16 @@ function RoomManagement() {
   ]);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
   const [data, setData] = useState([]);
+  const [filteredProjects, setFilteredProjects] = useState([]);
   const [teacherNames, setTeacherNames] = useState([]);
+  const [selectedExamType, setSelectedExamType] = useState(null);
+  const [savedProjects, setSavedProjects] = useState([]);
+  const [nameExam, setNameExem] = useState([]);
+  const [CSB01, setCSB01] = useState([]);
+  const [CSB02, setCSB02] = useState([]);
+  const [CSB04, setCSB04] = useState([]);
 
-  const projectTimes = [
-    "09:00",
-    "09:15",
-    "09:30",
-    "09:45",
-    "10:00",
-    "10:15",
-    "10:30",
-    "10:45",
-    "11:00",
-    "11:15",
-    "11:30",
-    "11:45",
-    "13:00",
-    "13:15",
-    "13:30",
-    "13:45",
-    "14:00",
-    "14:15",
-    "14:30",
-    "14:45",
-    "15:00",
-    "15:15",
-    "15:30",
-    "15:45",
-  ];
+  const projectTimes = ["09:00","09:15","09:30","09:45","10:00","10:15","10:30","10:45", "11:00","11:15","11:30","11:45","13:00","13:15", "13:30", "13:45","14:00", "14:15", "14:30","14:45", "15:00","15:15","15:30","15:45",];
 
   useEffect(() => {
     api
@@ -71,9 +53,45 @@ function RoomManagement() {
         );
         setData(projectData);
         setProjects([{ projectId: "", projectName: "", start_in_time: "" }]);
-      })
-      .catch(console.error);
+        if (res.data && res.data.body) {
+          const CSB01Projects = [];
+          const CSB02Projects = [];
+          const CSB04Projects = [];
 
+          res.data.body.forEach((room) => {
+            if (room.projects && Array.isArray(room.projects)) {
+              room.projects.forEach((project) => {
+                if (room.nameExam === "สอบหัวข้อ") {
+                  CSB01Projects.push(project);
+                } else if (room.nameExam === "สอบก้าวหน้า") {
+                  CSB02Projects.push(project);
+                } else if (room.nameExam === "สอบป้องกัน") {
+                  CSB04Projects.push(project);
+                }
+              });
+            }
+          });
+          console.log("res.data.body", res.data.body);
+
+          setCSB01(CSB01Projects);
+          setCSB02(CSB02Projects);
+          setCSB04(CSB04Projects);
+          console.log("CSB01", CSB01);
+          console.log("CSB02", CSB02);
+          console.log("CSB03", CSB04);
+        } else {
+          console.log("Unexpected response structure:", res);
+          setCSB01([]);
+          setCSB02([]);
+          setCSB04([]);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching room data:", error);
+        setCSB01([]);
+        setCSB02([]);
+        setCSB04([]);
+      });
     api
       .getTeacher()
       .then((res) => {
@@ -83,7 +101,48 @@ function RoomManagement() {
       .catch((err) => {
         console.log(err);
       });
+    loadProjects();
   }, []);
+
+  
+  const loadProjects = async () => {
+    try {
+      const res = await api.getAllProject();
+      const projectData = res.data.body.map(
+        ({ _id, projectName, start_in_time, examType }) => ({
+          projectId: _id,
+          projectName,
+          start_in_time,
+          examType
+        })
+      );
+      setData(projectData);
+      
+      // If there's a selected exam type, filter the projects
+      if (selectedExamType) {
+        filterProjectsByExamType(selectedExamType, projectData);
+      }
+    } catch (error) {
+      console.error("Error loading projects:", error);
+    }
+  };
+  
+
+  const loadTeachers = async () => {
+    try {
+      const res = await api.getTeacher();
+      setTeacherNames(res.data.body);
+    } catch (error) {
+      console.error("Error loading teachers:", error);
+    }
+  };
+  
+
+  const handleExamTypeChange = (value) => {
+    setSelectedExamType(value);
+    filterProjectsByExamType(value);
+    form.setFieldsValue({ examName: value });
+  };
   
   const handleSubmit = (values) => {
     const body = {
@@ -93,11 +152,7 @@ function RoomManagement() {
       teachers,
       projects,
     };
-
-    // Log the body to ensure it's correct before sending
     console.log("Request body: ", body);
-
-    // First, create the room management
     api
       .createRoomManagement(body)
       .then((res) => {
@@ -105,6 +160,13 @@ function RoomManagement() {
         setTeachers([{ T_id: "", T_name: "", role: "" }]);
         setProjects([{ projectId: "", projectName: "", start_in_time: "" }]);
         setIsSubmitDisabled(true);
+        setSelectedExamType(null);
+        setSavedProjects((prevSavedProjects) => [
+          ...prevSavedProjects,
+          ...projects.map((project) => project.projectName),
+        ]);
+        setNameExem((prevNameExem) => [...prevNameExem, ...nameExam]);
+
 
         notification.success({
           message: "สำเร็จ",
@@ -118,28 +180,26 @@ function RoomManagement() {
           .getSumaryRoomByExamName(token, values.examName)
           .then((summaryRes) => {
             console.log("Room Summary: ", summaryRes);
-            // You can handle the display of summary data here
-            // For example, update the UI with the fetched room summary
           })
           .catch((summaryError) => {
             console.error("Error fetching room summary:", summaryError);
           });
       })
       .catch((error) => {
-        console.error("Error creating room:", error);
+      const errorMessage =
+        error.response && error.response.data && error.response.data.error
+          ? error.response.data.error
+          : "ไม่สามารถจัดห้องสอบนี้ได้";
 
-        // Extract error message from response
-        const errorMessage =
-          error.response && error.response.data.error
-            ? error.response.data.error
-            : "จัดการห้องไม่สำเร็จ"; // Fallback message
-
-        notification.error({
-          message: "ไม่สำเร็จ",
-          description: errorMessage,
-          placement: "topRight",
-        });
+      notification.error({
+        message: "ไม่สำเร็จ",
+        description: errorMessage, 
+        placement: "topRight",
       });
+
+      // Log the error for debugging
+      console.error("Error creating room:", error);
+    });
   };
 
   const checkFormValidity = () => {
@@ -155,11 +215,20 @@ function RoomManagement() {
 
     setIsSubmitDisabled(!allFieldsFilled);
   };
+  
+  const filterProjectsByExamType = (examType, projectsData = data) => {
+    const filtered = projectsData.filter(project => project.examType === examType);
+    setFilteredProjects(filtered);
+    
+    // Reset project selections when exam type changes
+    setProjects([{ projectId: "", projectName: "", start_in_time: "" }]);
+    setProjectCount(1);
+  };
 
   useEffect(() => {
-    checkFormValidity();
+    form.validateFields();
   }, [form, teachers, projects]);
-
+  
   const handleDynamicFieldChange = (setState, fieldIndex, fieldName, value) => {
     setState((prevState) => {
       const updatedFields = [...prevState];
@@ -167,7 +236,7 @@ function RoomManagement() {
       return updatedFields;
     });
   };
-
+  
   const handleTeacherChange = (index, T_id) => {
     const selectedTeacher = teacherNames.find(
       (teacher) => teacher.T_id === T_id
@@ -182,9 +251,10 @@ function RoomManagement() {
       );
     }
   };
+  
 
   const handleProjectNameChange = (index, projectName) => {
-    const selectedProject = data.find(
+    const selectedProject = filteredProjects.find(
       (project) => project.projectName === projectName
     );
     handleDynamicFieldChange(setProjects, index, "projectName", projectName);
@@ -220,6 +290,13 @@ function RoomManagement() {
         !selected.includes(option) || selected[currentIndex] === option
     );
 
+    const filteredProjectOptions = (options, selected, currentIndex) =>
+    options.filter(
+      (option) =>
+        (!selected.includes(option) || selected[currentIndex] === option) &&
+        !savedProjects.includes(option)
+    );
+
   const handleRoleChange = (index, value) => {
     if (value === "main") {
       const isChairpersonExists = teachers.some(
@@ -232,6 +309,39 @@ function RoomManagement() {
     }
     handleDynamicFieldChange(setTeachers, index, "role", value);
   };
+
+  const handleExamNameChange = (value) => {
+    form.setFieldsValue({ examName: value });
+
+    // Filter projects based on the selected exam name
+    let matchingProjects = [];
+    if (value === "สอบหัวข้อ") {
+      matchingProjects = CSB01;
+    } else if (value === "สอบก้าวหน้า") {
+      matchingProjects = CSB02;
+    } else if (value === "สอบป้องกัน") {
+      matchingProjects = CSB04;
+    }
+
+    setFilteredProjects(matchingProjects);
+    checkFormValidity();
+  };
+
+  // const handleProjectNameChange = (index, projectName) => {
+  //   const selectedProject = filteredProjects.find(
+  //     (project) => project.projectName === projectName
+  //   );
+
+  //   handleDynamicFieldChange(setProjects, index, "projectName", projectName);
+  //   if (selectedProject) {
+  //     handleDynamicFieldChange(
+  //       setProjects,
+  //       index,
+  //       "projectId",
+  //       selectedProject.projectId
+  //     );
+  //   }
+  // };
 
   return (
     <div style={{ maxWidth: "90%", margin: "auto", padding: "20px" }}>
@@ -252,7 +362,7 @@ function RoomManagement() {
               name="examName"
               rules={[{ required: true, message: "กรุณาเลือกชื่อการสอบ" }]}
             >
-              <Select placeholder="เลือกชื่อการสอบ">
+              <Select placeholder="เลือกชื่อการสอบ" onChange={handleExamNameChange}>
                 <Option value="สอบหัวข้อ">สอบหัวข้อ</Option>
                 <Option value="สอบก้าวหน้า">สอบก้าวหน้า</Option>
                 <Option value="สอบป้องกัน">สอบป้องกัน</Option>
@@ -398,8 +508,8 @@ function RoomManagement() {
                   value={projects[index].projectName}
                   onChange={(value) => handleProjectNameChange(index, value)}
                 >
-                  {filteredOptions(
-                    data.map(({ projectName }) => projectName),
+                  {filteredProjectOptions(
+                    filteredProjects.map(({ projectName }) => projectName), // Use filteredProjects here
                     projects.map(({ projectName }) => projectName),
                     index
                   ).map((projectName, idx) => (

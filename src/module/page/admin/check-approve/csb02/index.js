@@ -39,12 +39,12 @@ export default function CheckApproveCSB02() {
 
   const columns = [
     {
-      title: "Project Name",
+      title: "รายชื่อโครงงาน",
       dataIndex: "projectName",
       render: (projectName) => <span>{projectName}</span>,
     },
     {
-      title: "Student",
+      title: "รายชื่อนักศึกษา",
       dataIndex: "students",
       render: (students) => (
         <>
@@ -65,7 +65,7 @@ export default function CheckApproveCSB02() {
       ),
     },
     {
-      title: "Advisors",
+      title: "รายชื่ออาจารย์ที่ปรึกษาโครงงาน",
       dataIndex: "lecturers",
       render: (lecturers) => (
         <>
@@ -83,7 +83,7 @@ export default function CheckApproveCSB02() {
       ),
     },
     {
-      title: "Date Approve",
+      title: "วันที่อนุมัติโครงงาน",
       dataIndex: "date",
       render: (date) => {
         if (!date) return "No date available";
@@ -128,6 +128,17 @@ export default function CheckApproveCSB02() {
 
   return (
     <div>
+      <div style={{ textAlign: "center" }}>
+        <h1
+          style={{
+            fontSize: "20px",
+            textAlign: "center",
+            marginBottom: "10px",
+          }}
+        >
+          <b>ข้อมูลการยื่นขอสอบก้าวหน้า</b>
+        </h1>
+      </div>
       <div id="print-section">
         <Table
           className="custom-table"
