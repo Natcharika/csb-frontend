@@ -27,7 +27,7 @@ export default function CreateProjectForStudent() {
         setIsSubmitDisabled(true);
         notification.success({
           message: "สำเร็จ",
-          description: "สร้างโปรเจกต์สำเร็จ",
+          description: "สร้างโครงงานสำเร็จ",
           placement: "topRight",
         });
       })
@@ -36,7 +36,7 @@ export default function CreateProjectForStudent() {
         console.error(error);
         notification.error({
           message: "เกิดข้อผิดพลาด",
-          description: "ไม่สามารถสร้างโปรเจกต์ได้",
+          description: "ไม่สามารถสร้างโครงงานได้",
           placement: "topRight",
         });
       });

@@ -16,8 +16,8 @@ export default function CheckSP1() {
       const filteredProjects = projectsData
         .filter(
           (project) =>
-            project.status?.CSB01?.activeStatus === 1 &&
-            project.status?.CSB01?.status === "รอดำเนินการ"
+            project.status?.CSB01?.activeStatus === 2 &&
+            project.status?.CSB01?.status === "ผ่าน"
         )
         .map((item) => ({
           projectName: item.projectName,

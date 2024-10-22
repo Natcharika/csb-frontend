@@ -15,6 +15,7 @@ import {
 import api from "../../../../utils/form/api";
 import "../../../../theme/css/tables.css";
 import "../../../../theme/css/buttons.css";
+import "../../../../theme/css/texts.css";
 
 const { TextArea } = Input;
 
@@ -1072,6 +1073,7 @@ function InputScoreCSB01() {
     // } else {
     //   setFilteredProjects([]);
     // }'
+
     setFilteredProjects(
       dataProject.filter((project) => project.dateExam === value)
     );
@@ -1154,10 +1156,40 @@ function InputScoreCSB01() {
     setComment("");
     setModalVisible(false);
   };
+  const handleDisableEvaluation = async (csb_id, projectId) => {
 
-  const handleDisableEvaluation = (projectId) => {
-    setEvaluatedRows((prev) => ({ ...prev, [projectId]: "notEvaluated" }));
+    try {
+      const result = {
+        _id: csb_id,
+        nameExam: "สอบหัวข้อ",
+      };
+      const token = localStorage.getItem("jwtToken");
+      const res = await api.rejectcsb(result, token);
+      if (res.data.message === "Reject CSB01 score ") {
+        message.success("ไม่ประเมิน");
+        setSuccessfulEvaluations((prev) =>
+          new Set(prev).add(selectedProject.projectId)
+        );
+        setEvaluatedRows((prev) => ({ ...prev, [projectId]: "notEvaluated" }));
+        console.log("reject: ", result);
+      } else {
+        notification.error({
+          message: "Error",
+          description: res.data.message,
+          placement: "topRight",
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      notification.error({
+        message: "Error Submitting Score",
+        description: "Unable to submit the score. Please try again later.",
+        placement: "topRight",
+      });
+    }
   };
+    
+  
 
   const columns = [
     {
@@ -1510,6 +1542,7 @@ function InputScoreCSB01() {
             </Form.Item>
             <Form.Item style={{ textAlign: "center" }}>
               <Button
+                className="All-button"
                 type="primary"
                 onClick={onSubmit}
                 disabled={!isScoreComplete() || loading}

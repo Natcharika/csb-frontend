@@ -10,6 +10,9 @@ import {
   notification,
 } from "antd";
 import api from "../../../../utils/form/api";
+import "../../../../theme/css/tables.css";
+import "../../../../theme/css/buttons.css";
+import "../../../../theme/css/texts.css";
 
 function ChairmanScoreCSB04() {
   const [projects, setProjects] = useState([]); // State to hold project details
@@ -230,6 +233,21 @@ function ChairmanScoreCSB04() {
     },
   ];
 
+  const components = {
+    header: {
+      cell: (props) => (
+        <th
+          style={{
+            backgroundColor: "rgb(253 186 116)",
+            borderBottom: "2px solid #FFFFFF",
+          }}
+        >
+          {props.children}
+        </th>
+      ),
+    },
+  };
+
   return (
     <div
       style={{
@@ -304,7 +322,9 @@ function ChairmanScoreCSB04() {
               </Row>
 
               <Table
+                className="custom-table"
                 columns={columns}
+                components={components}
                 dataSource={data}
                 pagination={false}
                 bordered
@@ -342,10 +362,10 @@ function ChairmanScoreCSB04() {
                 style={{ marginTop: "16px", justifyContent: "center" }}
               >
                 <Col>
-                  <Button type="primary" onClick={handleSubmit}>
+                  <Button className="All-button" type="primary" onClick={handleSubmit}>
                     อนุมัติคะแนน
                   </Button>
-                  <Button onClick={handleCancel} style={{ marginLeft: "10px" }}>
+                  <Button className="red-button" onClick={handleCancel} style={{ marginLeft: "10px" }}>
                     ยกเลิก
                   </Button>
                 </Col>

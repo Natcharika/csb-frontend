@@ -18,8 +18,8 @@ export default function SumaryRoom() {
         const fetchedData = res.data.body;
 
         // Sort the data by date in descending order
-        const sortedData = fetchedData.sort((a, b) => 
-          new Date(b.dateExam) - new Date(a.dateExam)
+        const sortedData = fetchedData.sort(
+          (a, b) => new Date(b.dateExam) - new Date(a.dateExam)
         );
 
         setData(sortedData);
@@ -27,9 +27,7 @@ export default function SumaryRoom() {
 
         const uniqueDates = [
           ...new Set(
-            sortedData.map((item) =>
-              moment(item.dateExam).format("YYYY-MM-DD")
-            )
+            sortedData.map((item) => moment(item.dateExam).format("YYYY-MM-DD"))
           ),
         ];
         setDates(uniqueDates);
@@ -61,7 +59,7 @@ export default function SumaryRoom() {
 
   const columns = [
     {
-      title: "Project Name",
+      title: "รายชื่อโครงงาน",
       dataIndex: "projects",
       render: (projects) => (
         <>
@@ -79,15 +77,15 @@ export default function SumaryRoom() {
       ),
     },
     {
-      title: "Room",
+      title: "ห้องสอบ",
       dataIndex: "roomExam",
     },
     {
-      title: "nameExam",
+      title: "ชื่อการสอบ",
       dataIndex: "nameExam",
     },
     {
-      title: "Time",
+      title: "เวลาสอบ",
       dataIndex: "projects",
       render: (projects) => (
         <>
@@ -105,7 +103,7 @@ export default function SumaryRoom() {
       ),
     },
     {
-      title: "Teachers",
+      title: "รายชื่อกรรมการสอบ",
       dataIndex: "teachers",
       render: (teachers) => (
         <>
@@ -123,15 +121,19 @@ export default function SumaryRoom() {
       ),
     },
     {
-      title: "Teachers Role",
+      title: "ตำแหน่งกรรมการสอบ",
       dataIndex: "teachers",
       render: (teachers) => (
         <>
           {Array.isArray(teachers) ? (
             teachers.map((teacher, index) => (
               <span key={index}>
-                <Tag color="blue">{teacher.role}</Tag>
-                <br />
+                {/* <Tag color="blue">{teacher.role}</Tag> */}
+                {teacher.role == "main" ? (
+                  <div><Tag color="pink">ประธานกรรมการ</Tag></div>
+                ) : (
+                  <div><Tag color="blue">กรรมการ</Tag></div>
+                )}
               </span>
             ))
           ) : (
@@ -141,9 +143,9 @@ export default function SumaryRoom() {
       ),
     },
     {
-      title: "Date",
+      title: "วันที่สอบ",
       dataIndex: "dateExam",
-      render: (dateExam) => 
+      render: (dateExam) =>
         dateExam ? moment(dateExam).format("DD/MM/YYYY") : "No date available",
     },
   ];
@@ -193,7 +195,15 @@ export default function SumaryRoom() {
   return (
     <div>
       <div style={{ textAlign: "center" }}>
-        <h1>Summary Room</h1>
+        <h1
+          style={{
+            fontSize: "20px",
+            textAlign: "center",
+            marginBottom: "10px",
+          }}
+        >
+          <b>สรุปรายละเอียดห้องสอบทั้งหมด</b>
+        </h1>
       </div>
       <div style={{ marginBottom: 16, textAlign: "center" }}>
         <Dropdown overlay={menu}>

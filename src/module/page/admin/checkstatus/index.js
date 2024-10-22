@@ -28,7 +28,11 @@ export default function CheckOCR() {
 
       await api.updateFileStatus({
         _id: record._id,
-        fi_status: "ผ่าน",
+        status: "ผ่าน",
+        projectState:
+          record.fi_result.project_1.status == "ผ่าน"
+            ? "project_2"
+            : "project_1",
       }); // Only send fi_status
       message.success("สถานะถูกอัพเดตเป็น 'ผ่าน' เรียบร้อยแล้ว");
       fetchData(); // Refresh the data to reflect the updated status
@@ -38,11 +42,16 @@ export default function CheckOCR() {
     }
   };
 
-  const handleReject = async (record) => {
+  const handleReject = async (record, comment) => {
     try {
       await api.updateFileStatus({
         _id: record._id,
-        fi_status: "ไม่ผ่าน",
+        status: "ไม่ผ่าน",
+        projectState:
+          record.fi_result.project_1.status == "ผ่าน"
+            ? "project_2"
+            : "project_1",
+        comment: comment,
       }); // Only send fi_status
       message.success("สถานะถูกอัพเดตเป็น 'ไม่ผ่าน' เรียบร้อยแล้ว");
 
@@ -71,8 +80,8 @@ export default function CheckOCR() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              {file.fileName.length > 20
-                ? file.fileName.substring(0, 20) +
+              {file.fileName.length > 15
+                ? file.fileName.substring(0, 15) +
                   "... (" +
                   file.fileName.split(".").pop() +
                   ")"
@@ -87,10 +96,14 @@ export default function CheckOCR() {
       title: "สถานะปัจจุบัน",
       dataIndex: "fi_result",
       render: (fi_result) => {
-        console.log("fi_result:", fi_result);
-        return fi_result.project_1.status == "ผ่าน" ? "project 2" : "project 1";
+        return (
+          <div className="flex justify-center">
+            {fi_result.project_1.status == "ผ่าน" ? "project 2" : "project 1"}
+          </div>
+        );
       },
       width: 95,
+      align: "center",
     },
 
     {
@@ -99,11 +112,11 @@ export default function CheckOCR() {
       render: (fi_result) => {
         return (
           <div
-            className={
+            className={`flex justify-center ${
               fi_result.project_1.total_credits.passed
                 ? "text-green-500"
                 : "text-red-500"
-            }
+            }`}
           >
             {fi_result.project_1.total_credits.score}
           </div>
@@ -117,11 +130,11 @@ export default function CheckOCR() {
       render: (fi_result) => {
         return (
           <div
-            className={
+            className={`flex justify-center ${
               fi_result.project_1.major_credits.passed
                 ? "text-green-500"
                 : "text-red-500"
-            }
+            }`}
           >
             {fi_result.project_1.major_credits.score}
           </div>
@@ -130,11 +143,11 @@ export default function CheckOCR() {
       width: 100,
     },
     {
-      title: "Project1",
+      title: "โครงงานพิเศษ 1",
       dataIndex: "fi_result",
       render: (fi_result) => {
         return (
-          <div>
+          <div className="flex justify-center">
             {fi_result.project_1.passed_project_1 == true ? (
               <Tag color="green">ผ่าน</Tag>
             ) : (
@@ -146,15 +159,17 @@ export default function CheckOCR() {
       width: 100,
     },
     {
-      title: "Project2",
+      title: "โครงงานพิเศษ 2",
       dataIndex: "fi_result",
       render: (fi_result) => {
         return (
-          <div>
+          <div className="flex justify-center">
             {fi_result.project_2.passed_project_2 == true ? (
               <Tag color="green">ผ่าน</Tag>
-            ) : (
+            ) : fi_result.project_1.status == "ผ่าน" ? (
               <Tag color="red">ไม่ผ่าน</Tag>
+            ) : (
+              <Tag color="orange">ไม่พร้อมประเมิน</Tag>
             )}
           </div>
         );
@@ -164,12 +179,14 @@ export default function CheckOCR() {
     {
       title: "จัดการ",
       render: (_, record) => (
-        <>
-          <Button onClick={() => handleApprove(record)}>ผ่าน</Button>
-          <Button type="primary" danger onClick={() => handleReject(record)}>
+        <div className="flex justify-center">
+          <Button className="All-button" onClick={() => handleApprove(record)} style={{marginRight:'5px'}}>
+            ผ่าน
+          </Button>
+          <Button className="red-button" type="primary" danger onClick={() => handleReject(record)}>
             ไม่ผ่าน
           </Button>
-        </>
+        </div>
       ),
       width: 130,
     },

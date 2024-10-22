@@ -13,6 +13,9 @@ import {
   notification,
 } from "antd";
 import api from "../../../../utils/form/api";
+import "../../../../theme/css/tables.css";
+import "../../../../theme/css/buttons.css";
+import "../../../../theme/css/texts.css";
 
 const { TextArea } = Input;
 
@@ -361,6 +364,21 @@ function InputScoreCSB04() {
     }
   };
 
+  const components = {
+    header: {
+      cell: (props) => (
+        <th
+          style={{
+            backgroundColor: "rgb(253 186 116)",
+            borderBottom: "2px solid #FFFFFF",
+          }}
+        >
+          {props.children}
+        </th>
+      ),
+    },
+  };
+
   return (
     <div
       style={{
@@ -396,6 +414,7 @@ function InputScoreCSB04() {
         {dataProject.length > 0 ? (
           <div>
             <Button
+              className="red-button"
               onClick={() =>
                 filteredProjects.forEach((project) =>
                   handleDisableEvaluation(project.projectId)
@@ -412,6 +431,8 @@ function InputScoreCSB04() {
               ไม่ประเมินทั้งหมด
             </Button>
             <Table
+              className="custom-table"
+              components={components}
               dataSource={filteredProjects}
               columns={[
                 {
@@ -450,6 +471,7 @@ function InputScoreCSB04() {
                     return (
                       <>
                         <Button
+                          className="All-button"
                           onClick={() =>
                             handleLinkClick(filteredProjects.indexOf(record))
                           }
@@ -458,6 +480,7 @@ function InputScoreCSB04() {
                           ประเมิน
                         </Button>
                         <Button
+                          className="red-button"
                           onClick={() =>
                             handleDisableEvaluation(record.projectId)
                           }
@@ -543,7 +566,7 @@ function InputScoreCSB04() {
             </p>
           </Card>
 
-          <Table dataSource={tableData} columns={columns} pagination={false} />
+          <Table className="custom-table" dataSource={tableData} columns={columns} pagination={false} />
           <Form layout="vertical" style={{ marginTop: 16 }}>
             <Form.Item label="ความคิดเห็น">
               <TextArea
@@ -554,6 +577,7 @@ function InputScoreCSB04() {
             </Form.Item>
             <Form.Item>
               <Button
+                className="All-button"
                 type="primary"
                 onClick={onSubmit}
                 disabled={!isScoreComplete() || loading}

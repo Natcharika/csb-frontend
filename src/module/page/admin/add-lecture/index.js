@@ -15,17 +15,22 @@ export default function AddLecture() {
   const fetchData = async () => {
     const body = { projectValidate: [0, 0] };
     try {
-        const res = await api.getProjects(body);
-        // Filter projects where the lecturer field is not empty or has at least one lecturer assigned
-        const filtered = res.data.body.filter(
-            (project) => !project.lecturer || project.lecturer.length === 0
-        );
-        setData(filtered);
-        setFilteredData(filtered);
+      const res = await api.getProjects(body);
+      // Filter projects where CSB01 has status "ผ่าน" and activeStatus is 2
+      const filtered = res.data.body.filter(
+        (project) =>
+          project.CSB01 &&
+          project.CSB01.status === "ผ่าน" &&
+          project.CSB01.activeStatus === 2 &&
+          (!project.lecturer || project.lecturer.length === 0)
+      );
+      setData(filtered);
+      setFilteredData(filtered);
     } catch (err) {
-        console.error(err);
+      console.error(err);
     }
-};
+  };
+  
 
   const fetchTeacher = async () => {
     try {

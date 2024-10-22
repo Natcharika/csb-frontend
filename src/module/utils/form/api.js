@@ -98,6 +98,17 @@ export default {
       }
     ),
 
+  rejectcsb: (params, token) =>
+    service.post(
+      "/reject-score",
+      { params },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    ),
+
   studentactivecsb03: (params) => service.post("/student-csb03", { params }),
   approveCSB03: (params) => service.post("/approveCSB03", { params }),
   rejectCSB03: (params) => service.post("/rejectCSB03", { params }),
@@ -106,7 +117,7 @@ export default {
   studentactivecsb04: (params) => service.post("/student-csb04", { params }),
   approveCSB04: (params) => service.post("/approveCSB04", { params }),
   rejectCSB04: (params) => service.post("/rejectCSB04", { params }),
-  scorecsb04: (params) => service.post("/score-csb04", { params }),
+  // scorecsb04: (params) => service.post("/score-csb04", { params }),
 
   getProjects: (data) => service.get("/projects", { data }),
   getProjectAcceptace: (examName, token) =>
@@ -200,6 +211,14 @@ export default {
   deleteWhitelist: (data, token) =>
     service.delete("/whitelist", {
       data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  getExamPeriod: () => service.get("/exam-period"),
+  patchExamPeriod: (data, token) =>
+    service.patch("/exam-period", data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

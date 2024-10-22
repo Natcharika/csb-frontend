@@ -42,7 +42,7 @@ export default function ExamCSB01() {
       projectStatus: 0,
       projectDescription: values.projectDescription,
       student: formattedStudents,
-      Status: "",
+      status: { CSB01: { activeStatus: 1 } }, // Include activeStatus in the request body
     };
 
     try {
@@ -76,18 +76,82 @@ export default function ExamCSB01() {
       setIsSubmitDisabled(true);
       notification.success({
         message: "สำเร็จ",
-        description: "สร้างโปรเจกต์สำเร็จ",
+        description: "สร้างโครงงานสำเร็จ",
         placement: "topRight",
       });
     } catch (error) {
       console.error(error);
       notification.error({
         message: "เกิดข้อผิดพลาด",
-        description: "ไม่สามารถสร้างโปรเจกต์ได้",
+        description: "ไม่สามารถสร้างโครงงานได้",
         placement: "topRight",
       });
     }
   };
+
+  // const handleSubmit = async (values) => {
+  //   const formattedStudents = Object.keys(values.student).map((key) => ({
+  //     studentId: values.student[key].studentId,
+  //     FirstName: values.student[key].FirstName,
+  //     LastName: values.student[key].LastName,
+  //   }));
+
+  //   const body = {
+  //     projectName: values.projectName,
+  //     projectType: 0,
+  //     projectStatus: 0,
+  //     projectDescription: values.projectDescription,
+  //     student: formattedStudents,
+  //     Status: "",
+  //     CSB01: {
+  //       activeStatus: 1, // Setting activeStatus to 1 for CSB01
+  //       status: "รอดำเนินการ", // Optionally set the initial status
+  //     },
+  //   };
+
+  //   try {
+  //     // Fetch existing projects
+  //     const res = await api.getAllProject();
+  //     if (Array.isArray(res.data.body) && res.data.body.length > 0) {
+  //       const existingStudentIds = res.data.body.flatMap((project) =>
+  //         project.student.map((student) => student.studentId)
+  //       );
+
+  //       // Check if any of the submitted student IDs are already associated with a project
+  //       const studentAlreadyInProject = formattedStudents.some((student) =>
+  //         existingStudentIds.includes(student.studentId)
+  //       );
+
+  //       if (studentAlreadyInProject) {
+  //         // If a student is already in a project, show a notification and stop the submission
+  //         notification.error({
+  //           message: "เกิดข้อผิดพลาด",
+  //           description:
+  //             "นักศึกษามีโครงงานอยู่แล้ว ไม่สามารถสร้างโครงงานใหม่ได้",
+  //           placement: "topRight",
+  //         });
+  //         return; // Stop the form submission
+  //       }
+  //     }
+
+  //     // If no conflict, proceed with creating the project
+  //     await api.createProject(body);
+  //     form.resetFields();
+  //     setIsSubmitDisabled(true);
+  //     notification.success({
+  //       message: "สำเร็จ",
+  //       description: "สร้างโปรเจกต์สำเร็จ",
+  //       placement: "topRight",
+  //     });
+  //   } catch (error) {
+  //     console.error(error);
+  //     notification.error({
+  //       message: "เกิดข้อผิดพลาด",
+  //       description: "ไม่สามารถสร้างโปรเจกต์ได้",
+  //       placement: "topRight",
+  //     });
+  //   }
+  // };
 
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");

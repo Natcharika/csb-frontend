@@ -5,6 +5,9 @@ import { Button, Input, Form, Select } from "antd";
 import { AiOutlinePlus } from "react-icons/ai";
 import api from "../../../utils/form/api";
 import { AiOutlineDelete } from "react-icons/ai";
+import "../../../theme/css/tables.css";
+import "../../../theme/css/buttons.css";
+import "../../../theme/css/texts.css";
 
 const Whitelist = () => {
   const [users, setUsers] = useState([]);
@@ -118,6 +121,21 @@ const Whitelist = () => {
     }
   };
 
+  const components = {
+    header: {
+      cell: (props) => (
+        <th
+          style={{
+            backgroundColor: "rgb(253 186 116)",
+            borderBottom: "2px solid #FFFFFF",
+          }}
+        >
+          {props.children}
+        </th>
+      ),
+    },
+  };
+
   return (
     <div>
       <Modal
@@ -168,23 +186,26 @@ const Whitelist = () => {
           </div>
         </Form>
       </Modal>
-      <div className="text-xl font-bold mb-2">จัดการผู้ใช้</div>
+      <div className="text-xl font-bold mb-2" style={{textAlign: "center"}}>จัดการผู้ใช้</div>
       <Button
         type="primary"
         icon={<AiOutlinePlus />}
         onClick={() => setIsModalOpen(true)}
         className="mr-2"
+        style={{marginBottom: '10px'}}
       >
         เพิ่มผู้ใช้
       </Button>
 
       <Table
+        className="custom-table"
         locale={{
           emptyText: "ไม่มีข้อมูล",
         }}
         dataSource={users}
         columns={columns}
-        className="mt-2"
+        // className="mt-2"
+        components={components}
       />
     </div>
   );

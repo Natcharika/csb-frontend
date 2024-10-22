@@ -440,11 +440,11 @@ export default function ExamCSB02() {
                 <br />
                 3. ท่านยังไม่ได้รับการแต่งตั้งอาจารย์ที่ปรึกษา
               </Paragraph>
-              <img
+              {/* <img
                 src={loadingGif}
                 alt="Loading..."
                 style={{ width: "100%" }}
-              />
+              /> */}
             </>
           )}
         </>

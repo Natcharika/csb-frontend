@@ -14,7 +14,7 @@
 
 /* เมื่อ hover แถว */
 .custom-table .ant-table-row:hover {
-    background-color: rgb(253, 186, 116, 0.5) !important;
+    background-color: rgb(252, 216, 177, 0.559) !important;
     /* สีพื้นหลังเมื่อ hover เป็นสีส้ม */
 }
 

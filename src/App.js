@@ -44,6 +44,7 @@ function App() {
   const [role, setRole] = useState("");
   const [username, setUsername] = useState("");
   const [level, setLevel] = useState("all");
+  const [examPeriod, setExamPeriod] = useState([]);
 
   useEffect(() => {
     try {
@@ -64,6 +65,18 @@ function App() {
           }
         });
       }
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      api.getExamPeriod().then((response) => {
+        console.log(response.data);
+
+        setExamPeriod(response.data);
+      });
     } catch (error) {
       console.log(error);
     }
@@ -111,27 +124,59 @@ function App() {
                   path="/special-project-1/provider"
                   element={<ProviderSp1 />}
                 />
-                <Route
-                  path="/special-project-1/exam-csb01"
-                  element={<ExamCSB01 />}
-                />
-                <Route
-                  path="/special-project-1/exam-csb02"
-                  element={<ExamCSB02 />}
-                />
+
                 <Route
                   path="/special-project-2/provider"
                   element={<ProviderSp2 />}
                 />
-                <Route
-                  path="/special-project-2/exam-csb03"
-                  element={<ExamCSB03 />}
-                />
-                <Route
-                  path="/special-project-2/exam-csb04"
-                  element={<ExamCSB04 />}
-                />
+
+<Route
+                        path="/special-project-1/exam-csb01"
+                        element={<ExamCSB01 />}
+                      />
+                       <Route
+                        path="/special-project-1/exam-csb02"
+                        element={<ExamCSB02 />}
+                      />
+                      <Route
+                        path="/special-project-2/exam-csb03"
+                        element={<ExamCSB03 />}
+                      /><Route
+                      path="/special-project-2/exam-csb04"
+                      element={<ExamCSB04 />}
+                    />
+                    
+
                 <Route path="/project-status" element={<ProjectStatus />} />
+                {/* {examPeriod.map((item) => {
+                  const routeMapper = {
+                    สอบหัวข้อ: (
+                      <Route
+                        path="/special-project-1/exam-csb01"
+                        element={<ExamCSB01 />}
+                      />
+                    ),
+                    สอบก้าวหน้า: (
+                      <Route
+                        path="/special-project-1/exam-csb02"
+                        element={<ExamCSB02 />}
+                      />
+                    ),
+                    ยื่นทดสอบโครงงาน: (
+                      <Route
+                        path="/special-project-2/exam-csb03"
+                        element={<ExamCSB03 />}
+                      />
+                    ),
+                    สอบป้องกัน: (
+                      <Route
+                        path="/special-project-2/exam-csb04"
+                        element={<ExamCSB04 />}
+                      />
+                    ),
+                  };
+                  return item.examStatus && routeMapper[item.examName];
+                })} */}
               </>
             )}
             {role === "teacher" && (
@@ -228,70 +273,4 @@ function App() {
     </div>
   );
 }
-// {
-//     path: "/room-management",
-//     element: (
-//       <SideBar
-//         page={ <RoomManagement />}
-//         pageName={"สร้างห้องสอบ"}
-//         pageSub={""}
-//         path={"/room-management"}
-//       />
-//     ),
-//   },
-//   {
-//     path: "/member-spacial-project/sp-1",
-//     element: (
-//       <SideBar
-//         page={ < Sp1/>}
-//         pageName={"รายชื่อนักศึกษา"}
-//         pageSub={"sp-1"}
-//         path={"/member-spacial-project/sp-1"}
-//       />
-//     ),
-//   },
-//   {
-//     path: "/member-spacial-project/sp-2",
-//     element: (
-//       <SideBar
-//         page={ < Sp2/>}
-//         pageName={"รายชื่อนักศึกษา"}
-//         pageSub={"sp-2"}
-//         path={"/member-spacial-project/sp-2"}
-//       />
-//     ),
-//   },
-//   {
-//     path: "/sumary-room",
-//     element: (
-//       <SideBar
-//         page={ <SumaryRoom />}
-//         pageName={"สรุปห้องสอบ"}
-//         pageSub={""}
-//         path={"/sumary-room"}
-//       />
-//     ),
-//   },
-//   {
-//     path: "/add-lecture",
-//     element: (
-//       <SideBar
-//         page={ <AddLecture />}
-//         pageName={"รายชื่อโครงงาน"}
-//         pageSub={""}
-//         path={"/add-lecture"}
-//       />
-//     ),
-//   },
-//   {
-//     path: "/create-project-for-student",
-//     element: (
-//       <SideBar
-//         page={ <CreateProjectForStudent />}
-//         pageName={""}
-//         pageSub={""}
-//         path={"/create-project-for-student"}
-//       />
-//     ),
-//   },
 export default App;

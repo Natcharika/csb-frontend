@@ -348,7 +348,7 @@ import kmutnb from "../public/image/kmutnb.png";
 import { Link, useNavigate } from "react-router-dom";
 const { Header, Content, Sider } = Layout;
 
-const menuItemsStudent = [
+const menuItemsStudent = (examPeriod) => [
   {
     key: "/",
     // icon: React.createElement(LaptopOutlined),
@@ -364,10 +364,12 @@ const menuItemsStudent = [
         // label: "ตรวจสอบคุณสมบัตินักศึกษา" <br/> "Special Project 1",
         label: "ตรวจสอบคุณสมบัติ",
       },
+      // examPeriod.find((e) => e.examName === "สอบหัวข้อ").examStatus && 
       {
         key: "/special-project-1/exam-csb01",
         label: "ยื่นสอบหัวข้อ",
       },
+      // examPeriod.find((e) => e.examName === "สอบก้าวหน้า").examStatus && 
       {
         key: "/special-project-1/exam-csb02",
         label: "ยื่นสอบก้าวหน้า",
@@ -383,10 +385,12 @@ const menuItemsStudent = [
         key: "/special-project-2/provider",
         label: "ตรวจสอบคุณสมบัติ",
       },
+      // examPeriod.find((e) => e.examName === "ยื่นทดสอบโครงงาน").examStatus && 
       {
         key: "/special-project-2/exam-csb03",
         label: "ยื่นสอบทดสอบระบบ",
       },
+      // examPeriod.find((e) => e.examName === "สอบป้องกัน").examStatus && 
       {
         key: "/special-project-2/exam-csb04",
         label: "ยื่นสอบป้องกัน",
@@ -639,7 +643,7 @@ const SiderBar = ({ children, role, username, level, logout }) => {
           className="w-[200px] h-auto items-center"
         />
         <span style={{ fontSize: "20px" }}>
-          Special Project Examination Management System for CSB Program
+          ระบบจัดการการสอบโครงงานพิเศษสำหรับโครงการพิเศษสองภาษา
         </span>
         <span>
           {username ? (
@@ -681,14 +685,25 @@ const SiderBar = ({ children, role, username, level, logout }) => {
             // defaultOpenKeys={["sub1"]}
             items={
               role === "student"
-                ? menuItemsStudent
+                ? menuItemsStudent([
+                    {
+                      examName: "สอบหัวข้อ",
+                      examStatus: true,
+                    },
+                  ])
                 : role === "teacher"
                 ? getMenuItemTeacher(level)
                 : role === "admin"
                 ? menuItemsAdmin
                 : role === "superAdmin"
                 ? menuItemsSuperAdmin
-                : [menuItemsStudent[0]]
+                : [
+                    {
+                      key: "/",
+
+                      label: "หน้าหลัก",
+                    },
+                  ]
             }
             onClick={handleMenuClick}
           />

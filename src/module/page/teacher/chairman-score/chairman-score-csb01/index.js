@@ -267,12 +267,12 @@ function ChairmanScoreCSB01() {
                 style={{ marginTop: "16px", justifyContent: "center" }}
               >
                 <Col>
-                  <Button type="primary" onClick={handleSubmit}>
+                  <Button className="All-button" type="primary" onClick={handleSubmit}>
                     อนุมัติคะแนน
                   </Button>
                 </Col>
                 <Col>
-                  <Button danger onClick={handleCancel}>
+                  <Button className="red-button" danger onClick={handleCancel}>
                     ยกเลิก
                   </Button>
                 </Col>

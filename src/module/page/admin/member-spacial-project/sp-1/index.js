@@ -32,7 +32,7 @@ export default function Sp1() {
 
   const columns = [
     {
-      title: "Project Name",
+      title: "รายชื่อโครงงาน",
       dataIndex: "projectName",
       filterMode: "tree",
       filterSearch: true,
@@ -41,7 +41,7 @@ export default function Sp1() {
       sorter: (a, b) => a.projectName.localeCompare(b.projectName),
     },
     {
-      title: "Name Student",
+      title: "รายชื่อนักศึกษา",
       dataIndex: "student",
       render: (students) => (
         <>
@@ -55,7 +55,7 @@ export default function Sp1() {
       ),
     },
     {
-      title: "Name Lecturer",
+      title: "รายชื่ออาจารย์ที่ปรึกษาโครงงาน",
       dataIndex: "lecturer",
       render: (lecturers) => (
         <>
@@ -95,7 +95,7 @@ export default function Sp1() {
 
   return (
     <div>
-      <h1>Project List</h1>
+      <h1 style={{fontSize:'20px' , textAlign:"center", marginBottom:'10px'}}><b>รายชื่อนักศึกษาโครงงานพิเศษ 1</b></h1>
       <Table
         className="custom-table"
         columns={columns}

@@ -15,7 +15,7 @@ import {
 import api from "../../../../utils/form/api";
 import "../../../../theme/css/tables.css";
 import "../../../../theme/css/buttons.css";
-
+import "../../../../theme/css/texts.css";
 const { TextArea } = Input;
 
 function InputScoreCSB02() {
@@ -397,6 +397,7 @@ function InputScoreCSB02() {
         {dataProject.length > 0 ? (
           <div>
             <Button
+              className="red-button"
               onClick={() =>
                 filteredProjects.forEach((project) =>
                   handleDisableEvaluation(project.projectId)
@@ -453,6 +454,7 @@ function InputScoreCSB02() {
                     return (
                       <>
                         <Button
+                          className="All-button"
                           onClick={() =>
                             handleLinkClick(filteredProjects.indexOf(record))
                           }
@@ -461,6 +463,7 @@ function InputScoreCSB02() {
                           ประเมิน
                         </Button>
                         <Button
+                          className="All-button"
                           onClick={() =>
                             handleDisableEvaluation(record.projectId)
                           }
@@ -546,7 +549,7 @@ function InputScoreCSB02() {
             </p>
           </Card>
 
-          <Table dataSource={tableData} columns={columns} pagination={false} />
+          <Table className="custom-table" dataSource={tableData} columns={columns} pagination={false} />
           <Form layout="vertical" style={{ marginTop: 16 }}>
             <Form.Item label="ความคิดเห็น">
               <TextArea
@@ -557,6 +560,7 @@ function InputScoreCSB02() {
             </Form.Item>
             <Form.Item>
               <Button
+                className="All-button"
                 type="primary"
                 onClick={onSubmit}
                 disabled={!isScoreComplete() || loading}

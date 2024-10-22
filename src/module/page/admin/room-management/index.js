@@ -285,7 +285,7 @@ function RoomManagement() {
               <DatePicker
                 format="YYYY-MM-DD"
                 placeholder="เลือกวันที่สอบ"
-                style={{ width: "100%" }}
+                style={{ width: "100%", backgroundColor:"#fee9c4", borderColor:"#ffd28f"}}
                 picker="date"
                 onChange={(date) => {
                   form.setFieldsValue({ examDate: date });

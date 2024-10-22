@@ -10,7 +10,7 @@
 }
 
 .ant-input:not(:placeholder-shown) {
-  background-color: #fee9c4; /* สีพื้นหลังที่ต้องการ */
+ /* background-color: #fee9c4;  สีพื้นหลังที่ต้องการ */
   border-color: #ffd28f !important;
 }
 

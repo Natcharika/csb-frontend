@@ -96,7 +96,7 @@ export default function ApproveCSB04() {
     }
 
     try {
-      const response = await api.rejectCSB04({
+      const response = await api.rejectcsb({
         projectId: selectedProject._id, // Use _id from selectedProject
         activeStatus: 0,
       });
