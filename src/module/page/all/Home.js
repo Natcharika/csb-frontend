@@ -27,14 +27,14 @@ const Home = (props) => {
       case "admin":
         return {
           title: "ยินดีต้อนรับเจ้าหน้าที่ทุกท่าน",
-          image: teacher,
-          altText: "teacher logo",
+          image: staff,
+          altText: "staff logo",
         };
       default:
         return {
-          title: "ยินดีต้อนรับทุกท่าน",
-          image: staff,
-          altText: "staff logo",
+          title: "ยินดีต้อนรับบุคลากรโครงการพิเศษ(สองภาษา)",
+          // image: staff,
+          // altText: "staff logo",
         };
     }
   };

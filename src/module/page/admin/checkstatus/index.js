@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/form/api";
-import { Table, Button, message, Tag } from "antd";
+import { Table, Button, message, Tag, Modal, Input } from "antd";
 import "../../../theme/css/buttons.css";
 
 export default function CheckOCR() {
   const [filteredData, setFilteredData] = useState([]);
+  const [isOpenCommentModal, setIsOpenCommentModal] = useState(false);
+  const [comment, setComment] = useState("");
+  const [selectedRecord, setSelectedRecord] = useState(null);
 
   const fetchData = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
       const { data } = await api.getfiles(token);
-      console.log("Data:", data.body);
-
       setFilteredData(data.body);
     } catch (error) {
       console.log("Error fetching data:", error);
@@ -24,8 +25,6 @@ export default function CheckOCR() {
 
   const handleApprove = async (record) => {
     try {
-      console.log(record);
-
       await api.updateFileStatus({
         _id: record._id,
         status: "ผ่าน",
@@ -43,6 +42,7 @@ export default function CheckOCR() {
   };
 
   const handleReject = async (record, comment) => {
+    console.log("Rejecting record:", record);
     try {
       await api.updateFileStatus({
         _id: record._id,
@@ -54,7 +54,8 @@ export default function CheckOCR() {
         comment: comment,
       }); // Only send fi_status
       message.success("สถานะถูกอัพเดตเป็น 'ไม่ผ่าน' เรียบร้อยแล้ว");
-
+      setIsOpenCommentModal(false);
+      setComment("");
       fetchData(); // Refresh the data to reflect the updated status
     } catch (error) {
       message.error("การอัพเดตสถานะล้มเหลว");
@@ -180,10 +181,22 @@ export default function CheckOCR() {
       title: "จัดการ",
       render: (_, record) => (
         <div className="flex justify-center">
-          <Button className="All-button" onClick={() => handleApprove(record)} style={{marginRight:'5px'}}>
+          <Button
+            className="All-button"
+            onClick={() => handleApprove(record)}
+            style={{ marginRight: "5px" }}
+          >
             ผ่าน
           </Button>
-          <Button className="red-button" type="primary" danger onClick={() => handleReject(record)}>
+          <Button
+            className="red-button"
+            type="primary"
+            danger
+            onClick={() => {
+              setSelectedRecord(record);
+              setIsOpenCommentModal(true);
+            }}
+          >
             ไม่ผ่าน
           </Button>
         </div>
@@ -212,17 +225,32 @@ export default function CheckOCR() {
   };
 
   return (
-    <div>
-      <div id="print-section">
-        <Table
-          className="custom-table"
-          columns={columns}
-          dataSource={filteredData}
-          rowKey="_id"
-          onChange={onChange}
-          components={components}
+    <div id="print-section">
+      <Modal
+        title="กรุณากรอกเหตุผลที่ไม่ผ่าน"
+        open={isOpenCommentModal}
+        onOk={() => {
+          console.log("Selected record:", selectedRecord, comment);
+          handleReject(selectedRecord, comment);
+        }}
+        onCancel={() => {
+          setIsOpenCommentModal(false);
+          setComment("");
+        }}
+      >
+        <Input
+          placeholder="กรุณากรอกเหตุผลที่ไม่ผ่าน"
+          onChange={(e) => setComment(e.target.value)}
         />
-      </div>
+      </Modal>
+      <Table
+        className="custom-table"
+        columns={columns}
+        dataSource={filteredData}
+        rowKey="_id"
+        onChange={onChange}
+        components={components}
+      />
     </div>
   );
 }

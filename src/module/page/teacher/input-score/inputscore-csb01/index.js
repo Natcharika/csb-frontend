@@ -1123,9 +1123,10 @@ function InputScoreCSB01() {
     try {
       const token = localStorage.getItem("jwtToken");
       const res = await api.scorecsb(result, token);
+
       if (
-        res.data.message === "CSB01 score updated successfully" ||
-        res.data.message === "CSB01 score saved successfully"
+        res.data.message === "อัพเดทคะแนนการสอบหัวข้อสำเร็จ" ||
+        res.data.message === "บันทึกคะแนนการสอบหัวข้อสำเร็จ"
       ) {
         message.success("บันทึกคะแนนสำเร็จ");
         setSuccessfulEvaluations((prev) =>
@@ -1135,10 +1136,9 @@ function InputScoreCSB01() {
           ...prev,
           [selectedProject.projectId]: "evaluated",
         }));
-        console.log("555: ", result);
       } else {
-        notification.error({
-          message: "Error",
+        notification.success({
+          message: "success",
           description: res.data.message,
           placement: "topRight",
         });
@@ -1156,8 +1156,8 @@ function InputScoreCSB01() {
     setComment("");
     setModalVisible(false);
   };
-  const handleDisableEvaluation = async (csb_id, projectId) => {
 
+  const handleDisableEvaluation = async (csb_id, projectId) => {
     try {
       const result = {
         _id: csb_id,
@@ -1165,31 +1165,38 @@ function InputScoreCSB01() {
       };
       const token = localStorage.getItem("jwtToken");
       const res = await api.rejectcsb(result, token);
-      if (res.data.message === "Reject CSB01 score ") {
-        message.success("ไม่ประเมิน");
-        setSuccessfulEvaluations((prev) =>
-          new Set(prev).add(selectedProject.projectId)
-        );
-        setEvaluatedRows((prev) => ({ ...prev, [projectId]: "notEvaluated" }));
-        console.log("reject: ", result);
-      } else {
-        notification.error({
-          message: "Error",
-          description: res.data.message,
-          placement: "topRight",
-        });
-      }
+      notification.success({
+        message: "ไม่ประเมิน",
+        description: res.data.message,
+        placement: "topRight",
+      });
+      setSuccessfulEvaluations((prev) =>
+        new Set(prev).add(selectedProject.projectId)
+      );
+      setEvaluatedRows((prev) => ({ ...prev, [projectId]: "notEvaluated" }));
+      // if (res.data.message === "Reject CSB01 score ") {
+      //   message.success("ไม่ประเมิน");
+      //   setSuccessfulEvaluations((prev) =>
+      //     new Set(prev).add(selectedProject.projectId)
+      //   );
+      //   setEvaluatedRows((prev) => ({ ...prev, [projectId]: "notEvaluated" }));
+      //   console.log("reject: ", result);
+      // } else {
+      //   notification.error({
+      //     message: "Error",
+      //     description: res.data.message,
+      //     placement: "topRight",
+      //   });
+      // }
     } catch (err) {
       console.error(err);
       notification.error({
-        message: "Error Submitting Score",
-        description: "Unable to submit the score. Please try again later.",
+        message: "ส่งคะแนนผิดพลาด",
+        description: "ไม่สามารถส่งคะแนนได้ โปรดลองอีกครั้งในภายหลัง",
         placement: "topRight",
       });
     }
   };
-    
-  
 
   const columns = [
     {
@@ -1347,7 +1354,13 @@ function InputScoreCSB01() {
       }}
     >
       <div style={{ width: "60%", textAlign: "center" }}>
-        <Typography.Title level={2}>
+        <Typography.Title
+          style={{
+            fontSize: "20px",
+            textAlign: "center",
+            marginBottom: "20px",
+          }}
+        >
           ประเมินการโครงงานพิเศษ 1 (สอบหัวข้อ)
         </Typography.Title>
         <Typography.Text>เลือกวันที่ที่จะทำการประเมิน:</Typography.Text>
@@ -1376,7 +1389,7 @@ function InputScoreCSB01() {
               className="red-button"
               onClick={() =>
                 filteredProjects.forEach((project) =>
-                  handleDisableEvaluation(project.projectId)
+                  handleDisableEvaluation(project._id, project.projectId)
                 )
               }
               style={{
@@ -1441,7 +1454,10 @@ function InputScoreCSB01() {
                         <Button
                           className="red-button"
                           onClick={() =>
-                            handleDisableEvaluation(record.projectId)
+                            handleDisableEvaluation(
+                              record._id,
+                              record.projectId
+                            )
                           }
                           style={{
                             marginLeft: 8,

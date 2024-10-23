@@ -63,7 +63,6 @@ export default function ProviderSp2() {
     fetchData();
   }, [username]); // เพิ่ม username ใน dependencies
 
-
   const handleUploadTranscript = (uploadedFile) => {
     // Check if the uploaded file is a PDF
     if (uploadedFile.type !== "application/pdf") {
@@ -76,14 +75,48 @@ export default function ProviderSp2() {
     return false;
   };
 
-  const handleSubmit = async () => {
-    if (!username) {
-      message.error("กรุณาเข้าสู่ระบบก่อนที่จะส่งไฟล์");
-      return;
-    }
+  // const handleSubmit = async () => {
+  //   if (!username) {
+  //     message.error("กรุณาเข้าสู่ระบบก่อนที่จะส่งไฟล์");
+  //     return;
+  //   }
 
+  //   if (!transcriptFile) {
+  //     message.error("กรุณาอัปโหลดไฟล์ผลการศึกษาก่อนที่จะส่ง");
+  //     return;
+  //   }
+
+  //   const formData = new FormData();
+  //   formData.append("transcriptFile", transcriptFile);
+  //   formData.append("std", username);
+
+  //   try {
+  //     const response = await fetch("http://localhost:8788/files", {
+  //       method: "POST",
+  //       body: formData,
+  //     });
+
+  //     // const response = await fetch("http://202.44.40.169:8788/files", {
+  //     //   method: "POST",
+  //     //   body: formData,
+  //     // });
+
+  //     if (response.ok) {
+  //       message.success("ส่งไฟล์สำเร็จ!");
+  //     } else {
+  //       message.error("การส่งไฟล์ล้มเหลว");
+  //     }
+
+  //     await handleFileUpload(username);
+  //   } catch (error) {
+  //     console.error("Error uploading file:", error);
+  //     message.error("เกิดข้อผิดพลาดในการอัปโหลดไฟล์");
+  //   }
+  // };
+
+  const handleSubmit = async () => {
     if (!transcriptFile) {
-      message.error("กรุณาอัปโหลดไฟล์ผลการศึกษาก่อนที่จะส่ง");
+      message.error("กรุณาอัปโหลดทั้งไฟล์ผลการศึกษาก่อนที่จะส่ง");
       return;
     }
 
@@ -92,15 +125,15 @@ export default function ProviderSp2() {
     formData.append("std", username);
 
     try {
-      const response = await fetch("http://localhost:8788/files", {
-        method: "POST",
-        body: formData,
-      });
-
-      // const response = await fetch("http://202.44.40.169:8788/files", {
+      // const response = await fetch(`http://202.44.40.169:8788/files?=${username}`, {
       //   method: "POST",
       //   body: formData,
       // });
+
+      const response = await fetch(`http://localhost:8788/files?=${username}`, {
+        method: "POST",
+        body: formData,
+      });
 
       if (response.ok) {
         message.success("ส่งไฟล์สำเร็จ!");
@@ -108,22 +141,22 @@ export default function ProviderSp2() {
         message.error("การส่งไฟล์ล้มเหลว");
       }
 
-      await handleFileUpload(username);
+      // await handleFileUpload(username);
     } catch (error) {
       console.error("Error uploading file:", error);
       message.error("เกิดข้อผิดพลาดในการอัปโหลดไฟล์");
     }
   };
 
-  const handleFileUpload = async (fi_id) => {
-    try {
-      await axios.patch(`http://localhost:8788/files/${fi_id}`);
+  // const handleFileUpload = async (fi_id) => {
+  //   try {
+  //     await axios.patch(`http://localhost:8788/files/${fi_id}`);
 
-      // await axios.patch(`http://202.44.40.169:8788/files/${fi_id}`);
-    } catch (error) {
-      console.error("Error updating file status:", error);
-    }
-  };
+  //     // await axios.patch(`http://202.44.40.169:8788/files/${fi_id}`);
+  //   } catch (error) {
+  //     console.error("Error updating file status:", error);
+  //   }
+  // };
 
   const handlePreview = () => {
     setPreviewVisible(true);
@@ -148,13 +181,17 @@ export default function ProviderSp2() {
         backgroundColor: "#fff",
         borderRadius: 10,
         maxWidth: 820,
+        border: "2px solid #ffd28f", // กำหนดกรอบสีส้มอ่อน
+        backgroundColor: "#fff5e6", // พื้นหลังสีส้มอ่อน
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // เพิ่มเงาให้กรอบ
       }}
     >
       <img
-        src={cis}
+        src={"http://cs.kmutnb.ac.th/img/logo.png"}
         alt="logo"
         style={{ display: "block", margin: "0 auto", width: "150px" }}
       />
+
       <center>
         <Title level={3}>ตรวจสอบคุณสมบัติยื่นโครงงานพิเศษ 2</Title>
       </center>

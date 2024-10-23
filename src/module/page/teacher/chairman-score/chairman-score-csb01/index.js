@@ -182,8 +182,14 @@ function ChairmanScoreCSB01() {
       }}
     >
       <div style={{ width: "60%", textAlign: "center" }}>
-        <h1 style={{ textAlign: "center" }}>
-          แบบประเมินโครงงานพิเศษ 1 (สอบหัวข้อ)
+        <h1
+          style={{
+            fontSize: "20px",
+            textAlign: "center",
+            marginBottom: "20px",
+          }}
+        >
+          <b>แบบประเมินโครงงานพิเศษ 1 (สอบหัวข้อ)</b>
         </h1>
 
         <Form layout="vertical">
@@ -267,7 +273,11 @@ function ChairmanScoreCSB01() {
                 style={{ marginTop: "16px", justifyContent: "center" }}
               >
                 <Col>
-                  <Button className="All-button" type="primary" onClick={handleSubmit}>
+                  <Button
+                    className="All-button"
+                    type="primary"
+                    onClick={handleSubmit}
+                  >
                     อนุมัติคะแนน
                   </Button>
                 </Col>

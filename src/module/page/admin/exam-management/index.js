@@ -10,6 +10,7 @@ import {
   notification,
 } from "antd";
 import api from "../../../utils/form/api";
+import "../../../theme/css/buttons.css";
 
 const ManageExam = () => {
   const [examPeriod, setExamPeriod] = useState([]);
@@ -18,7 +19,6 @@ const ManageExam = () => {
   const fetchExamPeriod = async () => {
     try {
       const response = await api.getExamPeriod();
-
       if (
         response.data &&
         response.data.body &&
@@ -71,7 +71,21 @@ const ManageExam = () => {
   };
 
   return (
-    <Card>
+    <Card
+      style={{
+        margin: "auto",
+        padding: 20,
+        backgroundColor: "#fff",
+        flexDirection: "column",
+        // alignItems: "center",
+        // textAlign: "center",
+        borderRadius: 10,
+        maxWidth: 820,
+        border: "2px solid #ffd28f", // กำหนดกรอบสีส้มอ่อน
+        backgroundColor: "#fff5e6", // พื้นหลังสีส้มอ่อน
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // เพิ่มเงาให้กรอบ
+      }}
+    >
       <Row justify="center">
         <Col span={12}>
           <Typography.Title level={2} style={{ textAlign: "center" }}>

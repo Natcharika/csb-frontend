@@ -17,7 +17,8 @@ export default function CheckApproveCSB01() {
         .filter(
           (project) =>
             project.status?.CSB01?.activeStatus === 1 &&
-            project.status?.CSB01?.status === "รอดำเนินการ"
+            project.status?.CSB01?.status === "รอดำเนินการ" &&
+            (!project.lecturer || project.lecturer.length === 0)
         )
         .map((item) => ({
           projectName: item.projectName,
@@ -64,24 +65,24 @@ export default function CheckApproveCSB01() {
         </>
       ),
     },
-    {
-      title: "รายชื่ออาจารย์ที่ปรึกษาโครงงาน",
-      dataIndex: "lecturers",
-      render: (lecturers) => (
-        <>
-          {Array.isArray(lecturers) ? (
-            lecturers.map((lecturer, index) => (
-              <span key={index}>
-                {lecturer.T_name}
-                <br />
-              </span>
-            ))
-          ) : (
-            <span>No advisors available</span>
-          )}
-        </>
-      ),
-    },
+    // {
+    //   title: "รายชื่ออาจารย์ที่ปรึกษาโครงงาน",
+    //   dataIndex: "lecturers",
+    //   render: (lecturers) => (
+    //     <>
+    //       {Array.isArray(lecturers) ? (
+    //         lecturers.map((lecturer, index) => (
+    //           <span key={index}>
+    //             {lecturer.T_name}
+    //             <br />
+    //           </span>
+    //         ))
+    //       ) : (
+    //         <span>No advisors available</span>
+    //       )}
+    //     </>
+    //   ),
+    // },
     {
       title: "วันที่อนุมัติโครงงาน",
       dataIndex: "date",

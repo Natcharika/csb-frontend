@@ -1,61 +1,64 @@
 /* เปลี่ยนสีกรอบของ Input เมื่อเอาเมาส์ไปชี้ */
 .ant-input:hover {
-  border-color: #ffb340 !important; /* สีกรอบเมื่อ hover */
-  box-shadow: 0 0 5px rgba(255, 175, 64, 0.5) !important; /* เพิ่มเงา */
-}
-
-.ant-input:focus {
-  border-color: #ffb340 !important; /* สีกรอบที่ต้องการเมื่อคลิก */
+  border-color: #ffb340 !important;
   box-shadow: 0 0 5px rgba(255, 175, 64, 0.5) !important;
 }
 
-.ant-input:not(:placeholder-shown) {
- /* background-color: #fee9c4;  สีพื้นหลังที่ต้องการ */
-  border-color: #ffd28f !important;
+.ant-input:focus {
+  border-color: #ffb340 !important;
+  box-shadow: 0 0 5px rgba(255, 175, 64, 0.5) !important;
 }
 
-/* เปลี่ยนสีพื้นหลังของ checkbox เมื่อถูกเลือก */
+/* .ant-input:not(:placeholder-shown) {
+  background-color: #fee9c4;
+  border-color: #ffd28f !important;
+} */
+
+/* .roommanate-input .ant-input:not(:placeholder-shown) {
+  border-color: #ffd28f !important;
+} */
+
 .ant-checkbox-checked .ant-checkbox-inner {
-  background-color: #ffb340; /* สีพื้นหลังที่ต้องการเมื่อถูกเลือก */
-  border-color: #ffb340; /* สีกรอบเมื่อ checkbox ถูกเลือก */
+  background-color: #ffb340;
+  border-color: #ffb340;
 }
 
-/* เปลี่ยนสีกรอบของ checkbox */
-.ant-checkbox .ant-checkbox-inner {
-  border-color: #ffb340; /* สีกรอบ checkbox */
-}
-
-/* เปลี่ยนสี icon ติ๊กถูกเมื่อ checkbox ถูกเลือก */
 .ant-checkbox-checked .ant-checkbox-inner::after {
-  border-color: #fff; /* สีของเครื่องหมายถูก */
+  border-color: #fff;
 }
 
-/* เปลี่ยนสีเมื่อ checkbox อยู่ในสถานะ hover */
 .ant-checkbox-wrapper:hover .ant-checkbox-inner {
-  border-color: #ffb340; /* สีกรอบเมื่อ hover */
-  background-color: #ffb340; /* สีพื้นหลังเมื่อ hover */
+  border-color: #ffb340;
+  background-color: #ffb340;
 }
 
-/* เปลี่ยนสีพื้นหลังเมื่อ checkbox ถูกเลือกและ hover */
 .ant-checkbox-checked:hover .ant-checkbox-inner {
-  background-color: #ffb340; /* สีพื้นหลังที่เปลี่ยนเมื่อถูกเลือกและ hover */
+  background-color: #ffb340;
 }
 
-/* Custom styles for the Select component */
-
-/* เปลี่ยนสีกรอบเมื่อ Select ถูกเลือก */
 .ant-select-selector.ant-select-selector:focus {
-  border-color: #fee9c4 !important; /* เปลี่ยนสีกรอบเมื่อถูกโฟกัส */
-  box-shadow: 0 0 0 2px rgba(255, 175, 64, 0.5) !important; /* เพิ่มเงาเมื่อโฟกัส */
+  border-color: #ffb340 !important;
+  box-shadow: 0 0 0 1px rgba(255, 175, 64, 0.5) !important;
 }
 
-/* เปลี่ยนสีพื้นหลังและกรอบเมื่อ hover */
 .ant-select-selector:hover {
-  border-color: #fee9c4 !important; /* เปลี่ยนสีกรอบเมื่อ hover */
-  background-color: #ffb3407e !important; /* เปลี่ยนสีพื้นหลังเมื่อ hover */
+  border-color: #ffb340 !important;
+  box-shadow: 0 0 0 1px rgba(255, 175, 64, 0.5) !important;
+  /* background-color: #ffb3407e !important; */
 }
 
-.ant-select:not(.ant-select-customize-input) .ant-select-selector {
-  background-color: #fee9c4; /* สีพื้นหลังที่ต้องการ */
+/* .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  background-color: #fee9c4;
   border-color: #ffd28f !important;
+} */
+
+.ant-picker:hover {
+  border-color: #ffb340 !important;
+  box-shadow: 0 0 0 1px rgba(255, 175, 64, 0.5) !important;
+}
+
+/* เปลี่ยนสีกรอบเมื่อ hover */
+.ant-input-password:hover {
+  border-color: #ffb340 !important;
+  box-shadow: 0 0 0 1px rgba(255, 175, 64, 0.5) !important;
 }

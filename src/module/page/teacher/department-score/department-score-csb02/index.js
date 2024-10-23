@@ -76,6 +76,7 @@ function DepartmentHeadScoreCSB02() {
                 projectId: selectedProject._id,
                 activeStatus: 3, // Set as needed
             });
+            
     
             if (response.status === 200) {
                 message.success("บันทึกคะแนนสำเร็จ!");

@@ -68,7 +68,7 @@ function ChairmanScoreCSB04() {
       {
         id: 1,
         name: "คะแนนรวม",
-        fullscores: "90",
+        fullscores: "80",
         score: project.unconfirmScore || "", // Show unconfirmScore in score
       },
     ]);
@@ -176,7 +176,8 @@ function ChairmanScoreCSB04() {
     }
 
     const unconfirmScore = Number(updatedData);
-    const totalConfirmScore = unconfirmScore + Number(logBookScore) + Number(exhibitionScore);
+    const totalConfirmScore =
+      unconfirmScore + Number(logBookScore) + Number(exhibitionScore);
     try {
       const response = await api.chaircsb04({
         _id: selectedProject._id, // Use _id for projectId
@@ -257,11 +258,20 @@ function ChairmanScoreCSB04() {
       }}
     >
       <div style={{ width: "60%", textAlign: "center" }}>
-        <h1>แบบประเมินโครงงานพิเศษ 2 (สอบป้องกัน)</h1>
+        <h1
+          style={{
+            fontSize: "20px",
+            textAlign: "center",
+            marginBottom: "20px",
+          }}
+        >
+          <b>แบบประเมินโครงงานพิเศษ 2 (สอบป้องกัน)</b>
+        </h1>
         <Form layout="vertical">
           <Row gutter={16}>
             <Col span={24}>
-              <Form.Item label="เลือกชื่อโครงงาน">
+              <Form.Item>
+                <h3>เลือกชื่อโครงงาน</h3>
                 <Select
                   onChange={handleProjectChange}
                   placeholder="เลือกโครงงาน"
@@ -362,10 +372,18 @@ function ChairmanScoreCSB04() {
                 style={{ marginTop: "16px", justifyContent: "center" }}
               >
                 <Col>
-                  <Button className="All-button" type="primary" onClick={handleSubmit}>
+                  <Button
+                    className="All-button"
+                    type="primary"
+                    onClick={handleSubmit}
+                  >
                     อนุมัติคะแนน
                   </Button>
-                  <Button className="red-button" onClick={handleCancel} style={{ marginLeft: "10px" }}>
+                  <Button
+                    className="red-button"
+                    onClick={handleCancel}
+                    style={{ marginLeft: "10px" }}
+                  >
                     ยกเลิก
                   </Button>
                 </Col>

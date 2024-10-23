@@ -84,8 +84,8 @@ export default function AddLecture() {
     try {
       const response = await api.assignTeacher(payload);
       notification.success({
-        message: "Success",
-        description: "Lecturer(s) have been assigned successfully.",
+        message: "สำเร็จ",
+        description: "แต่งตั้งอาจารย์ที่ปรึกษาสำเร็จ",
       });
       setIsModalVisible(false);
       fetchData(); // Refresh the project list
@@ -94,8 +94,7 @@ export default function AddLecture() {
       notification.error({
         message: "Error",
         description:
-          err.response?.data.message ||
-          "There was an issue assigning the lecturer(s).",
+          err.response?.data.message || "มีปัญหาในการแต่งตั้งอาจารย์ที่ปรึกษา",
       });
     }
   };

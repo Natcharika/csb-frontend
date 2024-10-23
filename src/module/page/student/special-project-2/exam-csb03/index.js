@@ -12,6 +12,7 @@ import {
 } from "antd";
 import cis from "../../../../public/image/cis.png";
 import api from "../../../../utils/form/api";
+import "../../../../theme/css/buttons.css";
 
 const { Title, Paragraph } = Typography;
 
@@ -156,15 +157,21 @@ export default function ExamCSB03() {
   return (
     <div
       style={{
-        maxWidth: 1000,
         margin: "auto",
+        padding: 40,
         backgroundColor: "#fff",
+        flexDirection: "column",
+        alignItems: "center",
         textAlign: "center",
-        borderRadius: 15,
+        borderRadius: 10,
+        maxWidth: 820,
+        border: "2px solid #ffd28f", // กำหนดกรอบสีส้มอ่อน
+        backgroundColor: "#fff5e6", // พื้นหลังสีส้มอ่อน
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // เพิ่มเงาให้กรอบ
       }}
     >
       <img
-        src={cis}
+        src={"http://cs.kmutnb.ac.th/img/logo.png"}
         alt="logo"
         style={{ display: "block", margin: "0 auto", width: "150px" }}
       />
@@ -244,6 +251,7 @@ export default function ExamCSB03() {
                       placeholder="กรอกชื่อหน่วยงาน"
                       value={organization}
                       onChange={(e) => setOrganization(e.target.value)}
+                      style={{ backgroundColor: "#FFF" }}
                     />
                   </Form.Item>
                   <Form.Item label="วันที่เริ่มทดสอบ" required>
@@ -269,6 +277,7 @@ export default function ExamCSB03() {
                     }}
                   >
                     <Button
+                      className="All-button"
                       type="primary"
                       htmlType="submit"
                       style={{ padding: "6px 30px", fontSize: "16px" }}

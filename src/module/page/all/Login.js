@@ -3,6 +3,8 @@ import { Form, Input, Button, Typography, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../../utils/form/api";
+import "../../theme/css/buttons.css";
+import "../../theme/css/texts.css";
 
 const { Link } = Typography;
 
@@ -57,12 +59,22 @@ const Login = ({ onLoginSuccess }) => {
   return (
     <center>
       <div
+        // style={{
+        //   width: 300,
+        //   marginTop: "2rem",
+        //   padding: "2rem",
+        //   border: "1px solid #ccc",
+        //   borderRadius: "8px",
+        // }}
         style={{
-          width: 300,
-          marginTop: "2rem",
-          padding: "2rem",
-          border: "1px solid #ccc",
-          borderRadius: "8px",
+          margin: "auto",
+          padding: 40,
+          backgroundColor: "#fff",
+          borderRadius: 10,
+          maxWidth: 350,
+          border: "2px solid #ffd28f", // กำหนดกรอบสีส้มอ่อน
+          backgroundColor: "#fff5e6", // พื้นหลังสีส้มอ่อน
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // เพิ่มเงาให้กรอบ
         }}
       >
         <Form onFinish={onSubmit}>
@@ -97,9 +109,9 @@ const Login = ({ onLoginSuccess }) => {
               fontWeight: "bold",
             }}
           >
-            Forgot ICIT Account Password
+            <u>Forgot ICIT Account Password</u>
           </Link>
-          <Button type="primary" htmlType="submit" block>
+          <Button className="All-button" type="primary" htmlType="submit" block>
             Sign in
           </Button>
           {error && (

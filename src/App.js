@@ -39,13 +39,22 @@ import CheckApproveCSB03 from "./module/page/admin/check-approve/csb03";
 import CheckApproveCSB04 from "./module/page/admin/check-approve/csb04";
 import CheckOCR from "./module/page/admin/checkstatus";
 import Whitelist from "./module/page/multiRole/whitelist";
-
+import { ConfigProvider } from "antd";
 function App() {
   const [role, setRole] = useState("");
   const [username, setUsername] = useState("");
   const [level, setLevel] = useState("all");
   const [examPeriod, setExamPeriod] = useState([]);
 
+  const fecthAccess = async (token) => {
+    try {
+      api.getAccess(token).then((response) => {
+        setExamPeriod(response.data.body);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
     try {
       const token = localStorage.getItem("jwtToken");
@@ -54,7 +63,7 @@ function App() {
           if (response.status !== 200) {
             localStorage.clear();
           }
-          const { username, role, level, jwtToken } = response.data;
+          const { username, role, jwtToken } = response.data;
           localStorage.setItem("jwtToken", jwtToken);
           setRole(role);
           setUsername(username);
@@ -64,19 +73,8 @@ function App() {
             });
           }
         });
+        fecthAccess(token);
       }
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
-
-  useEffect(() => {
-    try {
-      api.getExamPeriod().then((response) => {
-        console.log(response.data);
-
-        setExamPeriod(response.data);
-      });
     } catch (error) {
       console.log(error);
     }
@@ -85,6 +83,7 @@ function App() {
   const onLoginSuccess = (data) => {
     const { username, role, level, jwtToken } = data;
     localStorage.setItem("jwtToken", jwtToken);
+    fecthAccess(jwtToken);
     setRole(role);
     setUsername(username);
     setLevel(level);
@@ -97,7 +96,13 @@ function App() {
     setLevel("");
   };
   return (
-    <div>
+    <ConfigProvider
+      theme={{
+        token: {
+          fontFamily: "Bai Jamjuree",
+        },
+      }}
+    >
       <BrowserRouter>
         {/* <div>
           <button onClick={() => setRole("")}>หายตัว!!!</button>
@@ -111,7 +116,13 @@ function App() {
             กลายร่างเป็นเจ้าหน้าที่
           </button>
         </div> */}
-        <SiderBar role={role} username={username} level={level} logout={logout}>
+        <SiderBar
+          role={role}
+          username={username}
+          level={level}
+          logout={logout}
+          examPeriod={examPeriod}
+        >
           <Routes>
             <Route path="/" element={<Home role={role} />} />
             <Route
@@ -120,35 +131,8 @@ function App() {
             />
             {role === "student" && (
               <>
-                <Route
-                  path="/special-project-1/provider"
-                  element={<ProviderSp1 />}
-                />
-
-                <Route
-                  path="/special-project-2/provider"
-                  element={<ProviderSp2 />}
-                />
-
-<Route
-                        path="/special-project-1/exam-csb01"
-                        element={<ExamCSB01 />}
-                      />
-                       <Route
-                        path="/special-project-1/exam-csb02"
-                        element={<ExamCSB02 />}
-                      />
-                      <Route
-                        path="/special-project-2/exam-csb03"
-                        element={<ExamCSB03 />}
-                      /><Route
-                      path="/special-project-2/exam-csb04"
-                      element={<ExamCSB04 />}
-                    />
-                    
-
                 <Route path="/project-status" element={<ProjectStatus />} />
-                {/* {examPeriod.map((item) => {
+                {examPeriod.map((item) => {
                   const routeMapper = {
                     สอบหัวข้อ: (
                       <Route
@@ -174,9 +158,21 @@ function App() {
                         element={<ExamCSB04 />}
                       />
                     ),
+                    "ตรวจสอบคุณสมบัติการยื่นสอบโครงงานพิเศษ 1": (
+                      <Route
+                        path="/special-project-1/provider"
+                        element={<ProviderSp1 />}
+                      />
+                    ),
+                    "ตรวจสอบคุณสมบัติการยื่นสอบโครงงานพิเศษ 2": (
+                      <Route
+                        path="/special-project-2/provider"
+                        element={<ProviderSp2 />}
+                      />
+                    ),
                   };
                   return item.examStatus && routeMapper[item.examName];
-                })} */}
+                })}
               </>
             )}
             {role === "teacher" && (
@@ -270,7 +266,7 @@ function App() {
           </Routes>
         </SiderBar>
       </BrowserRouter>
-    </div>
+    </ConfigProvider>
   );
 }
 export default App;

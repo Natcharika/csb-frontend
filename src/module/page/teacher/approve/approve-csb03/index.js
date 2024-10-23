@@ -1,6 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Select, Input, Button, Form, Row, Col, message, notification } from 'antd';
-import api from '../../../../utils/form/api';
+import React, { useState, useEffect } from "react";
+import {
+  Select,
+  Input,
+  Button,
+  Form,
+  Row,
+  Col,
+  message,
+  notification,
+} from "antd";
+import api from "../../../../utils/form/api";
 import "../../../../theme/css/texts.css";
 import "../../../../theme/css/buttons.css";
 
@@ -40,9 +49,8 @@ export default function ApproveCSB03() {
     }
   };
   useEffect(() => {
-    fetchProjects()
+    fetchProjects();
   }, []);
-
 
   const handleProjectChange = (value) => {
     const selected = projects.find((p) => p.projectName === value);
@@ -58,7 +66,7 @@ export default function ApproveCSB03() {
 
   const handleApprove = async () => {
     if (!selectedProject) {
-      message.warning('กรุณาเลือกชื่อโครงงานก่อน');
+      message.warning("กรุณาเลือกชื่อโครงงานก่อน");
       return;
     }
 
@@ -70,18 +78,20 @@ export default function ApproveCSB03() {
 
       console.log(response.data);
       message.success(`อนุมัติโครงงาน ${selectedProject.projectName} สำเร็จ`);
-      setApprovedProjects((prev) => new Set(prev).add(selectedProject.projectName));
+      setApprovedProjects((prev) =>
+        new Set(prev).add(selectedProject.projectName)
+      );
       resetForm();
       fetchProjects();
     } catch (error) {
       console.error(error);
-      message.error('ไม่สามารถอนุมัติโครงงานได้ กรุณาลองใหม่อีกครั้ง');
+      message.error("ไม่สามารถอนุมัติโครงงานได้ กรุณาลองใหม่อีกครั้ง");
     }
   };
 
   const handleReject = async () => {
     if (!selectedProject) {
-      message.warning('กรุณาเลือกชื่อโครงงานก่อน');
+      message.warning("กรุณาเลือกชื่อโครงงานก่อน");
       return;
     }
 
@@ -91,37 +101,71 @@ export default function ApproveCSB03() {
         activeStatus: 0,
       });
       console.log(response.data);
-      message.warning(`ปฏิเสธการยื่นสอบป้องกันโครงงาน ${selectedProject.projectName}`);
+      message.warning(
+        `ปฏิเสธการยื่นทดสอบโครงงาน ${selectedProject.projectName}`
+      );
       resetForm();
     } catch (error) {
-      message.error('ไม่สามารถปฏิเสธโครงงานได้ กรุณาลองใหม่อีกครั้ง');
+      message.error("ไม่สามารถปฏิเสธโครงงานได้ กรุณาลองใหม่อีกครั้ง");
     }
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', padding: '24px', fontFamily: 'Arial, sans-serif' }}>
-      <div style={{ width: '100%', maxWidth: '600px' }}>
-        <h1 style={{ textAlign: 'center' }}>อนุมัติการยื่นสอบป้องกันโครงงาน</h1>
+    <div
+      // style={{
+      //   display: "flex",
+      //   justifyContent: "center",
+      //   padding: "24px",
+      //   fontFamily: "Arial, sans-serif",
+      // }}
+      style={{
+        margin: "auto",
+        padding: 24,
+        backgroundColor: "#fff",
+        // flexDirection: "column",
+        display: "flex",
+        justifyContent: "center",
+        // alignItems: "center",
+        // textAlign: "center",
+        borderRadius: 10,
+        maxWidth: 820,
+        border: "2px solid #ffd28f", // กำหนดกรอบสีส้มอ่อน
+        backgroundColor: "#fff5e6", // พื้นหลังสีส้มอ่อน
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // เพิ่มเงาให้กรอบ
+      }}
+    >
+      <div style={{ width: "100%", maxWidth: "600px" }}>
+        <h1
+          style={{
+            fontSize: "20px",
+            textAlign: "center",
+            marginBottom: "20px",
+          }}
+        >
+          <b>อนุมัติการยื่นทดสอบโครงงาน</b>
+        </h1>
 
         <Form layout="vertical">
           <Row justify="center" gutter={16}>
             <Col span={12}>
-              <Form.Item style={{ textAlign: 'center' }}>
+              <Form.Item style={{ textAlign: "center" }}>
                 <h3>เลือกชื่อโครงงาน</h3>
 
                 <Select
-                  value={selectedProject?.projectName || ''}
+                  value={selectedProject?.projectName || ""}
                   placeholder="เลือกโครงงาน"
-                  style={{ width: '100%' }}
+                  style={{ width: "100%" }}
                   onChange={handleProjectChange}
                 >
                   {projects.map((project) => (
-                    <Select.Option key={project.projectId} value={project.projectName}>
+                    <Select.Option
+                      key={project.projectId}
+                      value={project.projectName}
+                    >
                       {project.projectName}
                     </Select.Option>
                   ))}
                 </Select>
-
               </Form.Item>
             </Col>
           </Row>
@@ -131,24 +175,34 @@ export default function ApproveCSB03() {
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item label="ชื่อ-สกุลนักศึกษาคนที่ 1">
-                    <Input value={`${projectDetails.student[0].FirstName} ${projectDetails.student[0].LastName}`} disabled style={{ width: '100%' }} />
+                    <Input
+                      value={`${projectDetails.student[0].FirstName} ${projectDetails.student[0].LastName}`}
+                      disabled
+                      style={{ width: "100%" }}
+                    />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
                   <Form.Item label="ชื่อ-สกุลนักศึกษาคนที่ 2">
-                    <Input value={`${projectDetails.student[1].FirstName} ${projectDetails.student[1].LastName}`} disabled style={{ width: '100%' }} />
+                    <Input
+                      value={`${projectDetails.student[1].FirstName} ${projectDetails.student[1].LastName}`}
+                      disabled
+                      style={{ width: "100%" }}
+                    />
                   </Form.Item>
                 </Col>
               </Row>
               <Row gutter={16}>
                 <Col span={24}>
-                  {
-                    projectDetails.lecturer.map((lecturer, index) => (
-                      <Form.Item label={`ชื่ออาจารย์ที่ปรึกษา ${index + 1}`}>
-                        <Input value={`${lecturer.T_name}`} disabled style={{ width: '100%' }} />
-                      </Form.Item>
-                    ))
-                  }
+                  {projectDetails.lecturer.map((lecturer, index) => (
+                    <Form.Item label={`ชื่ออาจารย์ที่ปรึกษา ${index + 1}`}>
+                      <Input
+                        value={`${lecturer.T_name}`}
+                        disabled
+                        style={{ width: "100%" }}
+                      />
+                    </Form.Item>
+                  ))}
 
                   {/*<Form.Item label="ชื่ออาจารย์ที่ปรึกษา">
                     <Input value={projectDetails.lecturer} disabled style={{ width: '100%' }} />
@@ -156,15 +210,24 @@ export default function ApproveCSB03() {
                 </Col>
               </Row>
 
-              <Row gutter={16} style={{ marginTop: '16px' }}>
-                <Col span={12} style={{ textAlign: 'right' }}>
-                  <Button className='All-button' type="primary" onClick={handleApprove}>
-                    อนุมัติการยื่นสอบป้องกันโครงงาน
+              <Row gutter={16} style={{ marginTop: "16px" }}>
+                <Col span={12} style={{ textAlign: "right" }}>
+                  <Button
+                    className="All-button"
+                    type="primary"
+                    onClick={handleApprove}
+                  >
+                    อนุมัติการยื่นทดสอบโครงงาน
                   </Button>
                 </Col>
                 <Col span={12}>
-                  <Button className='red-button' type="primary" danger onClick={handleReject}>
-                    ปฏิเสธการยื่นสอบป้องกันโครงงาน
+                  <Button
+                    className="red-button"
+                    type="primary"
+                    danger
+                    onClick={handleReject}
+                  >
+                    ปฏิเสธการยื่นทดสอบโครงงาน
                   </Button>
                 </Col>
               </Row>

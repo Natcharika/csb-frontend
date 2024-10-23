@@ -1,7 +1,7 @@
 .All-button {
-  background-color: #20950D !important;
+  background-color: #20950d !important;
   /* เปลี่ยนสีพื้นหลัง */
-  border-color: #20950D !important;
+  border-color: #20950d !important;
   /* เปลี่ยนสีกรอบ */
   color: #ffffff !important;
   /* เปลี่ยนสีข้อความ */
@@ -40,6 +40,16 @@
   /* สีข้อความเมื่อ hover */
 }
 
+.logout-button:hover {
+  color: rgb(255, 0, 0) !important;
+  /* สีข้อความเมื่อ hover */
+}
+
+.login-button:hover {
+  color: #20950d !important;
+  /* สีข้อความเมื่อ hover */
+}
+
 .AddLecture-button:hover {
   background-color: #dffbda !important;
   /* เปลี่ยนสีพื้นหลังเมื่อ hover */
@@ -73,4 +83,14 @@
 .custom-dropdown-button:hover {
   background-color: rgba(247, 113, 0, 0.5) !important;
   /* เปลี่ยนสีเมื่อ hover */
+}
+
+/* เปลี่ยนสีเมื่อ switch ถูกเปิด (checked) */
+.ant-switch-checked {
+  background-color: #ffa500 !important; /* เปลี่ยนสีพื้นหลังเป็นสีส้ม */
+}
+
+/* เปลี่ยนสีเมื่อ hover บน switch */
+.ant-switch:hover {
+  background-color: #ffcc80 !important; /* เปลี่ยนสีพื้นหลังเมื่อ hover */
 }

@@ -196,8 +196,14 @@ function ChairmanScoreCSB02() {
       }}
     >
       <div style={{ width: "60%", textAlign: "center" }}>
-        <h1 style={{ textAlign: "center" }}>
-          แบบประเมินโครงงานพิเศษ 1 (สอบก้าวหน้า)
+        <h1
+          style={{
+            fontSize: "20px",
+            textAlign: "center",
+            marginBottom: "20px",
+          }}
+        >
+          <b>แบบประเมินโครงงานพิเศษ 1 (สอบก้าวหน้า)</b>
         </h1>
 
         <Form layout="vertical">
@@ -296,10 +302,18 @@ function ChairmanScoreCSB02() {
                   span={10}
                   style={{ display: "flex", alignItems: "flex-end" }}
                 >
-                  <Button className="All-button" type="primary" onClick={handleSubmit}>
+                  <Button
+                    className="All-button"
+                    type="primary"
+                    onClick={handleSubmit}
+                  >
                     อนุมัติคะแนน
                   </Button>
-                  <Button className="red-button" onClick={handleCancel} style={{ marginLeft: "10px" }}>
+                  <Button
+                    className="red-button"
+                    onClick={handleCancel}
+                    style={{ marginLeft: "10px" }}
+                  >
                     ยกเลิก
                   </Button>
                 </Col>

@@ -101,7 +101,7 @@ export default function ApproveCSB02() {
       });
       console.log(response.data);
       message.warning(
-        `ปฏิเสธการยื่นสอบป้องกันโครงงาน ${selectedProject.projectName}`
+        `ปฏิเสธการยื่นสอบก้าวหน้าโครงงาน ${selectedProject.projectName}`
       );
       resetForm();
     } catch (error) {
@@ -111,21 +111,44 @@ export default function ApproveCSB02() {
 
   return (
     <div
+      // style={{
+      //   display: "flex",
+      //   justifyContent: "center",
+      //   padding: "24px",
+      //   fontFamily: "Arial, sans-serif",
+      // }}
       style={{
+        margin: "auto",
+        padding: 24,
+        backgroundColor: "#fff",
+        // flexDirection: "column",
         display: "flex",
         justifyContent: "center",
-        padding: "24px",
-        fontFamily: "Arial, sans-serif",
+        // alignItems: "center",
+        // textAlign: "center",
+        borderRadius: 10,
+        maxWidth: 820,
+        border: "2px solid #ffd28f", // กำหนดกรอบสีส้มอ่อน
+        backgroundColor: "#fff5e6", // พื้นหลังสีส้มอ่อน
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // เพิ่มเงาให้กรอบ
       }}
     >
       <div style={{ width: "100%", maxWidth: "600px" }}>
-        <h1 style={{ textAlign: "center" }}>อนุมัติการยื่นสอบป้องกันโครงงาน</h1>
+        <h1
+          style={{
+            fontSize: "20px",
+            textAlign: "center",
+            marginBottom: "20px",
+          }}
+        >
+          <b>อนุมัติการยื่นสอบก้าวหน้าโครงงาน</b>
+        </h1>
 
         <Form layout="vertical">
           <Row justify="center" gutter={16}>
             <Col span={12}>
               <Form.Item style={{ textAlign: "center" }}>
-                <h3>เลือกชื่อโครงงาน</h3>
+                <h2>เลือกชื่อโครงงาน</h2>
                 <Select
                   value={selectedProject?._id || ""} // Use _id as the value
                   placeholder="เลือกโครงงาน"
@@ -191,12 +214,21 @@ export default function ApproveCSB02() {
 
               <Row gutter={16} style={{ marginTop: "16px" }}>
                 <Col span={12} style={{ textAlign: "right" }}>
-                  <Button className="All-button" type="primary" onClick={handleApprove}>
+                  <Button
+                    className="All-button"
+                    type="primary"
+                    onClick={handleApprove}
+                  >
                     อนุมัติการยื่นสอบก้าวหน้าโครงงาน
                   </Button>
                 </Col>
                 <Col span={12}>
-                  <Button className="red-button" type="primary" danger onClick={handleReject}>
+                  <Button
+                    className="red-button"
+                    type="primary"
+                    danger
+                    onClick={handleReject}
+                  >
                     ปฏิเสธการยื่นสอบก้าวหน้าโครงงาน
                   </Button>
                 </Col>

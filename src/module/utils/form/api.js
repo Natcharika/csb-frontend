@@ -46,10 +46,24 @@ export default {
 
   // RoomManagement
   getRoomPage: (params) => service.get("/room-management", { params }),
-  createRoomManagement: (data) => service.post("/create-room-management", data),
+  createRoomManagement: (data, token) =>
+    service.post("/create-room-management", data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  checkRoomTeachers: (params) =>
+    service.post("/check-room-Teachers", { params }),
 
   // getAllProject
   getAllProject: (params) => service.get("/project-students", { params }),
+
+  getProjectByExamName: (token, examName) =>
+    service.get(`/exam/${examName}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
   updateProject: (data) => service.post("/create-form", { data }), //เพิ่มอาจารย์ที่ปรึกษา
   // createProject: (data) => service.post("/project-students", { data }),
 
@@ -216,13 +230,36 @@ export default {
       },
     }),
 
-  // getExamPeriod: () => service.get("/exam-period"),
-  // patchExamPeriod: (data, token) =>
-  //   service.patch("/exam-period", data, {
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   }),
+  getFileByToken: (token) =>
+    service.get("/filesbytoken", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  getAccess: (token) =>
+    service.get("/access", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  getExamPeriod: (token) =>
+    service.get("/exam-period", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  patchExamPeriod: (data, token) =>
+    service.patch("/exam-period", data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  projectStatus: (token) =>
+    service.get("/project/status", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 export const getProjectById = async (projectId) => {
   return await axios.get(`/api/projects/${projectId}`); // Adjust the endpoint according to your API structure

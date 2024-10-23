@@ -312,17 +312,21 @@ export default function ExamCSB02() {
   return (
     <div
       style={{
-        maxWidth: 1000,
         margin: "auto",
+        padding: 40,
         backgroundColor: "#fff",
         flexDirection: "column",
         alignItems: "center",
         textAlign: "center",
-        borderRadius: 15,
+        borderRadius: 10,
+        maxWidth: 820,
+        border: "2px solid #ffd28f", // กำหนดกรอบสีส้มอ่อน
+        backgroundColor: "#fff5e6", // พื้นหลังสีส้มอ่อน
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // เพิ่มเงาให้กรอบ
       }}
     >
       <img
-        src={cis}
+        src={"http://cs.kmutnb.ac.th/img/logo.png"}
         alt="logo"
         style={{ display: "block", margin: "0 auto", width: "150px" }}
       />
