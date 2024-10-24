@@ -78,6 +78,7 @@ export default function CheckOCR() {
           <Tag key={index} color="blue">
             <a
               href={`http://localhost:8788/view/${file.linkFile}`}
+              // href={`http://202.44.40.169:8788/view/${file.linkFile}`}
               target="_blank"
               rel="noopener noreferrer"
             >

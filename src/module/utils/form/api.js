@@ -268,6 +268,7 @@ export const getProjectById = async (projectId) => {
 export const updateFileStatus = (fi_id, status) => {
   const token = localStorage.getItem("jwtToken");
   return axios.patch(`http://localhost:8788/files/${fi_id}`, status, {
+  // return axios.patch(`http://202.44.40.169:8788/files/${fi_id}`, status, {
     headers: {
       Authorization: `Bearer ${token}`, // If you are using authentication
     },

@@ -12,6 +12,7 @@ import {
   Input,
   notification,
 } from "antd";
+import moment from "moment";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -371,24 +372,29 @@ function RoomManagement() {
           </Col>
 
           <Col span={8}>
-            <Form.Item
-              label="วันที่สอบ (Exam Date)"
-              name="examDate"
-              rules={[{ required: true, message: "กรุณาเลือกวันที่สอบ" }]}
-            >
-              <DatePicker
-                format="YYYY-MM-DD"
-                placeholder="เลือกวันที่สอบ"
-                style={{
-                  width: "100%",
-                }}
-                picker="date"
-                onChange={(date) => {
-                  form.setFieldsValue({ examDate: date });
-                  checkFormValidity();
-                }}
-              />
-            </Form.Item>
+          <Form.Item
+  label="วันที่สอบ (Exam Date)"
+  name="examDate"
+  rules={[{ required: true, message: "กรุณาเลือกวันที่สอบ" }]}
+>
+  <DatePicker
+    format="YYYY-MM-DD"
+    placeholder="เลือกวันที่สอบ"
+    style={{
+      width: "100%",
+    }}
+    picker="date"
+    disabledDate={(current) => {
+      // Disable dates before today
+      return current && current < moment().startOf('day');
+    }}
+    onChange={(date) => {
+      form.setFieldsValue({ examDate: date });
+      checkFormValidity();
+    }}
+  />
+</Form.Item>
+
           </Col>
         </Row>
 

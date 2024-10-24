@@ -266,17 +266,12 @@ function InputScoreCSB04() {
       const token = localStorage.getItem("jwtToken");
       const res = await api.rejectcsb(result, token);
       notification.success({
-        message: "ไม่ประเมิน",
+        message: "ไม่ประเมินสำเร็จ",
         description: res.data.message,
         placement: "topRight",
       });
-      setSuccessfulEvaluations((prev) =>
-        new Set(prev).add(selectedProject.projectId)
-      );
-      setEvaluatedRows((prev) => ({
-        ...prev,
-        [selectedProject.projectId]: "evaluated",
-      }));
+      setSuccessfulEvaluations((prev) => new Set(prev).add(projectId));
+      setEvaluatedRows((prev) => ({ ...prev, [projectId]: "notEvaluated" }));
       // if (res.data.message === "Reject CSB04 score ") {
       //   message.success("ไม่ประเมิน");
       //   setSuccessfulEvaluations((prev) =>
