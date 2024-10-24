@@ -65,6 +65,10 @@ export default function ProviderSp1() {
 
       if (response.ok) {
         message.success("ส่งไฟล์สำเร็จ!");
+        // เคลียร์ไฟล์ที่อัปโหลดสำเร็จ
+        setTranscriptFile(null);
+        setEnglishScoreFile(null);
+        setFileUrl(""); // เคลียร์ URL สำหรับ preview
       } else {
         message.error("การส่งไฟล์ล้มเหลว");
       }

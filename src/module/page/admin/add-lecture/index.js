@@ -176,7 +176,7 @@ export default function AddLecture() {
       />
 
       <Modal
-        title="Edit Project"
+        title="เพิ่มอาจารย์ที่ปรึกษาโครงงาน"
         visible={isModalVisible}
         onCancel={handleModalCancel}
         footer={null} // No footer needed, as we are handling actions in the form
@@ -191,7 +191,7 @@ export default function AddLecture() {
           onFinish={handleSubmit}
         >
           <Form.Item
-            label="Project Name"
+            label="ชื่อโครงงาน"
             name="projectName"
             rules={[
               { required: true, message: "Please input the project name!" },
@@ -201,7 +201,7 @@ export default function AddLecture() {
           </Form.Item>
 
           <Form.Item
-            label="Lecturer"
+            label="อาจารย์ที่ปรึกษา"
             name="lecturer"
             rules={[
               {
