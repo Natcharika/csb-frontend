@@ -21,7 +21,7 @@ export default function SumaryRoom() {
         const sortedData = fetchedData.sort(
           (a, b) => new Date(b.dateExam) - new Date(a.dateExam)
         );
-
+        setData(sortedData);
         setFilteredData(sortedData);
 
         const uniqueDates = [
@@ -41,20 +41,36 @@ export default function SumaryRoom() {
     fetchData();
   }, []);
 
+  // const handleDateSelect = (date) => {
+  //   setSelectedDate(date);
+
+  //   if (date === "all") {
+  //     setFilteredData(data); // Show all data when "All" is selected
+  //   } else if (date) {
+  //     const filtered = data.filter((item) =>
+  //       moment(item.dateExam).isSame(date, "day")
+  //     );
+  //     setFilteredData(filtered);
+  //   } else {
+  //     setFilteredData(data);
+  //   }
+  // };
+
   const handleDateSelect = (date) => {
     setSelectedDate(date);
-
+  
     if (date === "all") {
-      setFilteredData(data); // Show all data when "All" is selected
+      setFilteredData(data); // แสดงข้อมูลทั้งหมดเมื่อเลือก "All"
     } else if (date) {
       const filtered = data.filter((item) =>
         moment(item.dateExam).isSame(date, "day")
       );
-      setFilteredData(filtered);
+      setFilteredData(filtered); // แสดงข้อมูลที่กรองตามวันที่เลือก
     } else {
-      setFilteredData(data);
+      setFilteredData(data); // แสดงข้อมูลทั้งหมดหากไม่มีวันที่เลือก
     }
   };
+  
 
   const columns = [
     {
